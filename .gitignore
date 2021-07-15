@@ -1,0 +1,11 @@
+Yolov5_Git_Widerface
+Yolov5_Git_Widerface_CPU
+yolov5
+arr_data
+arr_data_test
+ARRANGED_DATASET
+ARRANGED_DATASET_TEST
+RAW_DATASET
+runs
+data_short.yaml
+testing.py
