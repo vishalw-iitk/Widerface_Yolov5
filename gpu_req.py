@@ -11,8 +11,8 @@ if os.path.exists('gpu_requirements.txt'):
 file1 = open('requirements.txt', 'r')
 Lines = file1.readlines()
 
-skip = False
-# skip = True
+# skip = False
+skip = True
 
 if not skip:
     for line in Lines:
