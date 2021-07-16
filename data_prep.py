@@ -11,10 +11,10 @@ import sys
 
 
 
-DATA_PATH = 'RAW_DATASET'
-OUTPUT_PATH = 'ARRANGED_DATASET'
+DATA_PATH = '../RAW_DATASET'
+OUTPUT_PATH = '../ARRANGED_DATASET'
 
-if os.path.exists('ARRANGED_DATASET/') and os.path.exists('ARRANGED_DATASET_TEST/'):
+if os.path.exists(OUTPUT_PATH) and os.path.exists(OUTPUT_PATH):
     print("**************************************************************************************")
     print("Dataset already arranged. Make sure it doesn't contain corrupted contents or format")
     print("**************************************************************************************")
