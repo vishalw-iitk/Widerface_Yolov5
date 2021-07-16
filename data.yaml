@@ -1,4 +1,4 @@
-train : ARRANGED_DATASET/images/train
-val : ARRANGED_DATASET/images/validation
+train : ../ARRANGED_DATASET/images/train
+val : ../ARRANGED_DATASET/images/validation
 nc : 1
 names : ["face"]
