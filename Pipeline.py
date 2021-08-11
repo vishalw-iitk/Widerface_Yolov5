@@ -169,19 +169,19 @@ def main(opt):
 
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--yolov5_repo_name', default= 'yolov5', help='')
-    parser.add_argument('--results_folder_path', default= '../runs', help='')
+    parser.add_argument('--yolov5-repo-name', default= 'yolov5', help='')
+    parser.add_argument('--results-folder_path', default= '../runs', help='')
     parser.add_argument('--clone-updated-yolov5', action='store_true', help='clone the updated yolov5 repository. This may not work if updates in the original yolv5 repo become incompatible with our setup')
     
     parser.add_argument('--device', default='cpu', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
 
-    parser.add_argument('--raw_dataset_path', type=str, default = '../RAW_DATASET', help='Path of the raw dataset which was just arranged from the downloaded dataset')
-    parser.add_argument('--arranged_data_path', type=str, default = '../ARRANGED_DATASET', help='Path of the arranged dataset')
+    parser.add_argument('--raw-dataset-path', type=str, default = '../RAW_DATASET', help='Path of the raw dataset which was just arranged from the downloaded dataset')
+    parser.add_argument('--arranged-data-path', type=str, default = '../ARRANGED_DATASET', help='Path of the arranged dataset')
 
     parser.add_argument('--partial-dataset', action='store_true', help='willing to select custom percentage of dataset')
-    parser.add_argument('--percent_traindata', type=int, help=' percent_of_the_train_data_required')
-    parser.add_argument('--percent_validationdata', type=int, help=' percent_of_the_validation_data_required')
-    parser.add_argument('--percent_testdata', type=int, help=' percent_of_the_test_data_required')
+    parser.add_argument('--percent-traindata', type=int, help=' percent_of_the_train_data_required')
+    parser.add_argument('--percent-validationdata', type=int, help=' percent_of_the_validation_data_required')
+    parser.add_argument('--percent-testdata', type=int, help=' percent_of_the_test_data_required')
 
     parser.add_argument('--batch-size', type=int, default=128, help='')
     parser.add_argument('--epochs', type=int, default=300, help='')    
@@ -197,12 +197,12 @@ def parse_opt(known=False):
     parser.add_argument('--qat-project', default='../runs_QAT/train', help='save to project/name')
     parser.add_argument('--qat-name', default='exp', help='save to project/name')
     parser.add_argument('--QAT-epochs', type=int, default=50, help='')
-    parser.add_argument('--repr_images', type=str, default='../ARRANGED_DATASET/images/validation/', help='path of representative dataset')
+    parser.add_argument('--repr-images', type=str, default='../ARRANGED_DATASET/images/validation/', help='path of representative dataset')
     parser.add_argument('--img', nargs='+', type=int, default=[640, 640], help='image size')  # height, width
     parser.add_argument('--ncalib', type=int, default=100, help='number of calibration images')
 
     parser.add_argument('--weights', type=str, default='', help='initial weights path')
-    parser.add_argument('--local_rank', type=int, default=-1, help='DDP parameter, do not modify')
+    parser.add_argument('--local-rank', type=int, default=-1, help='DDP parameter, do not modify')
 
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
