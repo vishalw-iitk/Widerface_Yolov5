@@ -28,7 +28,7 @@ def main(opt):
     # running_model_paths = running_model_dictionary()
 
     remove_access_denied_folders(cloned_yolov5_path)
-    # remove_access_denied_folders(results_folder_path)
+    remove_access_denied_folders(results_folder_path)
     
     # considering only freshy cloned yolov5 repository
     if clone_updated_yolov5:
