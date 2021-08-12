@@ -76,7 +76,7 @@ def main(opt):
     if opt.skip_QAT_training == False:
         qat_py = QAT()
         qat_py.quantize(
-                model_storage = running_model_paths['Quantization']['Pytorch']['QAT'],
+                save_dir = running_model_paths['Quantization']['Pytorch']['QAT'],
                 weights = opt.weights,
                 cfg = opt.cfg,
                 data = opt.data,

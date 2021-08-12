@@ -298,7 +298,7 @@ def plot_dictionary():
                     'fitness' : 10,
                     'latency' : 10,
                     'GFLOPS' : 100,
-                    'size' : 1,
+                    'size' : 1
                 }
             }
         },
@@ -311,6 +311,7 @@ def plot_dictionary():
                     'latency' : 10,
                     'GFLOPS' : 100,
                     'size' : 1,
+                    'sparsity' : 30
                 },
                 'P2' : {
                     'mAP50' : 40,
