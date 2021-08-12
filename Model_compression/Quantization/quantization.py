@@ -6,7 +6,7 @@ from dts.model_paths import frameworks
 from dts.model_paths import train_results_dictionary
 from dts.model_paths import model_defined_names
 from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo import train
-from dts.Model_compression.Quantization.Pytorch.PTQ import ptq
+from dts.Model_compression.Quantization.Pytorch.PTQ import PT_quant
 from dts.Model_conversion import model_export
 
 class Quantization(object):
@@ -111,10 +111,17 @@ def main(opt):
                 freeze = 0
                 )
 
-    root_model_path = weights = running_model_paths['Regular']['Pytorch']['fp32']
-    model_storage = running_model_paths['Quantization']['Pytorch']['PTQ']
-    # ptq_py = PTQ()
-    # ptq_py.quantize()
+    # root_model_path = weights = running_model_paths['Regular']['Pytorch']['fp32']
+    # model_storage = running_model_paths['Quantization']['Pytorch']['PTQ']
+    ptq_py = PTQ()
+    ptq_py.quantize(
+        weights = running_model_paths['Regular']['Pytorch']['fp32'],
+        results = running_model_paths['Quantization']['Pytorch']['PTQ'],
+        cfg = opt.cfg,
+        hyp = opt.hyp,
+        device = 'cpu',
+        data = opt.data
+    )
 
     # Tflite
     tfl_fp16 = TFL_fp16()

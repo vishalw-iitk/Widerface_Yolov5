@@ -92,6 +92,8 @@ def get_mAP_and_fitness_score(
         data = 'data.yaml',
         hyp = 'data/hyps/hyp.scratch.yaml',
         single_cls = False,
+        project = None,
+        save_dir = None
     ):
 
     model = quantized_load(weights, cfg, device, img_size, data, hyp, single_cls)
@@ -144,8 +146,8 @@ def get_mAP_and_fitness_score(
                                 model=model,
                                 # single_cls=single_cls,
                                 dataloader=val_loader,
-                                # project='runs/val',
-                                save_dir=Path('val_results'),
+                                project=project,
+                                save_dir=Path(save_dir),
                                 conf_thres = 0.0001,
                                 iou_thres = 0.00001,
                                 # save_json=is_coco and final_epoch,
@@ -180,7 +182,7 @@ def main(opt):
     from flopth import flopth
     try:
         print("opoppp")
-        pred = model(imgs)
+        pred = model(imgs.float()/255.0)
         print(list(pred.shape))
         sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred.shape)])
         print(sum_flops)
@@ -188,7 +190,17 @@ def main(opt):
         print(e)
 
     # print(model)
-    results, class_wise_maps, fitness, t = get_mAP_and_fitness_score(**vars(opt))
+    results, class_wise_maps, fitness, t = get_mAP_and_fitness_score(
+            weights = opt.weights,
+            cfg = opt.cfg,
+            device = 'cpu',
+            img_size = opt.img_size,
+            data = opt.data,
+            hyp = opt.hyp,
+            single_cls = opt.single_cls,
+            project = opt.project,
+            name = opt.name
+        )
     mp, mr, map50, map, loss, = [results[i] for i in range(0,5)] 
     from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.utils.metrics import fitness
     import numpy as np

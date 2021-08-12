@@ -185,7 +185,12 @@ def run(opt, running_model_paths):
         device = 'cpu',
         img_size = opt.img_size,
         data = opt.data,
-        hyp = opt.hyp
+        hyp = opt.hyp,
+        conf_thres = 0.001,
+        iou_thres = 0.6,
+        project = infer_paths['Quantization']['Pytorch']['QAT'],
+        name = model_name['Quantization']['Pytorch']['QAT'],
+        single_cls = False
     )
     print("the required....")
     print(running_model_metrics['Quantization']['Pytorch']['QAT'])
