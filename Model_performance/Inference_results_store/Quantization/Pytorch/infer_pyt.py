@@ -27,7 +27,7 @@ def quantized_load(
         img_size = 416,
         data = 'data.yaml',
         hyp = 'data/hyps/hyp.scratch.yaml',
-        single_cls = False,
+        single_cls = False
     ):
 
     # rel_path = '../../../../..'
@@ -97,6 +97,26 @@ def get_mAP_and_fitness_score(
     ):
 
     model = quantized_load(weights, cfg, device, img_size, data, hyp, single_cls)
+
+
+    imgs = torch.randint(255, (1,3, opt.img_size, opt.img_size))
+    _ = model(imgs)
+    # print("pred shape", pred.shape)
+    
+    from flopth import flopth
+    try:
+        print("opoppp")
+        pred = model(imgs.float()/255.0)
+        print(list(pred.shape))
+        sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred.shape)])
+        print(sum_flops)
+    except Exception as e:
+        print(e)
+
+
+
+
+
     ckpt = torch.load(weights, map_location=torch.device(device))
     fitness_score = ckpt['best_fitness']
 
@@ -174,20 +194,28 @@ def parse_opt(known=False):
 
 
 def main(opt):
-    model = quantized_load(**vars(opt))
-    imgs = torch.randint(255, (1,3, opt.img_size, opt.img_size))
-    # pred = model(imgs)
-    # print("pred shape", pred.shape)
+    # model = quantized_load(
+    #     weights = opt.weights,
+    #     cfg = opt.cfg,
+    #     device = 'cpu',
+    #     img_size = opt.img_size,
+    #     data = opt.data,
+    #     hyp = opt.hyp,
+    #     single_cls = opt.single_cls
+    # )
+    # imgs = torch.randint(255, (1,3, opt.img_size, opt.img_size))
+    # # pred = model(imgs)
+    # # print("pred shape", pred.shape)
     
-    from flopth import flopth
-    try:
-        print("opoppp")
-        pred = model(imgs.float()/255.0)
-        print(list(pred.shape))
-        sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred.shape)])
-        print(sum_flops)
-    except Exception as e:
-        print(e)
+    # from flopth import flopth
+    # try:
+    #     print("opoppp")
+    #     pred = model(imgs.float()/255.0)
+    #     print(list(pred.shape))
+    #     sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred.shape)])
+    #     print(sum_flops)
+    # except Exception as e:
+    #     print(e)
 
     # print(model)
     results, class_wise_maps, fitness, t = get_mAP_and_fitness_score(
