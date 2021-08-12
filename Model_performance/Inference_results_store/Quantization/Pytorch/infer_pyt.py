@@ -102,6 +102,8 @@ def get_mAP_and_fitness_score(
 
 
     imgs = torch.randint(255, (1,3, img_size, img_size))
+    imgs = torch.from_numpy(imgs).to(device)
+    imgs = imgs.float()  # uint8 to fp16/32
     _ = model(imgs)
     # print("pred shape", pred.shape)
     
