@@ -37,7 +37,7 @@ class PTQ(Pytorch):
         Pytorch.__init__(self)
         # to save path
     def quantize(self, **kwargs):
-        ptq.run(**kwargs)
+        PT_quant.run(**kwargs)
 
 
 # Tflite
