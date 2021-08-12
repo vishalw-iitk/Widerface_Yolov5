@@ -511,12 +511,12 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     # print("s8", model.state_dict())
     
     print("*************")
-    print(ema.qat_ema)
+    # print(ema.qat_ema)
 
     print("*************")
     print("*************")
 
-    print(quantized_model_ema)
+    # print(quantized_model_ema)
     print("*************")
 
     
