@@ -93,8 +93,10 @@ def get_mAP_and_fitness_score(
         hyp = 'data/hyps/hyp.scratch.yaml',
         single_cls = False,
         project = None,
-        save_dir = None
+        name = None
     ):
+
+    save_dir = name
 
     model = quantized_load(weights, cfg, device, img_size, data, hyp, single_cls)
 
