@@ -116,26 +116,28 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     is_coco = data.endswith('coco.yaml') and nc == 80  # COCO dataset
 
     # Model
-    # pre-training won't work as the model saved is the quantized model. We are not converting quanitized model to quantize aware model
     pretrained = weights.endswith('.pt')
     if pretrained:
         with torch_distributed_zero_first(RANK):
             weights = attempt_download(weights)  # download if not found locally
         ckpt = torch.load(weights, map_location=device)  # load checkpoint
         model = Model(cfg or ckpt['model'].yaml, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
-        # model = Model()  # create
-        # print("s01", model.state_dict())
-        imgs = torch.randint(255, (2,3,416,416))
-        imgs = imgs.to(device = 'cpu', non_blocking=True).float() / 255.0
-        # necessary to fix the min_max tensors shape
-        pred = model(imgs)
+        exclude = ['anchor'] if (cfg or hyp.get('anchors')) and not resume else []  # exclude keys
+        csd = ckpt['model'].float().state_dict()  # checkpoint state_dict as FP32
+        csd = intersect_dicts(csd, model.state_dict(), exclude=exclude)  # intersect
+        model.load_state_dict(csd, strict=False)  # load
+
+        print("ckpt keys", ckpt.keys())
+        # imgs = torch.randint(255, (2,3,416,416))
+        # imgs = imgs.to(device = 'cpu', non_blocking=True).float() / 255.0
+        # pred = model(imgs)
 
         
-        exclude = ['anchor'] if (cfg or hyp.get('anchors')) and not resume else []  # exclude keys
-        state_dict = ckpt['model'].float().state_dict()  # to FP32
+
+        # state_dict = ckpt['model'].float().state_dict()  # to FP32
         # print("s1", state_dict)
-        state_dict = intersect_dicts(state_dict, model.state_dict(), exclude=exclude)  # intersect
-        model.load_state_dict(state_dict, strict=False)  # load
+        # state_dict = intersect_dicts(state_dict, model.state_dict(), exclude=exclude)  # intersect
+        # model.load_state_dict(state_dict, strict=False)  # load
         # print("s2", model.state_dict())
         model.train()
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
@@ -148,7 +150,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         print("Training QAT Model...")
         # model.train()
 
-        LOGGER.info('Transferred %g/%g items from %s' % (len(state_dict), len(model.state_dict()), weights))  # report
+        LOGGER.info('Transferred %g/%g items from %s' % (len(csd), len(model.state_dict()), weights))  # report
     else:
         model = Model(cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
         model.train()
@@ -236,7 +238,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                         (weights, ckpt['epoch'], epochs))
             epochs += ckpt['epoch']  # finetune additional epochs
 
-        del ckpt, state_dict
+        del ckpt, csd
 
     # Image sizes
 
