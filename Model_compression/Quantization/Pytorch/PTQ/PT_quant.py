@@ -77,7 +77,7 @@ def main(opt):
         
 
     model_int8 = torch.quantization.convert(model_fp32_prepared)
-    torch.save(model_int8.state_dict(),os.path.join(opt.results,"PTQ_Int8_widerface.pt"))
+    torch.save(model_int8.state_dict(),os.path.join(opt.results))
     ###validation
 
     batch_size = 4
