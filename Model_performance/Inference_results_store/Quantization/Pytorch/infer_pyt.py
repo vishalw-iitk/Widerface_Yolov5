@@ -96,7 +96,7 @@ def get_mAP_and_fitness_score(
         name = None
     ):
 
-    save_dir = name
+    # save_dir = name
 
     model = quantized_load(weights, cfg, device, img_size, data, hyp, single_cls)
 
@@ -113,7 +113,7 @@ def get_mAP_and_fitness_score(
     try:
         print("opoppp")
         pred = model(imgs.float()/255.0)
-        print(list(pred.shape))
+        print(list(pred[0].shape), list(pred[1].shape))
         sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred.shape)])
         print(sum_flops)
     except Exception as e:
@@ -173,7 +173,8 @@ def get_mAP_and_fitness_score(
                                 # single_cls=single_cls,
                                 dataloader=val_loader,
                                 project=project,
-                                save_dir=Path(save_dir),
+                                name = name,
+                                # save_dir=Path(save_dir),
                                 conf_thres = 0.0001,
                                 iou_thres = 0.00001,
                                 # save_json=is_coco and final_epoch,

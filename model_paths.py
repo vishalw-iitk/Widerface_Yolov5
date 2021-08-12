@@ -153,22 +153,22 @@ def infer_results_dictionary():
         },
         'Quantization': {
             'Pytorch' : {
-                'PTQ' : '../Model_performance/Inference_results/Quantization/Pytorch/val',
-                'QAT' : '../Model_performance/Inference_results/Quantization/Pytorch/val'
+                'PTQ' : '../Model_performance/Inference_results/Quantization/Pytorch/PTQ/val',
+                'QAT' : '../Model_performance/Inference_results/Quantization/Pytorch/QAT/val'
                 },
             'Tflite' : {
-                'fp16' : '../Model_performance/Inference_results/Quantization/Tflite/val',
-                'int8' : '../Model_performance/Inference_results/Quantization/Tflite/val'
+                'fp16' : '../Model_performance/Inference_results/Quantization/Tflite/fp16/val',
+                'int8' : '../Model_performance/Inference_results/Quantization/Tflite/int8/val'
             }
         },
         'Pruning': {
             'Pytorch' : {
-                'P1' : '../Model_performance/Inference_results/Pruning/Pytorch/val',
-                'P2' : '../Model_performance/Inference_results/Pruning/Pytorch/val'
+                'P1' : '../Model_performance/Inference_results/Pruning/Pytorch/P1/val',
+                'P2' : '../Model_performance/Inference_results/Pruning/Pytorch/P1/val'
             },
             'Tflite' : {
-                'P1' : '../Model_performance/Inference_results/Pruning/Tflite/val',
-                'P2' : '../Model_performance/Inference_results/Pruning/Tflite/val'
+                'P1' : '../Model_performance/Inference_results/Pruning/Tflite/P1/val',
+                'P2' : '../Model_performance/Inference_results/Pruning/Tflite/P1/val'
             }
         }
     }
