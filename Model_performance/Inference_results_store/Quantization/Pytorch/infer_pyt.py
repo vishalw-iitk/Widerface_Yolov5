@@ -173,12 +173,20 @@ def parse_opt(known=False):
 
 def main(opt):
     model = quantized_load(**vars(opt))
-    # imgs = torch.randint(255, (1,3, opt.img_size, opt.img_size))
+    imgs = torch.randint(255, (1,3, opt.img_size, opt.img_size))
     # pred = model(imgs)
     # print("pred shape", pred.shape)
     
     from flopth import flopth
-    # sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred.shape)])
+    try:
+        print("opoppp")
+        pred = model(imgs)
+        print(list(pred.shape))
+        sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred.shape)])
+        print(sum_flops)
+    except Exception as e:
+        print(e)
+
     # print(model)
     results, class_wise_maps, fitness, t = get_mAP_and_fitness_score(**vars(opt))
     mp, mr, map50, map, loss, = [results[i] for i in range(0,5)] 
@@ -197,7 +205,7 @@ def run(**kwargs):
     opt = parse_opt(True)
     for k, v in kwargs.items():
         setattr(opt, k, v)
-    main(opt)
+    return main(opt)
 
 
 if __name__ == "__main__":
