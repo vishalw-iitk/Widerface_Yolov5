@@ -77,7 +77,7 @@ def main(opt):
         qat_py = QAT()
         qat_py.quantize(
                 model_storage = running_model_paths['Quantization']['Pytorch']['QAT'],
-                weights = running_model_paths['Regular']['Pytorch']['fp32'],
+                weights = opt.weights,
                 cfg = opt.cfg,
                 data = opt.data,
                 hyp = opt.hyp,

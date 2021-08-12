@@ -116,6 +116,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     is_coco = data.endswith('coco.yaml') and nc == 80  # COCO dataset
 
     # Model
+    print("********", weights)
     pretrained = weights.endswith('.pt')
     if pretrained:
         with torch_distributed_zero_first(RANK):
