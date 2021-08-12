@@ -113,8 +113,8 @@ def get_mAP_and_fitness_score(
     try:
         print("opoppp")
         pred = model(imgs.float()/255.0)
-        print(list(pred[0].shape), list(pred[1].shape))
-        sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred.shape)])
+        print(len(pred[0]), len(pred[1]), pred[0][0].shape, pred[1][0].shape)
+        sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred[1][0].shape)])
         print(sum_flops)
     except Exception as e:
         print(e)
