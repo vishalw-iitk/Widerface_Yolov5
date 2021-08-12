@@ -116,12 +116,13 @@ def main(opt):
     # https://github.com/pytorch/pytorch/issues/20756
 
 
-def parse_opt():
+def parse_opt(known = False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str, help='best_widerface_f32.pt')
     parser.add_argument('--results', type=str, help='val_results')
     
-    opt = parser.parse_args()
+    # opt = parser.parse_args()
+    opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 
 def run(**kwargs):
