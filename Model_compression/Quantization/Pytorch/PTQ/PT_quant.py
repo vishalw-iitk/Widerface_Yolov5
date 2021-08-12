@@ -13,6 +13,7 @@ from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo import val
 def main(opt):
     opt.weights = str(Path(opt.weights).absolute())
     opt.results = str(Path(opt.results).absolute())
+    os.makedirs(opt.results.replace('/best.pt', '')) if not os.path.exists(opt.results.replace('/best.pt', '')) else None
     # cfg = "models/yolov5s.yaml"
     cfg = opt.cfg
     # hyp = 'data/hyps/hyp.scratch.yaml'
