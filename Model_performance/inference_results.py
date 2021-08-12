@@ -67,8 +67,9 @@ class QAT_PyQ(PytorchQ):
 class PTQ_PyQ(PytorchQ):
     def __init__(self):
         PytorchQ.__init__(self)
-    def metrics(self):
-        pass
+    def metrics(self, **kwargs):
+        results_dictionary = infer_pyt.run(**kwargs)
+        return results_dictionary
 
 
 # Tflite Quantization
@@ -192,15 +193,29 @@ def run(opt, running_model_paths):
         name = model_name['Quantization']['Pytorch']['QAT'],
         single_cls = False
     )
-    print("the required....")
+    print("the required...QAT.")
     print(running_model_metrics['Quantization']['Pytorch']['QAT'])
 
     
     # 2) PTQ
     # infer_paths['Quantization']['Pytorch']['PTQ']
     # model_name['Quantization']['Pytorch']['PTQ']
-    # ptq_py = PTQ_PyQ()
-    # running_model_metrics['Quantization']['Pytorch']['PTQ'] = ptq_py.metrics()
+    ptq_py = PTQ_PyQ()
+    running_model_metrics['Quantization']['Pytorch']['PTQ'] = ptq_py.metrics(
+        weights = running_model_paths['Quantization']['Pytorch']['PTQ'],
+        cfg = opt.cfg,
+        device = 'cpu',
+        img_size = opt.img_size,
+        data = opt.data,
+        hyp = opt.hyp,
+        conf_thres = 0.001,
+        iou_thres = 0.6,
+        project = infer_paths['Quantization']['Pytorch']['PTQ'],
+        name = model_name['Quantization']['Pytorch']['PTQ'],
+        single_cls = False
+    )
+    print("the required....PTQ")
+    print(running_model_metrics['Quantization']['Pytorch']['PTQ'])
 
 
     # Tflite
