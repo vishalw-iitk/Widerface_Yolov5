@@ -124,7 +124,7 @@ def get_mAP_and_fitness_score(
 
 
     ckpt = torch.load(weights, map_location=torch.device(device))
-    fitness_score = ckpt['best_fitness']
+    fitness_score = ckpt['best_fitness'] if ckpt.get('best_fitness') else None
 
     with open(data) as f:
         data_dict = yaml.safe_load(f)  # data dict
