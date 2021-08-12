@@ -90,7 +90,7 @@ def main(opt):
                 bucket = False,
                 cache_images = True,
                 image_weights = False,
-                device = opt.device,
+                device = 'cpu',
                 multi_scale = False,
                 single_cls = False,
                 adam = False,
