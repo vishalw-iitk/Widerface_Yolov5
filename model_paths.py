@@ -66,7 +66,7 @@ def running_model_dictionary():
         }, # fp32 if fp32 not None else fp16
         'Quantization': {
             'Pytorch' : {
-                'PTQ' : "../Model_compression/Quantization/Pytorch/best.pt", #"path",
+                'PTQ' : "../Model_compression/Quantization/Pytorch/PTQ/best.pt", #"path",
                 'QAT' : "../runs/Quantization/QAT/Quantized_Pytorch_QAT/weights/best.pt" #"path-Time-Taker(store-expicitly)"
                 },
             'Tflite' : {
