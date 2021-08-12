@@ -182,7 +182,7 @@ def run(opt, running_model_paths):
     running_model_metrics['Quantization']['Pytorch']['QAT'] = qat_py.metrics(
         weights = running_model_paths['Quantization']['Pytorch']['QAT'],
         cfg = opt.cfg,
-        device = opt.device,
+        device = 'cpu',
         img_size = opt.img_size,
         data = opt.data,
         hyp = opt.hyp
