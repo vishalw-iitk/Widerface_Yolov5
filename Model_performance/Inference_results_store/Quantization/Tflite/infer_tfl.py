@@ -190,7 +190,13 @@ def run(data,
             out, train_out = model(img, augment=augment)  # inference and training outputs
             t1 += time_sync() - t
         elif suffix=='.tflite':
-            input_data = np.array(img)
+            plop = np.array(img)
+            print("plop shape in infer_tfl.py", plop.shape)
+            import numpy as np
+            data=np.random.randint(low=0,high=256,size=128*128*3*4, dtype=np.uint8)
+            data=data.reshape(4, 3, 128,128)
+            print("data shape", data.shape)
+            input_data = np.array(data)
             if tfl_int8:
                 scale, zero_point = input_details[0]['quantization']
                 input_data = input_data / scale + zero_point
