@@ -186,6 +186,7 @@ def parse_opt(known=False):
     parser.add_argument('--batch-size', type=int, default=128, help='')
     parser.add_argument('--epochs', type=int, default=300, help='')    
     parser.add_argument('--img-size', type=int, default = 416, help = 'Image size suitable for feeding to the model')
+    parser.add_argument('--single-cls', action='store_true', help='treat as single-class dataset')
 
     parser.add_argument('--cfg', type=str, default='../yolov5/models/yolov5s.yaml', help='model.yaml path')
     parser.add_argument('--data', type=str, default='data.yaml', help='dataset.yaml path')
