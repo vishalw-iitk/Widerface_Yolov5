@@ -40,7 +40,7 @@ def run(
 
     # model = quantized_load(weights, cfg, device, img_size, data, hyp, single_cls)
 
-    ckpt = torch.load(weights, map_location=torch.device(device))
+    ckpt = torch.load(weights)
     fitness_score = ckpt['best_fitness'] if ckpt.get('best_fitness') else None
 
     with open(data) as f:
