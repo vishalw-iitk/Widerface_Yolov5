@@ -1,5 +1,5 @@
 import os
-# from dts.Model_performance.
+from dts.Model_performance.Inference_results_store.Regular.Pytorch import infer_regular
 from dts.Model_performance.Inference_results_store.Quantization.Tflite import infer_tfl
 from dts.Model_performance.Inference_results_store.Quantization.Pytorch import infer_pyt
 from dts.model_paths import infer_results_dictionary
@@ -27,14 +27,9 @@ class PytorchR(Regular):
     def __init__(self):
         Regular.__init__(self)
 
-    def metrics(self, model_path):
-        model = load_model(model_path)
-        results = val.run(model)
-        self.mAP05, self.mAP0595, self.fitness
-        self.size = check_size(model_path)
-        self.latency = latency.run(model)
-        self.gflops = gflops.run(model)
-        return {'mAP0.5' : self.mAP05, 'mAP0595' : self.mAP0595, 'fitness' : self.fitness, 'size' : self.size, 'latency' : self.latency, 'gflops' : self.gflops}
+    def metrics(self, **kwargs):
+        results_dictionary = infer_regular.run(**kwargs)
+        return results_dictionary
 
 class Tfl_fp32_R(Regular):
     def __init__(self):
@@ -138,9 +133,21 @@ def run(opt, running_model_paths):
     # Regular model Pytroch val results
     # infer_paths['Regular']['Pytorch']['fp32']
     # model_name['Regular']['Pytorch']['fp32']
-    # os.makedirs(infer_paths['Regular']['Pytorch']['fp32']) if not os.path.exists(infer_paths['Regular']['Pytorch']['fp32']) else None
-    # regularp = PytorchR()
-    # running_model_metrics['Regular']['Pytorch']['fp32'] = regularp.metrics()
+    os.makedirs(infer_paths['Regular']['Pytorch']['fp32']) if not os.path.exists(infer_paths['Regular']['Pytorch']['fp32']) else None
+    regularp = PytorchR()
+    running_model_metrics['Regular']['Pytorch']['fp32'] = regularp.metrics(
+        weights = running_model_paths['Regular']['Pytorch']['fp32'],
+        cfg = opt.cfg,
+        device = opt.device,
+        img_size = opt.img_size,
+        data = opt.data,
+        hyp = opt.hyp,
+        single_cls = opt.single_cls,
+        project = infer_paths['Regular']['Pytorch']['fp32'],
+        name = model_name['Regular']['Pytorch']['fp32'],
+    )
+    print("the required...regular pyt.")
+    print(running_model_metrics['Regular']['Pytorch']['fp32'])
 
     # Regular model Tflite val results
     os.makedirs(infer_paths['Regular']['Tflite']['fp32']) if not os.path.exists(infer_paths['Regular']['Tflite']['fp32']) else None       
@@ -167,7 +174,8 @@ def run(opt, running_model_paths):
         half = False,
         tfl_int8 = False
         )
-
+    print("the required...tfl fp 32.")
+    print(running_model_metrics['Regular']['Tflite']['fp32'])
 
 
 
