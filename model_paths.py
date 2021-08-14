@@ -342,29 +342,3 @@ def plot_dictionary():
         }
     }
 ##
-
-res = {
-    'Regular': {
-        'Pytorch': {
-            'fp32': {
-                'mAP50': 0.8465543377167042,
-                'mAP': 0.48967166909119336,
-                'fitness': array([    0.32269]),
-                'size': 27.19796848297119,
-                'latency': (3.0161887407302856, 222.2798466682434, 0.6584972143173218),
-                'GFLOPS': None
-                }
-                },
-        'Tflite': {
-            'fp32': {
-                'mAP50': 0.0,
-                'mAP': 0.0,
-                'fitness': 0.0,
-                'size': 27.298988342285156,
-                'latency': (0.6669908761978149, 191.8651983141899, 0.5414336919784546),
-                'gflops': None
-                }
-                }
-                },
-        'Quantization': {
-            'Pytorch': {'PTQ': {'mAP50': 0.0, 'mAP': 0.0, 'fitness': array([          0]), 'size': 7.245903968811035, 'latency': (2.5851577520370483, 225.2943441271782, 0.670410692691803), 'GFLOPS': None}, 'QAT': {'mAP50': 0.00013366205000109408, 'mAP': 1.9756618815757976e-05, 'fitness': array([ 3.1147e-05]), 'size': 7.246270179748535, 'latency': (4.5186057686805725, 266.74554497003555, 0.8169636130332947), 'GFLOPS': None}}, 'Tflite': {'fp16': {'mAP50': 0.0, 'mAP': 0.0, 'fitness': 0.0, 'size': 13.704193115234375, 'latency': (0.6819590926170349, 197.9924887418747, 0.5539730191230774), 'gflops': None}, 'int8': '../Model_compression/Quantization/Tflite/int8/best.tflite'}}, 'Pruning': {'Pytorch': {'P1': '../Pre_trained_model/Model_compression/Pruning/P1/best.pt', 'P2': '../Model_compression/Pruning/Pytorch/P2.pt'}, 'Tflite': {'P1': '../Model_compression/Pruning/Tflite/P1.pt', 'P2': '../Model_compression/Pruning/Tflite/P2.pt'}}}
