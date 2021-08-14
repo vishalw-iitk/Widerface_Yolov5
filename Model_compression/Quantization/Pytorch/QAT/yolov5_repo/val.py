@@ -166,10 +166,8 @@ def run(data,
         t0 += t - t_
 
         # Run model
-        try:
-            out, train_out = model(img, augment=augment)  # inference and training outputs
-        except:
-            out, train_out = model.model_fp32(img, augment=augment)  # inference and training outputs
+        out, train_out = model(img, augment=augment)  # inference and training outputs
+        
         t1 += time_sync() - t
 
         # Compute loss

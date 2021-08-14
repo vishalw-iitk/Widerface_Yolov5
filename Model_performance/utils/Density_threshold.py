@@ -12,7 +12,6 @@ import os
 import argparse
 from pathlib import Path
 
-
 # get BBoxes for each sample 
 def get_Bboxes(Txtpath, img_width, img_height):
   boxes=[]

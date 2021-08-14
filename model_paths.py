@@ -310,8 +310,7 @@ def plot_dictionary():
                     'fitness' : 10,
                     'latency' : 10,
                     'GFLOPS' : 100,
-                    'size' : 1,
-                    'sparsity' : 30
+                    'size' : 1
                 },
                 'P2' : {
                     'mAP50' : 40,
