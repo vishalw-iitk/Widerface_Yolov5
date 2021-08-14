@@ -102,11 +102,11 @@ def get_mAP_and_fitness_score(
 
 
     # imgs = torch.randint(255, (1,3, img_size, img_size))
-    import numpy as np
-    imgs = np.random.randint(256, size=(1,3, img_size, img_size)) # 0 to 255
-    imgs = torch.from_numpy(imgs).to(device)
-    imgs = imgs.float()  # uint8 to fp16/32
-    _ = model(imgs)
+    # import numpy as np
+    # imgs = np.random.randint(256, size=(1,3, img_size, img_size)) # 0 to 255
+    # imgs = torch.from_numpy(imgs).to(device)
+    # imgs = imgs.float()  # uint8 to fp16/32
+    # _ = model(imgs)
     # print("pred shape", pred.shape)
     
     from flopth import flopth
@@ -163,7 +163,7 @@ def get_mAP_and_fitness_score(
     val_loader = create_dataloader(val_path, imgsz, batch_size // WORLD_SIZE * 2, gs,
                                         hyp=hyp, rect=True, rank=-1,
                                         workers=workers, pad=0.5,
-                                        cache = 'true',
+                                        cache = True,
                                         prefix=colorstr('val: '))[0]
 
     results, class_wise_maps, t = val.run(data_dict,

@@ -58,10 +58,9 @@ def main(opt):
     if opt.skip_training == True: # Use Pre-trained weighths
         running_model_paths = update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths)
     else: # train the model
-        weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights
-        print(weights)
+        # print(weights)
         train.run(
-            weights = weights,
+            weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
             cfg = opt.cfg,
             data = opt.data,
             hyp = opt.hyp,
