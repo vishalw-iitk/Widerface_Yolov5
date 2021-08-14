@@ -144,7 +144,7 @@ def run(opt, running_model_paths):
         hyp = opt.hyp,
         single_cls = opt.single_cls,
         project = infer_paths['Regular']['Pytorch']['fp32'],
-        name = model_name['Regular']['Pytorch']['fp32'],
+        name = model_name['Regular']['Pytorch']['fp32']
     )
     print("the required...regular pyt.")
     print(running_model_metrics['Regular']['Pytorch']['fp32'])
@@ -153,7 +153,7 @@ def run(opt, running_model_paths):
     os.makedirs(infer_paths['Regular']['Tflite']['fp32']) if not os.path.exists(infer_paths['Regular']['Tflite']['fp32']) else None       
     regulartf = Tfl_fp32_R()
     running_model_metrics['Regular']['Tflite']['fp32'] = regulartf.metrics(
-        data = 'data.yaml',
+        data = opt.data,
         weights = running_model_paths['Regular']['Tflite']['fp32'],
         batch_size = 1,
         imgsz = 416,

@@ -22,7 +22,7 @@ def run(
     ):
 
     
-    MLmodel = load_the_model(device)
+    MLmodel = load_the_model('cpu')
     model_type = 'Regular'
     model_name_user_defined = "Regular trained pytorch model"
     MLmodel.load_pytorch(
@@ -59,6 +59,7 @@ def run(
     workers = 8
 
     # Model parameters
+    print(hyp)
     hyp['box'] *= 3. / nl  # scale to layers
     hyp['cls'] *= nc / 80. * 3. / nl  # scale to classes and layers
     hyp['obj'] *= (imgsz / 640) ** 2 * 3. / nl  # scale to image size and layers
