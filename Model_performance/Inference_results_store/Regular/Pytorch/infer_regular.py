@@ -48,6 +48,8 @@ def run(
     
     # Hyperparameters
     # if isinstance(hyp, str):
+    with open(hyp) as f:
+        hyp = yaml.safe_load(f)  # load hyps dict
 
     nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
     batch_size = 4
