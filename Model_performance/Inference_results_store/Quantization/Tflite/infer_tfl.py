@@ -190,11 +190,12 @@ def run(data,
             out, train_out = model(img, augment=augment)  # inference and training outputs
             t1 += time_sync() - t
         elif suffix=='.tflite':
+            import numpy as np
             plop = np.array(img)
             print("plop shape in infer_tfl.py", plop.shape)
-            import numpy as np
+            
             data=np.random.randint(low=0,high=256,size=128*128*3*4, dtype=np.uint8)
-            data=data.reshape(4, 3, 128,128)
+            data=data.reshape(1, 3, 128,128)
             print("data shape", data.shape)
             input_data = np.array(data)
             if tfl_int8:
