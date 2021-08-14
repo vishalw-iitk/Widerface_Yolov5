@@ -258,30 +258,30 @@ def run(opt, running_model_paths):
     # int8
     # infer_paths['Quantization']['Tflite']['int8']
     # model_name['Quantization']['Tflite']['int8']
-    int8_Q_tf = Tfl_int8_Q()
-    running_model_metrics['Quantization']['Tflite']['int8'] = int8_Q_tf.metrics(
-        data = 'data.yaml',
-        weights = running_model_paths['Quantization']['Tflite']['int8'],
-        # weights = running_model_paths['Regular']['Tflite']['fp32'],
-        batch_size = 1,
-        imgsz = 416,
-        conf_thres = 0.001,
-        iou_thres = 0.6,
-        task = 'val',
-        device = 'cpu',
-        single_cls = True,
-        augment = False,
-        verbose = True,
-        save_txt = True,
-        save_hybrid = False,
-        save_conf = False,
-        save_json = False,
-        project = infer_paths['Quantization']['Tflite']['int8'],
-        name = model_name['Quantization']['Tflite']['int8'],
-        exist_ok = True,
-        half = False,
-        tfl_int8 = True
-        )
+    ##int8_Q_tf = Tfl_int8_Q()
+    # running_model_metrics['Quantization']['Tflite']['int8'] = int8_Q_tf.metrics(
+    #     data = 'data.yaml',
+    #     weights = running_model_paths['Quantization']['Tflite']['int8'],
+    #     # weights = running_model_paths['Regular']['Tflite']['fp32'],
+    #     batch_size = 1,
+    #     imgsz = 416,
+    #     conf_thres = 0.001,
+    #     iou_thres = 0.6,
+    #     task = 'val',
+    #     device = 'cpu',
+    #     single_cls = True,
+    #     augment = False,
+    #     verbose = True,
+    #     save_txt = True,
+    #     save_hybrid = False,
+    #     save_conf = False,
+    #     save_json = False,
+    #     project = infer_paths['Quantization']['Tflite']['int8'],
+    #     name = model_name['Quantization']['Tflite']['int8'],
+    #     exist_ok = True,
+    #     half = False,
+    #     tfl_int8 = True
+    #     )
     
 
 
@@ -291,29 +291,29 @@ def run(opt, running_model_paths):
     # method 1
     # infer_paths['Pruning']['Pytorch']['P1']
     # model_name['Pruning']['Pytorch']['P1']
-    os.makedirs(infer_paths['Pruning']['Pytorch']['P1']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P1']) else None
-    pr1_py = P1_PyP()
-    running_model_metrics['Pruning']['Pytorch']['P1'] = pr1_py.metrics()
+    ##os.makedirs(infer_paths['Pruning']['Pytorch']['P1']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P1']) else None
+    ##pr1_py = P1_PyP()
+    ##running_model_metrics['Pruning']['Pytorch']['P1'] = pr1_py.metrics()
 
     # method 2
     # infer_paths['Pruning']['Pytorch']['P2']
     # model_name['Pruning']['Pytorch']['P2']
-    pr2_py = P2_PyP()
-    running_model_metrics['Pruning']['Pytorch']['P2'] = pr2_py.metrics()
+    ##pr2_py = P2_PyP()
+    ##running_model_metrics['Pruning']['Pytorch']['P2'] = pr2_py.metrics()
 
     # Tflite
     # method 1
     # infer_paths['Pruning']['Tflite']['P1']
     # model_name['Pruning']['Tflite']['P1']
-    os.makedirs(infer_paths['Pruning']['Tflite']['P1']) if not os.path.exists(infer_paths['Pruning']['Tflite']['P1']) else None
-    tflm1p = tflm1P()
-    running_model_metrics['Pruning']['Tflite']['P1'] = tflm1p.metrics()
+    ##os.makedirs(infer_paths['Pruning']['Tflite']['P1']) if not os.path.exists(infer_paths['Pruning']['Tflite']['P1']) else None
+    ##tflm1p = tflm1P()
+    ##running_model_metrics['Pruning']['Tflite']['P1'] = tflm1p.metrics()
 
     # method 2
     # infer_paths['Pruning']['Tflite']['P2']
     # model_name['Pruning']['Tflite']['P2']
-    tflm2p = tflm2P()
-    running_model_metrics['Pruning']['Tflite']['P2'] = tflm2p.metrics()
+    ##tflm2p = tflm2P()
+    ##running_model_metrics['Pruning']['Tflite']['P2'] = tflm2p.metrics()
 
     del running_model_metrics['Regular']['Pytorch']['fp16']
     return running_model_metrics

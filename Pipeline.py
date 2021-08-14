@@ -156,6 +156,7 @@ def main(opt):
     # test_the_models() #detect.py
 
     plot_results = inference_results.run(opt, running_model_paths) #mAP0.5, mAP0.5:0.95, fitness_score, latency, GFLOPs, Size
+    print(plot_results)
     # arrnagement of results like segregation and density_threshold using val.py
 
     # plot_the_performance.run(plot_results)
