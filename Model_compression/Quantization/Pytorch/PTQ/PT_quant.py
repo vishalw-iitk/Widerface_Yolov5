@@ -84,38 +84,38 @@ def main(opt):
     torch.save(ckpt, os.path.join(opt.results))
     ###validation
 # # =======================================================================================
-#     batch_size = 4
-#     WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
-#     imgsz = 416
-#     val_path = data_dict['val']
-#     gs = max(int(model.stride.max()), 32)
-#     workers = 8
-#     single_cls = False
-#     # compute_loss = ComputeLoss(model)  # init loss class
-#     val_loader = create_dataloader(val_path, imgsz, batch_size // WORLD_SIZE * 2, gs, single_cls,
-#                                         hyp=hyp, cache='true', rect=True, rank=-1,
-#                                         workers=workers, pad=0.5,
-#                                         prefix=colorstr('val: '))[0]
-#     ###
-#     if not os.path.exists(opt.results):
-#         os.makedirs(opt.results)
-#     results, class_wise_maps, t = val.run(data_dict,
-#                                     batch_size=batch_size // WORLD_SIZE * 2,
-#                                     imgsz=imgsz,
-#                                     model=model_int8,
-#                                     single_cls=False,
-#                                     dataloader=val_loader,
-#                                     save_dir=Path(opt.results),
-#                                     iou_thres = 0.7,
-#                                     compute_loss=None
-#                                     )
-#     print("class_wise_maps", results)
-#     size = os.stat(os.path.join(opt.results,"PTQ_Int8_widerface.pt")).st_size/(1024.0*1024.0)
-#     print(size)
-#     shape = (batch_size, 3, imgsz, imgsz)
-#     print(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {shape}' % t)
-#     val_res = {'mAP50' : results[2], 'mAP' : results[3], 'fitness' : None, 'size' : str(size)+"MB", 'latency' : str(t[1])+"ms", 'GFLOPS' : None}
-#     print("PTQ: ", val_res)
+    batch_size = 4
+    WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
+    imgsz = 416
+    val_path = data_dict['val']
+    gs = max(int(model.stride.max()), 32)
+    workers = 8
+    single_cls = False
+    # compute_loss = ComputeLoss(model)  # init loss class
+    val_loader = create_dataloader(val_path, imgsz, batch_size // WORLD_SIZE * 2, gs, single_cls,
+                                        hyp=hyp, cache='true', rect=True, rank=-1,
+                                        workers=workers, pad=0.5,
+                                        prefix=colorstr('val: '))[0]
+    ###
+    if not os.path.exists(opt.results):
+        os.makedirs(opt.results)
+    results, class_wise_maps, t = val.run(data_dict,
+                                    batch_size=batch_size // WORLD_SIZE * 2,
+                                    imgsz=imgsz,
+                                    model=model_int8,
+                                    single_cls=False,
+                                    dataloader=val_loader,
+                                    save_dir=Path(opt.results),
+                                    iou_thres = 0.7,
+                                    compute_loss=None
+                                    )
+    print("class_wise_maps", results)
+    size = os.stat(os.path.join(opt.results,"PTQ_Int8_widerface.pt")).st_size/(1024.0*1024.0)
+    print(size)
+    shape = (batch_size, 3, imgsz, imgsz)
+    print(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {shape}' % t)
+    val_res = {'mAP50' : results[2], 'mAP' : results[3], 'fitness' : None, 'size' : str(size)+"MB", 'latency' : str(t[1])+"ms", 'GFLOPS' : None}
+    print("PTQ: ", val_res)
     # =========================================================================================
     # return val_res
     # https://github.com/pytorch/pytorch/issues/20756
