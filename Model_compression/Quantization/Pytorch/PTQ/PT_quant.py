@@ -103,10 +103,11 @@ def main(opt):
                                     batch_size=batch_size // WORLD_SIZE * 2,
                                     imgsz=imgsz,
                                     model=model_int8,
-                                    single_cls=False,
                                     dataloader=val_loader,
-                                    save_dir=Path(opt.results),
-                                    iou_thres = 0.7,
+                                    project='../Model_performance/Inference_results/Quantization/Pytorch/PTQ/val',
+                                    name = 'Quantized_Pytorch_PTQ',
+                                    # save_dir=Path(opt.results),
+                                    # iou_thres = 0.7,
                                     compute_loss=None
                                     )
     print("class_wise_maps", results)
