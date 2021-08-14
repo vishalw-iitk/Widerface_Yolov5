@@ -100,11 +100,11 @@ def main(opt):
     
     # Not to use fp16 path onwards
     # Use fp32 path
-    model_export.run(
-        model_type_for_export = model_names['Regular']['Pytorch']['fp32'],
-        framework_path = framework_path,
-        model_names = model_names
-    )
+    # model_export.run(
+    #     model_type_for_export = model_names['Regular']['Pytorch']['fp32'],
+    #     framework_path = framework_path,
+    #     model_names = model_names
+    # )
 
     # Pruning.run(opt.skip_training)
 
