@@ -44,7 +44,8 @@ class Conv(nn.Module):
         self.dequant = torch.quantization.DeQuantStub()
 
     def forward(self, x):
-        x = self.bn(self.conv(x))
+        # x = self.bn(self.conv(x))
+        x = self.conv(x)
         x = self.dequant(x)
         x = self.act(x)
         x = self.quant(x)
