@@ -42,8 +42,10 @@ class Conv(nn.Module):
         self.bn = nn.BatchNorm2d(c2)
         self.act = nn.SiLU() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
         self.dequant = torch.quantization.DeQuantStub()
+        print("++++++++++++++++++++++++")
 
     def forward(self, x):
+        print("+-------------------")
         x = self.bn(self.conv(x))
         # x = self.conv(x)
         x = self.dequant(x)
@@ -52,6 +54,7 @@ class Conv(nn.Module):
         return x
 
     def fuseforward(self, x):
+        print("++++++++++------------------+++++++")
         x = self.conv(x)
         x = self.dequant(x)
         x = self.act(x)
