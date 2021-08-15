@@ -20,7 +20,7 @@ class load_the_model:
     def load_pytorch(self, model_path, model_name_user_defined, cfg, imgsz, data, hyp, single_cls, model_class = 'any'):
         if model_class == 'Regular':
             # attempt load (loads the normal model in fp32)
-            from yolov5.models.experimental import attempt_load
+            from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.models.experimental import attempt_load
             self.model = attempt_load(model_path, map_location=self.device_name)  # load FP32 model
             
         elif model_class == 'QAT quantized':
