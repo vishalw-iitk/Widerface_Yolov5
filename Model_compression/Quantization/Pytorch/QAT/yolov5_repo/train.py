@@ -445,6 +445,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 with torch.no_grad():
                     model.eval()
                     temp_quantized_model = torch.quantization.convert(deepcopy(model))
+                    print(temp_quantized_model)
                     print("in the loop")
                     for pj in temp_quantized_model.parameters():
                         print(pj)
