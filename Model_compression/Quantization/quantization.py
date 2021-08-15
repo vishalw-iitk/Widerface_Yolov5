@@ -113,33 +113,33 @@ def main(opt):
 
     # root_model_path = weights = running_model_paths['Regular']['Pytorch']['fp32']
     # model_storage = running_model_paths['Quantization']['Pytorch']['PTQ']
-    # ptq_py = PTQ()
-    # ptq_py.quantize(
-    #     weights = running_model_paths['Regular']['Pytorch']['fp32'],
-    #     results = running_model_paths['Quantization']['Pytorch']['PTQ'],
-    #     cfg = opt.cfg,
-    #     hyp = opt.hyp,
-    #     device = 'cpu',
-    #     data = opt.data
-    # )
+    ptq_py = PTQ()
+    ptq_py.quantize(
+        weights = running_model_paths['Regular']['Pytorch']['fp32'],
+        results = running_model_paths['Quantization']['Pytorch']['PTQ'],
+        cfg = opt.cfg,
+        hyp = opt.hyp,
+        device = 'cpu',
+        data = opt.data
+    )
 
     # Tflite
-    # tfl_fp16 = TFL_fp16()
-    # tfl_fp16.quantize(
-    #     model_type_for_export = model_names['Quantization']['Tflite']['fp16'],
-    #     framework_path = framework_path,
-    #     model_names = model_names
-    #     )
+    tfl_fp16 = TFL_fp16()
+    tfl_fp16.quantize(
+        model_type_for_export = model_names['Quantization']['Tflite']['fp16'],
+        framework_path = framework_path,
+        model_names = model_names
+        )
 
-    # tfl_int8 = TFL_int8()
-    # tfl_int8.quantize(
-    #     model_type_for_export = model_names['Quantization']['Tflite']['int8'],
-    #     framework_path = framework_path,
-    #     model_names = model_names,
-    #     repr_images = opt.repr_images,
-    #     img = opt.img,
-    #     ncalib = opt.ncalib
-    # )
+    tfl_int8 = TFL_int8()
+    tfl_int8.quantize(
+        model_type_for_export = model_names['Quantization']['Tflite']['int8'],
+        framework_path = framework_path,
+        model_names = model_names,
+        repr_images = opt.repr_images,
+        img = opt.img,
+        ncalib = opt.ncalib
+    )
         
 
 def parse_opt(known=False):

@@ -100,11 +100,11 @@ def main(opt):
     
     # Not to use fp16 path onwards
     # Use fp32 path
-    # model_export.run(
-    #     model_type_for_export = model_names['Regular']['Pytorch']['fp32'],
-    #     framework_path = framework_path,
-    #     model_names = model_names
-    # )
+    model_export.run(
+        model_type_for_export = model_names['Regular']['Pytorch']['fp32'],
+        framework_path = framework_path,
+        model_names = model_names
+    )
 
     # Pruning.run(opt.skip_training)
 
@@ -117,7 +117,6 @@ def main(opt):
         repr_images = opt.repr_images,
         img = opt.img,
         ncalib = opt.ncalib,
-        # weights = 'runs/train/yolov5s_results/weights/best.pt',
         cfg = opt.cfg,
         data = opt.data,
         hyp = opt.hyp,
@@ -221,28 +220,3 @@ def run(**kwargs):
 if __name__ == "__main__":
     opt = parse_opt()
     main(opt)
-
-
-
-# Pytorch
-# Regular_training
-    # Test_the_models
-    # inference results
-    # export
-        #Pytorch
-            # Quantization
-                # Test_the_models
-                # Quantized model export
-                # inference results
-            # Pruning
-                # Test_the_models
-                # Pruned model exports
-                # inference results
-        #Tflite
-            # Quantization
-                # Test_the_models
-                # inference results
-            # Pruning
-                # Test_the_models
-                # inference results
-        
