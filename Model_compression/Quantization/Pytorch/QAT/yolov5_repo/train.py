@@ -128,7 +128,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             model_path = weights,
             model_name_user_defined = model_name_user_defined,
             cfg = os.path.join(cfg),
-            imgsz = opt.img_size,
+            imgsz = 416,
             data = os.path.join(data),
             hyp = os.path.join(hyp),
             single_cls = False,
