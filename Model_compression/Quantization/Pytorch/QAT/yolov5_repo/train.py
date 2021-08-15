@@ -119,16 +119,34 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     print("********", weights)
     pretrained = weights.endswith('.pt')
     if pretrained:
-        with torch_distributed_zero_first(RANK):
-            weights = attempt_download(weights)  # download if not found locally
-        ckpt = torch.load(weights, map_location=device)  # load checkpoint
-        model = Model(cfg or ckpt['model'].yaml, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
-        exclude = ['anchor'] if (cfg or hyp.get('anchors')) and not resume else []  # exclude keys
-        csd = ckpt['model'].float().state_dict()  # checkpoint state_dict as FP32
-        csd = intersect_dicts(csd, model.state_dict(), exclude=exclude)  # intersect
-        model.load_state_dict(csd, strict=False)  # load
+        from dts.utils.load_the_models import load_the_model
+        MLmodel = load_the_model('cpu')
+        # framework = 'Pytorch'
+        model_type = 'Regular'
+        model_name_user_defined = "Regular trained pytorch model"
+        MLmodel.load_pytorch(
+            model_path = weights,
+            model_name_user_defined = model_name_user_defined,
+            cfg = os.path.join(cfg),
+            imgsz = opt.img_size,
+            data = os.path.join(data),
+            hyp = os.path.join(hyp),
+            single_cls = False,
+            model_class = model_type
+        )
+        print(MLmodel.statement)
+        model = MLmodel.model
 
-        print("ckpt keys", ckpt.keys())
+        # with torch_distributed_zero_first(RANK):
+            # weights = attempt_download(weights)  # download if not found locally
+        # ckpt = torch.load(weights, map_location=device)  # load checkpoint
+        # model = Model(cfg or ckpt['model'].yaml, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
+        # exclude = ['anchor'] if (cfg or hyp.get('anchors')) and not resume else []  # exclude keys
+        # csd = ckpt['model'].float().state_dict()  # checkpoint state_dict as FP32
+        # csd = intersect_dicts(csd, model.state_dict(), exclude=exclude)  # intersect
+        # model.load_state_dict(csd, strict=False)  # load
+
+        # print("ckpt keys", ckpt.keys())
         # imgs = torch.randint(255, (2,3,416,416))
         # imgs = imgs.to(device = 'cpu', non_blocking=True).float() / 255.0
         # pred = model(imgs)
