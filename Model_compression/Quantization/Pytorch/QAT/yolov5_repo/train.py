@@ -130,7 +130,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             cfg = os.path.join(cfg),
             imgsz = 416,
             data = os.path.join(data),
-            hyp = os.path.join(hyp),
+            hyp = os.path.join(opt.hyp),
             single_cls = False,
             model_class = model_type
         )
