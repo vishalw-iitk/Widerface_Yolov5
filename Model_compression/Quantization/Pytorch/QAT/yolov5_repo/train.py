@@ -137,7 +137,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         # )
         # print(MLmodel.statement)
         # model = MLmodel.model
-        model = attempt_load(weights, map_location=opt.device_name)  # load FP32 model
+        model = attempt_load(weights, map_location=torch.device('cpu'))  # load FP32 model
         ckpt = {'epoch': -1,
                 'best_fitness': 0,
                 'training_results': None,
