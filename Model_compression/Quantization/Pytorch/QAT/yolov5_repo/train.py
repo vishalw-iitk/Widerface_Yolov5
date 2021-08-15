@@ -172,7 +172,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
         model.fuse()
         # print(model)
-        print(model.parameters())
+        print("out of the loop")
+        for pj in model.parameters():
+            print(pj)
 
         model.eval()
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
@@ -445,7 +447,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 with torch.no_grad():
                     model.eval()
                     temp_quantized_model = torch.quantization.convert(deepcopy(model))
-                    print(temp_quantized_model.parameters())
+                    print("in the loop")
+                    for pj in temp_quantized_model.parameters():
+                        print(pj)
                     model.train()
                 if plots and ni < 3:
                     f = save_dir / f'train_batch{ni}.jpg'  # filename
