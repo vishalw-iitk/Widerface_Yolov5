@@ -174,7 +174,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         print("Training QAT Model...")
         # model.train()
 
-        LOGGER.info('Transferred %g/%g items from %s' % (len(csd), len(model.state_dict()), weights))  # report
+        # LOGGER.info('Transferred %g/%g items from %s' % (len(), len(model.state_dict()), weights))  # report
     else:
         model = Model(cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
         model.train()
