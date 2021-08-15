@@ -172,7 +172,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
         model.fuse()
         print(model)
-        
+
         model.eval()
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
         model.qconfig = quantization_config
@@ -223,7 +223,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         if hasattr(v, 'bias') and isinstance(v.bias, nn.Parameter):
             pg2.append(v.bias)  # biases
         # if isinstance(v, nn.BatchNorm2d):
-        if isinstance(v, nn.SiLU):
+        if isinstance(v, nn.Conv2d):
             pg0.append(v.weight)  # no decay
         elif hasattr(v, 'weight') and isinstance(v.weight, nn.Parameter):
             pg1.append(v.weight)  # apply decay
