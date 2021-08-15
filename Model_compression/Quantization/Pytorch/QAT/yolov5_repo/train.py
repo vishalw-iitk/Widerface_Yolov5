@@ -220,7 +220,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     for k, v in model.named_modules():
         if hasattr(v, 'bias') and isinstance(v.bias, nn.Parameter):
             pg2.append(v.bias)  # biases
-        if isinstance(v, nn.BatchNorm2d):
+        # if isinstance(v, nn.BatchNorm2d):
+        if isinstance(v, nn.SiLU):
             pg0.append(v.weight)  # no decay
         elif hasattr(v, 'weight') and isinstance(v.weight, nn.Parameter):
             pg1.append(v.weight)  # apply decay
