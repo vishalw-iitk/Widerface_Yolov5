@@ -172,9 +172,6 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
         model.fuse()
         # print(model)
-        print("out of the loop")
-        for pj in model.parameters():
-            print(pj)
 
         model.eval()
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
