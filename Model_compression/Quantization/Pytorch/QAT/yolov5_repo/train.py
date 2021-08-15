@@ -101,6 +101,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             loggers['tb'] = SummaryWriter(str(save_dir))
 
         # W&B
+        hyp_loc = opt.hyp
         opt.hyp = hyp  # add hyperparameters
         run_id = torch.load(weights).get('wandb_id') if weights.endswith('.pt') and os.path.isfile(weights) else None
         run_id = run_id if opt.resume else None  # start fresh run if transfer learning
@@ -130,7 +131,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             cfg = os.path.join(cfg),
             imgsz = 416,
             data = os.path.join(data),
-            hyp = os.path.join(opt.hyp),
+            hyp = os.path.join(hyp_loc),
             single_cls = False,
             model_class = model_type
         )
