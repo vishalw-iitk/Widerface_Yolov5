@@ -442,7 +442,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
                 # Plot
                 with torch.no_grad():
+                    model.eval()
                     temp_quantized_model = torch.quantization.convert(deepcopy(model))
+                    model.train()
                 if plots and ni < 3:
                     f = save_dir / f'train_batch{ni}.jpg'  # filename
                     Thread(target=plot_images, args=(imgs, targets, paths, f), daemon=True).start()
