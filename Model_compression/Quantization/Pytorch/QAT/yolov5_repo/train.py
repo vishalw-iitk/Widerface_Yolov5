@@ -120,23 +120,24 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     print("********", weights)
     pretrained = weights.endswith('.pt')
     if pretrained:
-        from dts.utils.load_the_models import load_the_model
-        MLmodel = load_the_model('cpu')
-        # framework = 'Pytorch'
-        model_type = 'Regular'
-        model_name_user_defined = "Regular trained pytorch model"
-        MLmodel.load_pytorch(
-            model_path = weights,
-            model_name_user_defined = model_name_user_defined,
-            cfg = os.path.join(cfg),
-            imgsz = 416,
-            data = os.path.join(data),
-            hyp = os.path.join(hyp_loc),
-            single_cls = False,
-            model_class = model_type
-        )
-        print(MLmodel.statement)
-        model = MLmodel.model
+        # from dts.utils.load_the_models import load_the_model
+        # MLmodel = load_the_model('cpu')
+        # # framework = 'Pytorch'
+        # model_type = 'Regular'
+        # model_name_user_defined = "Regular trained pytorch model"
+        # MLmodel.load_pytorch(
+        #     model_path = weights,
+        #     model_name_user_defined = model_name_user_defined,
+        #     cfg = os.path.join(cfg),
+        #     imgsz = 416,
+        #     data = os.path.join(data),
+        #     hyp = os.path.join(hyp_loc),
+        #     single_cls = False,
+        #     model_class = model_type
+        # )
+        # print(MLmodel.statement)
+        # model = MLmodel.model
+        model = attempt_load(weights, map_location=opt.device_name)  # load FP32 model
         ckpt = {'epoch': -1,
                 'best_fitness': 0,
                 'training_results': None,
