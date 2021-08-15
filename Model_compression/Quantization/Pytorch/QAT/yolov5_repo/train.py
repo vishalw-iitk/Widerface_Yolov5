@@ -171,6 +171,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         model.train()
 
         model.fuse()
+        print(model)
+        
         model.eval()
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
         model.qconfig = quantization_config
@@ -181,7 +183,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
         model.train()
         print("Training QAT Model...")
-        print(model)
+        # print(model)
         # model.train()
 
         # LOGGER.info('Transferred %g/%g items from %s' % (len(), len(model.state_dict()), weights))  # report
