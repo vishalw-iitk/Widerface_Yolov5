@@ -455,7 +455,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                     if loggers['tb'] and ni == 0:  # TensorBoard
                         with warnings.catch_warnings():
                             warnings.simplefilter('ignore')  # suppress jit trace warning
-                            loggers['tb'].add_graph(torch.jit.trace(de_parallel(temp_quantized_model), imgs[0:1], strict=False), [])
+                            # loggers['tb'].add_graph(torch.jit.trace(de_parallel(temp_quantized_model), imgs[0:1], strict=False), [])
                 elif plots and ni == 10 and loggers['wandb']:
                     wandb_logger.log({'Mosaics': [loggers['wandb'].Image(str(x), caption=x.name) for x in
                                                   save_dir.glob('train*.jpg') if x.exists()]})
