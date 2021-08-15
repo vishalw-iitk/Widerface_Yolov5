@@ -51,7 +51,12 @@ class Conv(nn.Module):
         return x
 
     def fuseforward(self, x):
-        return self.act(self.conv(x))
+        x = self.conv(x)
+        x = self.dequant(x)
+        x = self.act(x)
+        x = self.quant(x)
+        return x
+        # return self.act(self.conv(x))
 
 
 class TransformerLayer(nn.Module):
