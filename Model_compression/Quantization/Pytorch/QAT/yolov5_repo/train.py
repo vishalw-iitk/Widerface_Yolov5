@@ -141,14 +141,17 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         # model.load_state_dict(state_dict, strict=False)  # load
         # print("s2", model.state_dict())
         model.train()
+
+        model.fuse()
+        model.eval()
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
         model.qconfig = quantization_config
-        model.fuse()
+        
         # model = torch.quantization.fuse_modules(model, [['conv', 'bn', 'act']])
         torch.quantization.prepare_qat(model, inplace=True)
         # print("s3", model.state_dict())
 
-
+        model.train()
         print("Training QAT Model...")
         # model.train()
 
