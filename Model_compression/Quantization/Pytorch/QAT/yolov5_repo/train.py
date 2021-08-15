@@ -137,25 +137,27 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         # )
         # print(MLmodel.statement)
         # model = MLmodel.model
-        model = attempt_load(weights, map_location=torch.device('cpu'))  # load FP32 model
-        ckpt = {'epoch': -1,
-                'best_fitness': 0,
-                'training_results': None,
-                'model': deepcopy(model),
-                'ema': None,
-                'updates': None,
-                'optimizer': None,
-                'wandb_id': None
-                }
+        # model = attempt_load(weights, map_location=torch.device('cpu'))  # load FP32 model
 
-        # with torch_distributed_zero_first(RANK):
-            # weights = attempt_download(weights)  # download if not found locally
-        # ckpt = torch.load(weights, map_location=device)  # load checkpoint
-        # model = Model(cfg or ckpt['model'].yaml, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
-        # exclude = ['anchor'] if (cfg or hyp.get('anchors')) and not resume else []  # exclude keys
-        # csd = ckpt['model'].float().state_dict()  # checkpoint state_dict as FP32
-        # csd = intersect_dicts(csd, model.state_dict(), exclude=exclude)  # intersect
-        # model.load_state_dict(csd, strict=False)  # load
+        with torch_distributed_zero_first(RANK):
+            weights = attempt_download(weights)  # download if not found locally
+        ckpt = torch.load(weights, map_location=device)  # load checkpoint
+        model = Model(cfg or ckpt['model'].yaml, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
+        exclude = ['anchor'] if (cfg or hyp.get('anchors')) and not resume else []  # exclude keys
+        csd = ckpt['model'].float().state_dict()  # checkpoint state_dict as FP32
+        csd = intersect_dicts(csd, model.state_dict(), exclude=exclude)  # intersect
+        model.load_state_dict(csd, strict=False)  # load
+
+        ckpt = {'epoch': -1,
+        'best_fitness': 0,
+        'training_results': None,
+        'model': deepcopy(model),
+        'ema': None,
+        'updates': None,
+        'optimizer': None,
+        'wandb_id': None
+        }
+
 
         # print("ckpt keys", ckpt.keys())
         # imgs = torch.randint(255, (2,3,416,416))
@@ -445,7 +447,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 with torch.no_grad():
                     model.eval()
                     temp_quantized_model = torch.quantization.convert(deepcopy(model))
-                    print(temp_quantized_model)
+                    # print(temp_quantized_model)
                     print("in the loop")
                     for pj in temp_quantized_model.parameters():
                         print(pj)
