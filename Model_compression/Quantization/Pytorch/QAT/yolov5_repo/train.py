@@ -137,6 +137,15 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         )
         print(MLmodel.statement)
         model = MLmodel.model
+        ckpt = {'epoch': -1,
+                'best_fitness': 0,
+                'training_results': None,
+                'model': deepcopy(model),
+                'ema': None,
+                'updates': None,
+                'optimizer': None,
+                'wandb_id': None
+                }
 
         # with torch_distributed_zero_first(RANK):
             # weights = attempt_download(weights)  # download if not found locally
@@ -172,6 +181,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
         model.train()
         print("Training QAT Model...")
+        print(model)
         # model.train()
 
         # LOGGER.info('Transferred %g/%g items from %s' % (len(), len(model.state_dict()), weights))  # report
@@ -263,7 +273,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                         (weights, ckpt['epoch'], epochs))
             epochs += ckpt['epoch']  # finetune additional epochs
 
-        del ckpt, csd
+        del ckpt
 
     # Image sizes
 
