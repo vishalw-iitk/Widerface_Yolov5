@@ -46,8 +46,6 @@ class Detect(nn.Module):
         self.inplace = inplace  # use in-place ops (e.g. slice assignment)
 
     def forward(self, x):
-        print("number of layers", self.nl)
-        print("is training", self.training)
         # x = x.copy()  # for profiling
         z = []  # inference output
         for i in range(self.nl):
