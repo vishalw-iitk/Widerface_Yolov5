@@ -195,7 +195,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         model.train()
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
         model.qconfig = quantization_config
-        model.fuse()
+        # model.fuse()
         # model = torch.quantization.fuse_modules(model, [['conv', 'bn', 'act']])
         # print(quantized_model)
         torch.quantization.prepare_qat(model, inplace=True)
