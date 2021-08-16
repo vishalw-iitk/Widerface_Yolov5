@@ -435,11 +435,16 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                     print("dict keys 2")
                     print(temp_quantized_model.__dict__.keys())
                     
-                    for k, v in temp_quantized_model.parameters():
+                    # for k, v in temp_quantized_model.parameters():
+                    ilp = 1
+                    for k, v in ema.qat_ema.parameters():
+                        if ilp ==4 :
+                            break
+                        ilp+=1
                         print(k, v)
                         print('\n')
                     print("state dicts")
-                    print(temp_quantized_model.state_dict().keys())
+                    print(temp_quantized_model.state_dict())
                     # print(temp_quantized_model)
                     # print("temp quantized model", temp_quantized_model.state_dict().keys())
                     model.train()
