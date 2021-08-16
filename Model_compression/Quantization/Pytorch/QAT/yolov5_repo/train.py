@@ -171,20 +171,23 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         # state_dict = intersect_dicts(state_dict, model.state_dict(), exclude=exclude)  # intersect
         # model.load_state_dict(state_dict, strict=False)  # load
         # print("s2", model.state_dict())
-        model.train()
+        print(model.train())
 
-        model.fuse()
-        # print(model)
-
-        model.eval()
+        
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
         model.qconfig = quantization_config
+        
+
+        print(model.fuse())
+        # print(model)
+
+        # model.eval()
         
         # model = torch.quantization.fuse_modules(model, [['conv', 'bn', 'act']])
         torch.quantization.prepare_qat(model, inplace=True)
         # print("s3", model.state_dict())
 
-        model.train()
+        # model.train()
         print("Training QAT Model...")
         # print(model)
         # model.train()
@@ -193,7 +196,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     else:
         model = Model(cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
         model.train()
-        print("initial model", model.state_dict().keys())
+        # print("initial model", model.state_dict().keys())
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
         model.qconfig = quantization_config
         # model.fuse()
@@ -446,7 +449,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
                 # Plot
                 with torch.no_grad():
-                    print("prepara qat model", model.state_dict().keys())
+                    # print("prepara qat model", model.state_dict().keys())
                     model.eval()
                     temp_quantized_model = torch.quantization.convert(deepcopy(ema.qat_ema))
                     # print(temp_quantized_model)
@@ -456,7 +459,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                     #     print(k, v)
                     #     print('\n')
                     # print(temp_quantized_model)
-                    print("temp quantized model", temp_quantized_model.state_dict().keys())
+                    # print("temp quantized model", temp_quantized_model.state_dict().keys())
                     model.train()
                     # print("in the loop not quant")
                     # for k, v in model.named_parameters():
