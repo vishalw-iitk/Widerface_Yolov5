@@ -158,7 +158,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         # else:
         print(f'Ensemble created with {weights}\n')
         for k in ['names']:
-            setattr(model, k, getattr(model[-1], k))
+            setattr(model, k, getattr(model, k))
         model.stride = model[torch.argmax(torch.tensor([m.stride.max() for m in model])).int()].stride  # max stride
             # model = model  # return ensemble
 
