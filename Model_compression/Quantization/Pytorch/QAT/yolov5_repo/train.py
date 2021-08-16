@@ -449,9 +449,11 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                     temp_quantized_model = torch.quantization.convert(deepcopy(model))
                     # print(temp_quantized_model)
                     print("in the loop quant")
+                    
                     for k, v in temp_quantized_model.named_parameters():
                         print(k, v)
                         print('\n')
+                    print(temp_quantized_model)
                     model.train()
                     # print("in the loop not quant")
                     # for k, v in model.named_parameters():
