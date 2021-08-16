@@ -159,7 +159,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         print(f'Ensemble created with {weights}\n')
         for k in ['names']:
             setattr(model, k, getattr(model, k))
-        model.stride = model[torch.argmax(torch.tensor([m.stride.max() for m in model])).int()].stride  # max stride
+        # model.stride = model[torch.argmax(torch.tensor([m.stride.max() for m in model])).int()].stride  # max stride
             # model = model  # return ensemble
 
         # state_dict = ckpt['model'].float().state_dict()  # to FP32
