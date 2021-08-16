@@ -52,8 +52,8 @@ def quantized_load(
 
     imgs = torch.randint(255, (2,3, img_size, img_size))
     imgs = imgs.to(device = 'cpu', non_blocking=True).float() / 255.0
-    nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
-    model = Model(cfg = cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)
+    # nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
+    # model = Model(cfg = cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)
     # necessary to fix the min_max tensors shape
     _ = model(imgs)
 
