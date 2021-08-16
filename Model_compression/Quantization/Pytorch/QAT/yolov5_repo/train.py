@@ -493,9 +493,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                                         #  Validating on the ema quantized model
                                         #  (So, [P, R, mAP@.5, mAP@.5-.95] will be stored as per the quantized model)
                                         # Hence, best_fitness score will be based on the quantized model and not the quantized aware model
-                                        #    model=deepcopy(quantized_model_ema.eval()),
+                                           model=deepcopy(quantized_model_ema.eval()),
                                         #    model=deepcopy(quantized_model),
-                                           model=deepcopy(ema.qat_ema),
+                                        #    model=deepcopy(ema.qat_ema),
                                         #    model=deepcopy(model),
                                            single_cls=single_cls,
                                            dataloader=val_loader,
