@@ -148,7 +148,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.models.yolo import Detect
          # Compatibility updates
         for m in model.modules():
+            print("$$$$")
             print(m)
+            print("$$$$$$$$$$$!!")
             if type(m) in [nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU, Detect, Model]:
                 m.inplace = True  # pytorch 1.7.0 compatibility
             elif type(m) is Conv:
