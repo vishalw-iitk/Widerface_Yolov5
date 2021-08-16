@@ -40,6 +40,16 @@ def quantized_load(
     with open(hyp) as f:
         hyp = yaml.safe_load(f)  # load hyps dict
 
+    # x = torch.load(f, map_location=torch.device('cpu'))
+    
+    nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
+    model = Model(cfg = cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)
+    model.train()
+    quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
+    model.qconfig = quantization_config
+    model.fuse()
+    torch.quantization.prepare_qat(model, inplace=True)
+
     imgs = torch.randint(255, (2,3, img_size, img_size))
     imgs = imgs.to(device = 'cpu', non_blocking=True).float() / 255.0
     nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
@@ -47,15 +57,23 @@ def quantized_load(
     # necessary to fix the min_max tensors shape
     _ = model(imgs)
 
-    model.train()
-
-    quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
-    model.qconfig = quantization_config
-    torch.quantization.prepare_qat(model, inplace=True)
 
     model.eval()
-
     model = torch.quantization.convert(model)
+
+    # model.load_state_dict(x['model'])
+
+
+
+    # model.train()
+
+    # quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
+    # model.qconfig = quantization_config
+    # torch.quantization.prepare_qat(model, inplace=True)
+
+    # model.eval()
+
+    # model = torch.quantization.convert(model)
     
     # print("is it errr")
     # pred = model(imgs)
