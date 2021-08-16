@@ -153,13 +153,13 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             elif type(m) is Conv:
                 m._non_persistent_buffers_set = set()  # pytorch 1.6.0 compatibility
 
-        if len(model) == 1:
-            model =  model[-1]  # return model
-        else:
-            print(f'Ensemble created with {weights}\n')
-            for k in ['names']:
-                setattr(model, k, getattr(model[-1], k))
-            model.stride = model[torch.argmax(torch.tensor([m.stride.max() for m in model])).int()].stride  # max stride
+        # if len(model) == 1:
+            # model =  model[-1]  # return model
+        # else:
+        print(f'Ensemble created with {weights}\n')
+        for k in ['names']:
+            setattr(model, k, getattr(model[-1], k))
+        model.stride = model[torch.argmax(torch.tensor([m.stride.max() for m in model])).int()].stride  # max stride
             # model = model  # return ensemble
 
         # state_dict = ckpt['model'].float().state_dict()  # to FP32
