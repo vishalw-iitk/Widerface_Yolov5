@@ -170,7 +170,7 @@ def get_mAP_and_fitness_score(
     model.hyp = hyp  # attach hyperparameters to model
     model.gr = 1.0  # iou loss ratio (obj_loss = 1.0 or iou)
 
-    compute_loss = ComputeLoss(model)
+    # compute_loss = ComputeLoss(model)
     # print("loss value", compute_loss)
 
     # train_path = data_dict['train']
@@ -199,7 +199,7 @@ def get_mAP_and_fitness_score(
                                 # verbose=nc < 50 and final_epoch,
                                 # plots=plots and final_epoch,
                                 # wandb_logger=wandb_logger,
-                                compute_loss=compute_loss
+                                # compute_loss=compute_loss
                                 )
 
     return results, class_wise_maps, fitness_score, t
