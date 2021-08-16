@@ -449,8 +449,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                     temp_quantized_model = torch.quantization.convert(deepcopy(model))
                     # print(temp_quantized_model)
                     print("in the loop")
-                    for pj in temp_quantized_model.parameters():
-                        print(pj)
+                    for k, v in temp_quantized_model.named_parameters():
+                        print(k, v)
+                        print('\n')
                     model.train()
                 if plots and ni < 3:
                     f = save_dir / f'train_batch{ni}.jpg'  # filename
