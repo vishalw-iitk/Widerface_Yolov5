@@ -120,24 +120,6 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     print("********", weights)
     pretrained = weights.endswith('.pt')
     if pretrained:
-        # from dts.utils.load_the_models import load_the_model
-        # MLmodel = load_the_model('cpu')
-        # # framework = 'Pytorch'
-        # model_type = 'Regular'
-        # model_name_user_defined = "Regular trained pytorch model"
-        # MLmodel.load_pytorch(
-        #     model_path = weights,
-        #     model_name_user_defined = model_name_user_defined,
-        #     cfg = os.path.join(cfg),
-        #     imgsz = 416,
-        #     data = os.path.join(data),
-        #     hyp = os.path.join(hyp_loc),
-        #     single_cls = False,
-        #     model_class = model_type
-        # )
-        # print(MLmodel.statement)
-        # model = MLmodel.model
-        # model = attempt_load(weights, map_location=torch.device('cpu'))  # load FP32 model
 
         with torch_distributed_zero_first(RANK):
             weights = attempt_download(weights)  # download if not found locally
@@ -148,6 +130,11 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         csd = intersect_dicts(csd, model.state_dict(), exclude=exclude)  # intersect
         model.load_state_dict(csd, strict=False)  # load
 
+        model.train()
+        quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
+        model.qconfig = quantization_config
+        model.fuse()
+
         ckpt = {'epoch': -1,
         'best_fitness': 0,
         'training_results': None,
@@ -157,28 +144,33 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         'optimizer': None,
         'wandb_id': None
         }
+        from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.models.common import Conv
+        from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.models.yolo import Detect
+         # Compatibility updates
+        for m in model.modules():
+            if type(m) in [nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU, Detect, Model]:
+                m.inplace = True  # pytorch 1.7.0 compatibility
+            elif type(m) is Conv:
+                m._non_persistent_buffers_set = set()  # pytorch 1.6.0 compatibility
 
-
-        # print("ckpt keys", ckpt.keys())
-        # imgs = torch.randint(255, (2,3,416,416))
-        # imgs = imgs.to(device = 'cpu', non_blocking=True).float() / 255.0
-        # pred = model(imgs)
-
-        
+        if len(model) == 1:
+            model =  model[-1]  # return model
+        else:
+            print(f'Ensemble created with {weights}\n')
+            for k in ['names']:
+                setattr(model, k, getattr(model[-1], k))
+            model.stride = model[torch.argmax(torch.tensor([m.stride.max() for m in model])).int()].stride  # max stride
+            # model = model  # return ensemble
 
         # state_dict = ckpt['model'].float().state_dict()  # to FP32
         # print("s1", state_dict)
         # state_dict = intersect_dicts(state_dict, model.state_dict(), exclude=exclude)  # intersect
         # model.load_state_dict(state_dict, strict=False)  # load
         # print("s2", model.state_dict())
-        print(model.train())
-
-        
-        quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
-        model.qconfig = quantization_config
-        
-
-        print(model.fuse())
+        # model.train()
+        # quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
+        # model.qconfig = quantization_config
+        # model.fuse()
         # print(model)
 
         # model.eval()
