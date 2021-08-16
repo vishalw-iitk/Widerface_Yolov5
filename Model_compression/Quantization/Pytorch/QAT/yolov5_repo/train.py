@@ -134,6 +134,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
         model.qconfig = quantization_config
         model.fuse()
+        for p in model.parameters():
+            p.requires_grad = True
 
         ckpt = {'epoch': -1,
         'best_fitness': 0,
