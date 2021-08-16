@@ -193,6 +193,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     else:
         model = Model(cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)  # create
         model.train()
+        print("initial model", model.state_dict().keys())
         quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
         model.qconfig = quantization_config
         # model.fuse()
@@ -445,15 +446,17 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
                 # Plot
                 with torch.no_grad():
+                    print("prepara qat model", model.state_dict().keys())
                     model.eval()
                     temp_quantized_model = torch.quantization.convert(deepcopy(ema.qat_ema))
                     # print(temp_quantized_model)
                     print("in the loop quant")
                     
-                    for k, v in temp_quantized_model.named_parameters():
-                        print(k, v)
-                        print('\n')
-                    print(temp_quantized_model)
+                    # for k, v in temp_quantized_model.named_parameters():
+                    #     print(k, v)
+                    #     print('\n')
+                    # print(temp_quantized_model)
+                    print("temp quantized model", temp_quantized_model.state_dict().keys())
                     model.train()
                     # print("in the loop not quant")
                     # for k, v in model.named_parameters():
