@@ -198,7 +198,7 @@ def fuse_conv_and_bn(conv, bn):
                           stride=conv.stride,
                           padding=conv.padding,
                           groups=conv.groups,
-                          bias=True).requires_grad_(False).to(conv.weight.device)
+                          bias=True).to(conv.weight.device)
 
     # prepare filters
     w_conv = conv.weight.clone().view(conv.out_channels, -1)
@@ -211,7 +211,7 @@ def fuse_conv_and_bn(conv, bn):
     b_bn = bn.bias - bn.weight.mul(bn.running_mean).div(torch.sqrt(bn.running_var + bn.eps))
     fusedconv.bias.copy_(torch.mm(w_bn, b_conv.reshape(-1, 1)).reshape(-1) + b_bn)
     
-    fusedconv = fusedconv.requires_grad_(True)
+    # fusedconv = fusedconv.requires_grad_(True)
 
     return fusedconv
 
