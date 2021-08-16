@@ -432,9 +432,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                     # print(temp_quantized_model)
                     print("in the loop quant")
                     
-                    # for k, v in temp_quantized_model.named_parameters():
-                    #     print(k, v)
-                    #     print('\n')
+                    for k, v in temp_quantized_model.parameters():
+                        print(k, v)
+                        print('\n')
                     # print(temp_quantized_model)
                     # print("temp quantized model", temp_quantized_model.state_dict().keys())
                     model.train()
