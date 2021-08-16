@@ -198,7 +198,7 @@ def fuse_conv_and_bn(conv, bn):
                           stride=conv.stride,
                           padding=conv.padding,
                           groups=conv.groups,
-                          bias=True).requires_grad_(False).to(conv.weight.device)
+                          bias=True).requires_grad_(True).to(conv.weight.device)
 
     # prepare filters
     w_conv = conv.weight.clone().view(conv.out_channels, -1)

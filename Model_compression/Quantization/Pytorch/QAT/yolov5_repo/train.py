@@ -144,27 +144,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         'optimizer': None,
         'wandb_id': None
         }
-        from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.models.common import Conv
-        from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.models.yolo import Detect
-         # Compatibility updates
-        for m in model.modules():
-            print("$$$$")
-            print(m)
-            print("$$$$$$$$$$$!!")
-            if type(m) in [nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU, Detect, Model]:
-                m.inplace = True  # pytorch 1.7.0 compatibility
-            elif type(m) is Conv:
-                m._non_persistent_buffers_set = set()  # pytorch 1.6.0 compatibility
-
-        # if len(model) == 1:
-            # model =  model[-1]  # return model
-        # else:
-        print(f'Ensemble created with {weights}\n')
-        for k in ['names']:
-            setattr(model, k, getattr(model, k))
-        # model.stride = model[torch.argmax(torch.tensor([m.stride.max() for m in model])).int()].stride  # max stride
-            # model = model  # return ensemble
-
+        
         # state_dict = ckpt['model'].float().state_dict()  # to FP32
         # print("s1", state_dict)
         # state_dict = intersect_dicts(state_dict, model.state_dict(), exclude=exclude)  # intersect
