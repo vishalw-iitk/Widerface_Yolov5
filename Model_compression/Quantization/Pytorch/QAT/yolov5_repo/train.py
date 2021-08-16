@@ -453,10 +453,10 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                         print(k, v)
                         print('\n')
                     model.train()
-                    print("in the loop not quant")
-                    for k, v in model.named_parameters():
-                        print(k, v)
-                        print('\n')
+                    # print("in the loop not quant")
+                    # for k, v in model.named_parameters():
+                        # print(k, v)
+                        # print('\n')
                 if plots and ni < 3:
                     f = save_dir / f'train_batch{ni}.jpg'  # filename
                     Thread(target=plot_images, args=(imgs, targets, paths, f), daemon=True).start()
