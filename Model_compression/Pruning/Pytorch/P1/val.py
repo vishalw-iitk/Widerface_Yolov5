@@ -251,7 +251,7 @@ def run(data,
     # Plots
     if plots:
         confusion_matrix.plot(save_dir=save_dir, names=list(names.values()))
-        callbacks.on_val_end()
+        # callbacks.on_val_end()
 
     # Save JSON
     if save_json and len(jdict):
