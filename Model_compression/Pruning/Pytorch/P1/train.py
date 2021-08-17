@@ -241,7 +241,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 check_anchors(dataset, model=model, thr=hyp['anchor_t'], imgsz=imgsz)
             # model.half().float()  # pre-reduce anchor precision
 
-        callbacks.on_pretrain_routine_end()
+        # callbacks.on_pretrain_routine_end()
 
     # DDP mode
     if cuda and RANK != -1:
