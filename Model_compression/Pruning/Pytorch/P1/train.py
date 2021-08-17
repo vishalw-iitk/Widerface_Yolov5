@@ -444,8 +444,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
         print("bn_weights:", torch.sort(bn_weights))
         print("bn_bias:", torch.sort(bnb_weights))
-        SummaryWriter.add_histogram('bn_weights/hist', bn_weights.numpy(), epoch, bins='doane')
-        SummaryWriter.add_histogram('bn_bias/hist', bnb_weights.numpy(), epoch, bins='doane')
+        # SummaryWriter.add_histogram('bn_weights/hist', bn_weights.numpy(), epoch, bins='doane')
+        # SummaryWriter.add_histogram('bn_bias/hist', bnb_weights.numpy(), epoch, bins='doane')
 
 
     if RANK in [-1, 0]:
