@@ -116,8 +116,8 @@ def main(opt):
         hyp = opt.hyp,
         device = 'cpu',
         cache_images = True,
-        project = train_results_paths['Pytorch']['Pytorch']['P1'],
-        name = model_names['Pytorch']['Pytorch']['P1']
+        project = train_results_paths['Pruning']['Pytorch']['P1'],
+        name = model_names['Pruning']['Pytorch']['P1']
         )
 
     quantization.run(       #Quantization.py
