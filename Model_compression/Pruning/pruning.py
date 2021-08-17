@@ -3,7 +3,7 @@ import os
 # from dts.model_paths import running_model_dictionary
 # from dts.model_paths import pre_trained_model_dictionary
 # from dts.model_paths import frameworks
-# from dts.Model_compression.Pruning.Pytorch.QAT.yolov5_repo import train
+from dts.Model_compression.Pruning.Pytorch.P1 import train
 from dts.Model_conversion import model_export
 
 class Pruning(object):
@@ -52,13 +52,23 @@ class TFP2(Tflite):
 
 
 def main(opt):
-    running_model_paths = opt.running_model_paths
-    framework_path = opt.framework_path
-    weights = running_model_paths['Regular']['Pytorch']['fp32']
+    # running_model_paths = opt.running_model_paths
+    # framework_path = opt.framework_path
+    # weights = running_model_paths['Regular']['Pytorch']['fp32']
     
-    if opt.skip_P1_training == False:
-        p1_py = P1()
-        p1_py.prune()
+    # if opt.skip_P1_training == False:
+    p1_py = P1()
+    p1_py.prune(
+        running_model_paths = opt.running_model_paths,
+        weights = opt.weights,
+        data = opt.data,
+        cfg = opt.cfg,
+        hyp = opt.hyp,
+        device = opt.device,
+        cache_images = True,
+        project = opt.project,
+        name = opt.name
+        )
 
     p2_py = P2()
     p2_py.prune()

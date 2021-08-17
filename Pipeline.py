@@ -48,6 +48,7 @@ def main(opt):
     from yolov5 import train
     from dts.Model_conversion import model_export
     from dts.Model_compression.Quantization import quantization
+    from dts.Model_compression.Pruning import pruning
     from dts.Model_performance import inference_results
     running_model_paths = running_model_dictionary()
     pre_trained_model_paths = pre_trained_model_dictionary()
@@ -106,7 +107,18 @@ def main(opt):
         model_names = model_names
     )
 
-    # Pruning.run(opt.skip_training)
+    pruning.run(
+        # opt.skip_training
+        running_model_paths = running_model_paths,
+        weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
+        data = opt.data,
+        cfg = opt.cfg,
+        hyp = opt.hyp,
+        device = 'cpu',
+        cache_images = True,
+        project = train_results_paths['Pytorch']['Pytorch']['P1'],
+        name = model_names['Pytorch']['Pytorch']['P1']
+        )
 
     quantization.run(       #Quantization.py
         skip_QAT_training = opt.skip_QAT_training,
