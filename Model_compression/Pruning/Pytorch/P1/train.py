@@ -508,7 +508,7 @@ def train(hyp, opt, device, tb_writer=None):
     return results
 
 
-if __name__ == '__main__':
+def parse_opt(known=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--st', action='store_true',default=True, help='train with L1 sparsity normalization')
     parser.add_argument('--sr', type=float, default=0.001, help='L1 normal sparse rate')
@@ -546,8 +546,10 @@ if __name__ == '__main__':
     parser.add_argument('--bbox_interval', type=int, default=-1, help='Set bounding-box image logging interval for W&B')
     parser.add_argument('--save_period', type=int, default=-1, help='Log model after every "save_period" epoch')
     parser.add_argument('--artifact_alias', type=str, default="latest", help='version of dataset artifact to be used')
-    opt = parser.parse_args()
+    opt = parser.parse_known_args()[0] if known else parser.parse_args()
+    return opt
 
+def main(opt):
     # Set DDP variables
     opt.world_size = int(os.environ['WORLD_SIZE']) if 'WORLD_SIZE' in os.environ else 1
     opt.global_rank = int(os.environ['RANK']) if 'RANK' in os.environ else -1
@@ -681,3 +683,16 @@ if __name__ == '__main__':
         plot_evolution(yaml_file)
         print(f'Hyperparameter evolution complete. Best results saved as: {yaml_file}\n'
               f'Command to train a new model with these hyperparameters: $ python train.py --hyp {yaml_file}')
+
+
+def run(**kwargs):
+    # Usage: import train; train.run(imgsz=320, weights='yolov5m.pt')
+    opt = parse_opt(True)
+    for k, v in kwargs.items():
+        setattr(opt, k, v)
+    main(opt)
+
+
+if __name__ == "__main__":
+    opt = parse_opt()
+    main(opt)
