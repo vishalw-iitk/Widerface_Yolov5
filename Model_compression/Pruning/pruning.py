@@ -67,7 +67,9 @@ def main(opt):
         device = opt.device,
         cache_images = True,
         project = opt.project,
-        name = opt.name
+        name = opt.name,
+        st = opt.st,
+        sr = opt.sr
         )
 
     p2_py = P2()

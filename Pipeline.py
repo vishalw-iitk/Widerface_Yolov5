@@ -117,7 +117,9 @@ def main(opt):
         device = 'cpu',
         cache_images = True,
         project = train_results_paths['Pruning']['Pytorch']['P1'],
-        name = model_names['Pruning']['Pytorch']['P1']
+        name = model_names['Pruning']['Pytorch']['P1'],
+        st = True,
+        sr = 0.001
         )
 
     quantization.run(       #Quantization.py
