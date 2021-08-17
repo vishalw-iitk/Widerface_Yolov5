@@ -55,7 +55,7 @@ from yolov5.utils.loggers.wandb.wandb_utils import check_wandb_resume
 from yolov5.utils.metrics import fitness
 from yolov5.utils.loggers import Loggers
 from yolov5.utils.callbacks import Callbacks
-from yolov5.models import Bottleneck
+from yolov5.models.common import Bottleneck
 
 LOGGER = logging.getLogger(__name__)
 LOCAL_RANK = int(os.getenv('LOCAL_RANK', -1))  # https://pytorch.org/docs/stable/elastic/run.html
