@@ -473,7 +473,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 # callbacks.on_model_save(last, epoch, final_epoch, best_fitness, fi)
 
         
-        sparisty_value = measure_global_sparsity(ema.ema, conv2d_use_mask=True)
+        sparisty_value = measure_global_sparsity(ema.ema)
         print("***********, starange")
         print("sparsity value in epoch no. {} is {}".format(epoch, sparisty_value))
         # end epoch ----------------------------------------------------------------------------------------------------
