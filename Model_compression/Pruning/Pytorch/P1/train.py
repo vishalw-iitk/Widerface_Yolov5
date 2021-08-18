@@ -63,6 +63,7 @@ RANK = int(os.getenv('RANK', -1))
 WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
 
 def measure_module_sparsity(module, weight=True, bias=False, use_mask=False):
+    print("inside module sparsity")
 
     num_zeros = 0
     num_elements = 0
@@ -94,6 +95,7 @@ def measure_global_sparsity(model,
                             conv2d_use_mask=False,
                             linear_use_mask=False):
 
+    print("inside global sparsity")
     num_zeros = 0
     num_elements = 0
 
@@ -472,6 +474,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
         
         sparisty_value = measure_global_sparsity(ema.ema, conv2d_use_mask=True)
+        print("***********, starange")
         print("sparsity value in epoch no. {} is {}".format(epoch, sparisty_value))
         # end epoch ----------------------------------------------------------------------------------------------------
     # end training -----------------------------------------------------------------------------------------------------
