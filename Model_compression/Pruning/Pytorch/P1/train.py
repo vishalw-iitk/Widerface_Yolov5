@@ -390,8 +390,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                     loss *= 4.
 
             # Backward
-            loss.backward()
-            # scaler.scale(loss).backward()
+            # loss.backward()
+            scaler.scale(loss).backward()
 
 
             # # ============================= sparsity training ========================== #
@@ -411,8 +411,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
             # Optimize
             if ni - last_opt_step >= accumulate:
-                # scaler.step(optimizer)  # optimizer.step
-                # scaler.update() 
+                scaler.step(optimizer)  # optimizer.step
+                scaler.update()
                 optimizer.zero_grad()
                 if ema:
                     ema.update(model)
