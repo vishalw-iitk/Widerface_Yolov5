@@ -101,8 +101,8 @@ def measure_global_sparsity(model,
 
     for module_name, module in model.named_modules():
 
-        if isinstance(module, torch.nn.Conv2d):
-        # if isinstance(module, torch.nn.BatchNorm2d):
+        # if isinstance(module, torch.nn.Conv2d):
+        if isinstance(module, torch.nn.BatchNorm2d):
 
             module_num_zeros, module_num_elements, _ = measure_module_sparsity(
                 module, weight=weight, bias=bias, use_mask=conv2d_use_mask)
