@@ -63,7 +63,7 @@ RANK = int(os.getenv('RANK', -1))
 WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
 
 def measure_module_sparsity(module, weight=True, bias=False, use_mask=False):
-    print("inside module sparsity")
+    # print("inside module sparsity")
 
     num_zeros = 0
     num_elements = 0
@@ -95,7 +95,7 @@ def measure_global_sparsity(model,
                             conv2d_use_mask=False,
                             linear_use_mask=False):
 
-    print("inside global sparsity")
+    # print("inside global sparsity")
     num_zeros = 0
     num_elements = 0
 
