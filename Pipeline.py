@@ -119,7 +119,7 @@ def main(opt):
         project = train_results_paths['Pruning']['Pytorch']['P1'],
         name = model_names['Pruning']['Pytorch']['P1'],
         st = True,
-        sr = 0.001
+        sr = 0.1
         )
 
     quantization.run(       #Quantization.py
