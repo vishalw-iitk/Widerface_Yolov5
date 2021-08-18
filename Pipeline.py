@@ -114,7 +114,7 @@ def main(opt):
         data = opt.data,
         cfg = opt.cfg,
         hyp = opt.hyp,
-        device = 'cpu',
+        device = opt.device,
         cache_images = True,
         project = train_results_paths['Pruning']['Pytorch']['P1'],
         name = model_names['Pruning']['Pytorch']['P1'],
