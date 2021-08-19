@@ -60,7 +60,8 @@ def main(opt):
     p1_py = P1()
     p1_py.prune(
         running_model_paths = opt.running_model_paths,
-        weights = opt.weights,
+        pre_trained_model_paths = opt.pre_trained_model_paths,
+        weights = opt.pre_trained_model_paths['Pruning']['Pytorch']['P1'] if opt.retrain_on_pre_trained else opt.weights,
         data = opt.data,
         cfg = opt.cfg,
         hyp = opt.hyp,

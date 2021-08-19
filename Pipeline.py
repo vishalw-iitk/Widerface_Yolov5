@@ -110,7 +110,10 @@ def main(opt):
     pruning.run(
         # opt.skip_training
         running_model_paths = running_model_paths,
-        weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
+        pre_trained_model_paths = pre_trained_model_paths,
+        # weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
+        weights = opt.weights,
+        retrain_on_pre_trained = opt.retrain_on_pre_trained,
         data = opt.data,
         cfg = opt.cfg,
         hyp = opt.hyp,
