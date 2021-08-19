@@ -108,7 +108,7 @@ def main(opt):
     )
 
     pruning.run(
-        # opt.skip_training
+        skip_pruning_m1 = opt.skip_pruning_m1,
         running_model_paths = running_model_paths,
         pre_trained_model_paths = pre_trained_model_paths,
         # weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
@@ -215,6 +215,7 @@ def parse_opt(known=False):
     parser.add_argument('--retrain-on-pre-trained', action='store_true', help= 'Retrain using the pre-trained weights')
     parser.add_argument('--skip-training', action='store_true', help='skip the time taking regular training')
     parser.add_argument('--skip-QAT-training', action='store_true', help='skip the time taking Quantizze Aware training training')
+    parser.add_argument('--skip-pruning-m1', action='store_true', help='skip the time taking Pruning training')
     parser.add_argument('--qat-project', default='../runs_QAT/train', help='save to project/name')
     parser.add_argument('--qat-name', default='exp', help='save to project/name')
     parser.add_argument('--QAT-epochs', type=int, default=50, help='')

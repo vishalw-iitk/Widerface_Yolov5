@@ -56,41 +56,41 @@ def main(opt):
     # framework_path = opt.framework_path
     # weights = running_model_paths['Regular']['Pytorch']['fp32']
     
-    # if opt.skip_P1_training == False:
-    p1_py = P1()
-    p1_py.prune(
-        running_model_paths = opt.running_model_paths,
-        pre_trained_model_paths = opt.pre_trained_model_paths,
-        weights = opt.pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
-        data = opt.data,
-        cfg = opt.cfg,
-        hyp = opt.hyp,
-        device = opt.device,
-        cache_images = True,
-        project = opt.project,
-        name = opt.name,
-        st = opt.st,
-        sr = opt.sr
-        )
+    if opt.skip_pruning_m1 == False:
+        p1_py = P1()
+        p1_py.prune(
+            running_model_paths = opt.running_model_paths,
+            pre_trained_model_paths = opt.pre_trained_model_paths,
+            weights = opt.pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
+            data = opt.data,
+            cfg = opt.cfg,
+            hyp = opt.hyp,
+            device = opt.device,
+            cache_images = True,
+            project = opt.project,
+            name = opt.name,
+            st = opt.st,
+            sr = opt.sr
+            )
 
-    p2_py = P2()
-    p2_py.prune()
+    # p2_py = P2()
+    # p2_py.prune()
 
     # Tflite
-    tfl_p1 = TFP1()
-    tfl_p1.prune(
-        model_type_for_export = 'pruned_tfl_fp16',
-        framework_path = framework_path
-        )
+    # tfl_p1 = TFP1()
+    # tfl_p1.prune(
+        # model_type_for_export = 'pruned_tfl_fp16',
+        # framework_path = framework_path
+        # )
 
-    tfl_p2 = TFP2()
-    tfl_p2.prune(
-        model_type_for_export = 'pruned_tfl_int8',
-        framework_path = framework_path,
-        repr_images = opt.repr_images,
-        img = opt.img,
-        ncalib = opt.ncalib
-    )
+    # tfl_p2 = TFP2()
+    # tfl_p2.prune(
+        # model_type_for_export = 'pruned_tfl_int8',
+        # framework_path = framework_path,
+        # repr_images = opt.repr_images,
+        # img = opt.img,
+        # ncalib = opt.ncalib
+    # )
         
 
 def parse_opt(known=False):
