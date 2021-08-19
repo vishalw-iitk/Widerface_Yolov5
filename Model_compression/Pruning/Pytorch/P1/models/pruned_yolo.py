@@ -447,7 +447,7 @@ def parse_pruned_model(maskbndict, d, ch):  # model_dict, input_channels(3)
     # gd, gw = 0.33, 0.50
     na = (len(anchors[0]) // 2) if isinstance(anchors, list) else anchors  # number of anchors
     no = na * (nc + 5)  # number of outputs = anchors * (classes + 5)
-    ch = [3]
+    # ch = [3]
     fromlayer = []  # last module bn layer name
     from_to_map = {}
     layers, save, c2 = [], [], ch[-1]  # layers, savelist, ch out
