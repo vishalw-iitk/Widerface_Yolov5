@@ -12,7 +12,7 @@ from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo import val
 
 def main(opt):
     opt.weights = str(Path(opt.weights).absolute())
-    opt.results = str(Path(opt.results).absolute())
+    # opt.results = str(Path(opt.results).absolute())
     # os.makedirs(opt.results.replace('/best.pt', '')) if not os.path.exists(opt.results.replace('/best.pt', '')) else None
     # cfg = "models/yolov5s.yaml"
     cfg = opt.cfg
@@ -103,8 +103,8 @@ def main(opt):
                                         workers=workers, pad=0.5,
                                         prefix=colorstr('val: '))[0]
     ###
-    if not os.path.exists(opt.results):
-        os.makedirs(opt.results)
+    if not os.path.exists(opt.project):
+        os.makedirs(opt.project)
     results, class_wise_maps, t = val.run(data_dict,
                                     batch_size=batch_size // WORLD_SIZE * 2,
                                     imgsz=imgsz,
