@@ -76,10 +76,10 @@ def running_model_dictionary():
         },
         'Pruning': {
             'Pytorch' : {
-                'P1' : "../Model_compression/Pruning/Pytorch/P1/best.pt", #"path-Time-Taker(store-expicitly)",
-                'P2' : "../Model_compression/Pruning/Pytorch/P2/best.pt", #"path"
-                'P3' : "../Model_compression/Pruning/Pytorch/P3/best.pt", #"path-Time-Taker(store-expicitly)",
-                'P4' : "../Model_compression/Pruning/Pytorch/P4/best.pt", #"path"
+                'P1' : "../runs/Pruning/P1/Pruned_Pytorch_P1/weights/best.pt", #"path-Time-Taker(store-expicitly)",
+                'P2' : "../runs/Pruning/P2/Pruned_Pytorch_P2/weights/best.pt", #"path"
+                'P3' : "../runs/Pruning/P3/Pruned_Pytorch_P3/weights/best.pt", #"path-Time-Taker(store-expicitly)",
+                'P4' : "../runs/Pruning/P4/Pruned_Pytorch_P4/weights/best.pt", #"path"
             },
             'Tflite' : {
                 'P1' : "../Model_compression/Pruning/Tflite/P1/best.pt", #"path",
