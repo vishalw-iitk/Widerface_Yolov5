@@ -39,6 +39,8 @@ def run(
     model = MLmodel.model
 
     # model = quantized_load(weights, cfg, device, img_size, data, hyp, single_cls)
+    if device != 'cpu':
+        device = 'cuda:'+device
 
     ckpt = torch.load(weights, map_location=torch.device(device))
     fitness_score = ckpt['best_fitness'] if ckpt.get('best_fitness') else None
