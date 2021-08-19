@@ -643,7 +643,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     print("=" * 94)
    # print(maskbndict.keys())
 
-    pruned_model = ModelPruned(maskbndict=maskbndict, cfg=pruned_yaml, ch=3).cuda()
+    pruned_model = Model(maskbndict=maskbndict, cfg=pruned_yaml, ch=3).cuda()
     # Compatibility updates
     for m in pruned_model.modules():
         if type(m) in [nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU, Detect, Model]:
