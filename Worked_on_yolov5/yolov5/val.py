@@ -74,6 +74,21 @@ def process_batch(detections, labels, iouv):
     return correct
 
 
+def _model_info(model, img_size=416):
+    try:  # FLOPs
+        from thop import profile
+        stride = max(int(model.stride.max()), 32) if hasattr(model, 'stride') else 32
+        img = torch.zeros((1, model.yaml.get('ch', 3), stride, stride), device=next(model.parameters()).device)  # input
+        # print(profile(deepcopy(model), inputs=(img,), verbose=False)[0]/1E9 * 2 * img_size/stride * img_size/stride)
+        flops = profile(deepcopy(model), inputs=(img,), verbose=False)[0] / 1E9 * 2  # stride GFLOPs
+        img_size = img_size if isinstance(img_size, list) else [img_size, img_size]  # expand if int/float
+        fs = '%.2f GFLOPs' % (flops * img_size[0] / stride * img_size[1] / stride)  # 640x640 GFLOPs
+    except (ImportError, Exception):
+        traceback.print_exc()
+        fs = None
+
+    return fs
+
 @torch.no_grad()
 def run(data,
         weights=None,  # model.pt path(s)
@@ -136,6 +151,8 @@ def run(data,
     nc = 1 if single_cls else int(data['nc'])  # number of classes
     iouv = torch.linspace(0.5, 0.95, 10).to(device)  # iou vector for mAP@0.5:0.95
     niou = iouv.numel()
+
+    print(_model_info(model))
 
     # Dataloader
     if not training:
@@ -244,6 +261,8 @@ def run(data,
 
     # Print speeds
     t = tuple(x / seen * 1E3 for x in (t0, t1, t2))  # speeds per image
+    _t = 1 / sum(list(x / seen for x in (t0, t1, t2)))
+    print(_t)
     if not training:
         shape = (batch_size, 3, imgsz, imgsz)
         print(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {shape}' % t)
