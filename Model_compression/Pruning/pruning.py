@@ -92,7 +92,7 @@ def main(opt):
                         prune_perc=opt.prune_perc,prune_iter=i,
                         random_reinit=False, theta0_reinit=False,
                         data=opt.data,cfg=opt.cfg, 
-                        hyp=opt.hyp,exist_ok=True,cache_images=True,device='cpu')
+                        hyp=opt.hyp,exist_ok=True,cache_images=True,device=opt.device)
 
 
     if opt.skip_P2_training == False:
@@ -100,7 +100,7 @@ def main(opt):
         p2_py = P2()
         for i in range(opt.num_iterations):
             p2_py.prune(weights=opt.weights, 
-                    batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_epochs,
+                    batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_retrain_epochs,
                     project = train_results_paths['Pruning']['Pytorch']['P2'],
                     name=model_names['Pruning']['Pytorch']['P2'],     
                     prune_perc=opt.prune_perc,prune_iter=i,
@@ -113,7 +113,7 @@ def main(opt):
         p3_py = P3()
         for i in range(opt.num_iterations):
             p3_py.prune(weights=opt.weights, 
-                    batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_epochs,
+                    batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_retrain_epochs,
                     project = train_results_paths['Pruning']['Pytorch']['P3'],
                     name=model_names['Pruning']['Pytorch']['P3'],     
                     prune_perc=opt.prune_perc,prune_iter=i,

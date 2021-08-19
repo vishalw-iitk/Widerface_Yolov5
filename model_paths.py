@@ -189,7 +189,7 @@ def infer_results_dictionary():
             },
             'Tflite' : {
                 'P1' : '../Model_performance/Inference_results/Pruning/Tflite/P1/val',
-                'P2' : '../Model_performance/Inference_results/Pruning/Tflite/P1/val'
+                'P2' : '../Model_performance/Inference_results/Pruning/Tflite/P2/val'
             }
         }
     }
