@@ -101,16 +101,30 @@ class TfliteP(Pruning):
 class P1_PyP(PruningP):
     def __init__(self):
         PruningP.__init__(self)
-    def metrics(self):
-        pass
+    def metrics(self, **kwargs):
+        results_dictionary = infer_regular.run(**kwargs)
+        return results_dictionary
         
 class P2_PyP(PruningP):
     def __init__(self):
         PruningP.__init__(self)
-    def metrics(self):
-        pass
+    def metrics(self, **kwargs):
+        results_dictionary = infer_regular.run(**kwargs)
+        return results_dictionary
 
-
+class P3_PyP(PruningP):
+    def __init__(self):
+        PruningP.__init__(self)
+    def metrics(self, **kwargs):
+        results_dictionary = infer_regular.run(**kwargs)
+        return results_dictionary
+        
+class P4_PyP(PruningP):
+    def __init__(self):
+        PruningP.__init__(self)
+    def metrics(self, **kwargs):
+        results_dictionary = infer_regular.run(**kwargs)
+        return results_dictionary
 
 # Tflite pruning
 class tflm1P(TfliteP):
@@ -294,8 +308,8 @@ def run(opt, running_model_paths):
     # Pytorch
     # method 1
     os.makedirs(infer_paths['Pruning']['Pytorch']['P1']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P1']) else None
-    regularp = PytorchR()
-    running_model_metrics['Pruning']['Pytorch']['P1'] = regularp.metrics(
+    p1_reinit = P1_PyP()
+    running_model_metrics['Pruning']['Pytorch']['P1'] = p1_reinit.metrics(
         weights = running_model_paths['Pruning']['Pytorch']['P1'],
         cfg = opt.cfg,
         device = opt.device,
@@ -311,8 +325,8 @@ def run(opt, running_model_paths):
 
     # method 2
     os.makedirs(infer_paths['Pruning']['Pytorch']['P2']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P2']) else None
-    regularp = PytorchR()
-    running_model_metrics['Pruning']['Pytorch']['P2'] = regularp.metrics(
+    p2_theta0 = P2_PyP()
+    running_model_metrics['Pruning']['Pytorch']['P2'] = p2_theta0.metrics(
         weights = running_model_paths['Pruning']['Pytorch']['P2'],
         cfg = opt.cfg,
         device = opt.device,
@@ -327,8 +341,8 @@ def run(opt, running_model_paths):
     print(running_model_metrics['Pruning']['Pytorch']['P2'])
 
     os.makedirs(infer_paths['Pruning']['Pytorch']['P3']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P3']) else None
-    regularp = PytorchR()
-    running_model_metrics['Pruning']['Pytorch']['P3'] = regularp.metrics(
+    p3_finetune = P3_PyP()
+    running_model_metrics['Pruning']['Pytorch']['P3'] = p3_finetune.metrics(
         weights = running_model_paths['Pruning']['Pytorch']['P3'],
         cfg = opt.cfg,
         device = opt.device,
@@ -343,8 +357,8 @@ def run(opt, running_model_paths):
     print(running_model_metrics['Pruning']['Pytorch']['P3'])
 
     os.makedirs(infer_paths['Pruning']['Pytorch']['P4']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P4']) else None
-    regularp = PytorchR()
-    running_model_metrics['Pruning']['Pytorch']['P4'] = regularp.metrics(
+    p4_layerprune = P4_PyP()
+    running_model_metrics['Pruning']['Pytorch']['P4'] = p4_layerprune.metrics(
         weights = running_model_paths['Pruning']['Pytorch']['P4'],
         cfg = opt.cfg,
         device = opt.device,
