@@ -293,17 +293,71 @@ def run(opt, running_model_paths):
     '''*********************  Pruning  ***************'''
     # Pytorch
     # method 1
-    # infer_paths['Pruning']['Pytorch']['P1']
-    # model_name['Pruning']['Pytorch']['P1']
-    ##os.makedirs(infer_paths['Pruning']['Pytorch']['P1']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P1']) else None
-    ##pr1_py = P1_PyP()
-    ##running_model_metrics['Pruning']['Pytorch']['P1'] = pr1_py.metrics()
+    os.makedirs(infer_paths['Pruning']['Pytorch']['P1']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P1']) else None
+    regularp = PytorchR()
+    running_model_metrics['Pruning']['Pytorch']['P1'] = regularp.metrics(
+        weights = running_model_paths['Pruning']['Pytorch']['P1'],
+        cfg = opt.cfg,
+        device = opt.device,
+        img_size = opt.img_size,
+        data = opt.data,
+        hyp = opt.hyp,
+        single_cls = opt.single_cls,
+        project = infer_paths['Pruning']['Pytorch']['P1'],
+        name = model_name['Pruning']['Pytorch']['P1']
+    )
+    print("the required...regular P1")
+    print(running_model_metrics['Pruning']['Pytorch']['P1'])
 
     # method 2
-    # infer_paths['Pruning']['Pytorch']['P2']
-    # model_name['Pruning']['Pytorch']['P2']
-    ##pr2_py = P2_PyP()
-    ##running_model_metrics['Pruning']['Pytorch']['P2'] = pr2_py.metrics()
+    os.makedirs(infer_paths['Pruning']['Pytorch']['P2']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P2']) else None
+    regularp = PytorchR()
+    running_model_metrics['Pruning']['Pytorch']['P2'] = regularp.metrics(
+        weights = running_model_paths['Pruning']['Pytorch']['P2'],
+        cfg = opt.cfg,
+        device = opt.device,
+        img_size = opt.img_size,
+        data = opt.data,
+        hyp = opt.hyp,
+        single_cls = opt.single_cls,
+        project = infer_paths['Pruning']['Pytorch']['P2'],
+        name = model_name['Pruning']['Pytorch']['P2']
+    )
+    print("the required...regular P2")
+    print(running_model_metrics['Pruning']['Pytorch']['P2'])
+
+    os.makedirs(infer_paths['Pruning']['Pytorch']['P3']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P3']) else None
+    regularp = PytorchR()
+    running_model_metrics['Pruning']['Pytorch']['P3'] = regularp.metrics(
+        weights = running_model_paths['Pruning']['Pytorch']['P3'],
+        cfg = opt.cfg,
+        device = opt.device,
+        img_size = opt.img_size,
+        data = opt.data,
+        hyp = opt.hyp,
+        single_cls = opt.single_cls,
+        project = infer_paths['Pruning']['Pytorch']['P3'],
+        name = model_name['Pruning']['Pytorch']['P3']
+    )
+    print("the required...regular P3")
+    print(running_model_metrics['Pruning']['Pytorch']['P3'])
+
+    os.makedirs(infer_paths['Pruning']['Pytorch']['P4']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P4']) else None
+    regularp = PytorchR()
+    running_model_metrics['Pruning']['Pytorch']['P4'] = regularp.metrics(
+        weights = running_model_paths['Pruning']['Pytorch']['P4'],
+        cfg = opt.cfg,
+        device = opt.device,
+        img_size = opt.img_size,
+        data = opt.data,
+        hyp = opt.hyp,
+        single_cls = opt.single_cls,
+        project = infer_paths['Pruning']['Pytorch']['P4'],
+        name = model_name['Pruning']['Pytorch']['P4']
+    )
+    print("the required...regular P4")
+    print(running_model_metrics['Pruning']['Pytorch']['P4'])
+
 
     # Tflite
     # method 1
@@ -320,4 +374,6 @@ def run(opt, running_model_paths):
     ##running_model_metrics['Pruning']['Tflite']['P2'] = tflm2p.metrics()
 
     del running_model_metrics['Regular']['Pytorch']['fp16']
+    del running_model_metrics['Quantization']['Tflite']['int8']
+
     return running_model_metrics
