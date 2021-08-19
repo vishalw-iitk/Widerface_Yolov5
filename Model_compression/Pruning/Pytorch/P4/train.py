@@ -16,7 +16,7 @@ Usage:
 """
 
 import argparse
-from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_yolo import ModelPruned
+# from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_yolo import ModelPruned
 import logging
 import os
 import random
@@ -40,7 +40,7 @@ from torch.utils.tensorboard import SummaryWriter
 # FILE = Path(__file__).absolute()
 # sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
 
-from dts.Model_compression.Pruning.Pytorch.P1 import val  # for end-of-epoch mAP
+from dts.Model_compression.Pruning.Pytorch.P4 import val  # for end-of-epoch mAP
 from yolov5.models.experimental import attempt_load
 from yolov5.models.yolo import Model
 from yolov5.utils.autoanchor import check_anchors
