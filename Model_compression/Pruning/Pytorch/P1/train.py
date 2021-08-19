@@ -534,8 +534,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     # ===================================================================
     
     from dts.Model_compression.Pruning.Pytorch.P1.prune_utils import gather_bn_weights, obtain_bn_mask
+    from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_common import C3Pruned, SPPPruned
     
-    from yolov5.models.common import Conv
+    from yolov5.models.common import Conv, Focus, Concat
     from yolov5.models.yolo import Detect
 
     model_list = {}
