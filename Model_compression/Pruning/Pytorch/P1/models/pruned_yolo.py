@@ -10,7 +10,7 @@ sys.path.append(Path(__file__).parent.parent.absolute().__str__())  # to run '$ 
 logger = logging.getLogger(__name__)
 
 from yolov5.models.common import *
-from models.pruned_common import *
+from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_common import *
 from yolov5.models.experimental import *
 from yolov5.utils.autoanchor import check_anchor_order
 from yolov5.utils.general import make_divisible, check_file, set_logging
