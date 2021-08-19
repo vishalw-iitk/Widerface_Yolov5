@@ -16,6 +16,7 @@ Usage:
 """
 
 import argparse
+from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_yolo import ModelPruned
 import logging
 import os
 import random
@@ -535,6 +536,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     
     from dts.Model_compression.Pruning.Pytorch.P1.prune_utils import gather_bn_weights, obtain_bn_mask
     from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_common import C3Pruned, SPPPruned
+    from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_yolo import ModelPruned
     
     from yolov5.models.common import Conv, Focus, Concat
     from yolov5.models.yolo import Detect
@@ -643,7 +645,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     print("=" * 94)
    # print(maskbndict.keys())
 
-    pruned_model = Model(maskbndict=maskbndict, cfg=pruned_yaml, ch=3).cuda()
+    pruned_model = ModelPruned(maskbndict=maskbndict, cfg=pruned_yaml, ch=3).cuda()
     # Compatibility updates
     for m in pruned_model.modules():
         if type(m) in [nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU, Detect, Model]:
