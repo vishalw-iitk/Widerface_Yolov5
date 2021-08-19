@@ -238,10 +238,10 @@ def parse_opt(known=False):
     parser.add_argument('--local-rank', type=int, default=-1, help='DDP parameter, do not modify')
 
     parser.add_argument('--skip-pruning', action='store_true', help='skip the time taking Pruning training')
-    parser.add_argument('--skip-Pruning-P1', action='store_true', help='skip the time taking Pruning m1 training')
-    parser.add_argument('--skip-Pruning-P2', action='store_true', help='skip the time taking Pruning m2 training')
-    parser.add_argument('--skip-Pruning-P3', action='store_true', help='skip the time taking Pruning m3 training')
-    parser.add_argument('--skip-Pruning-P4', action='store_true', help='skip the time taking Pruning m4 training')
+    parser.add_argument('--skip-P1-training', action='store_true', help='skip the time taking Pruning m1 training')
+    parser.add_argument('--skip-P2-training', action='store_true', help='skip the time taking Pruning m2 training')
+    parser.add_argument('--skip-P3-training', action='store_true', help='skip the time taking Pruning m3 training')
+    parser.add_argument('--skip-P4-training', action='store_true', help='skip the time taking Pruning m4 training')
     parser.add_argument('--prune-infer-on-pre-pruned-only', action='store_true', help='pruning inference on pre-pruned stored model only and not on recently pruned in pipeline')
 
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
