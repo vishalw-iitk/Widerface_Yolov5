@@ -129,8 +129,8 @@ def main(opt):
         batch_size = opt.batch_size,
         prune_perc = opt.prune_perc,
         cache_images = True,
-        project = train_results_paths['Pruning']['Pytorch']['P1'],
-        name = model_names['Pruning']['Pytorch']['P1'],
+        # project = train_results_paths['Pruning']['Pytorch']['P1'],
+        # name = model_names['Pruning']['Pytorch']['P1'],
         st = True,
         sr = 0.0001
         )
