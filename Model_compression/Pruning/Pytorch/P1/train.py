@@ -532,6 +532,12 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}")
 
     # ===================================================================
+    
+    from dts.Model_compression.Pruning.Pytorch.P1.prune_utils import gather_bn_weights, obtain_bn_mask
+    
+    from yolov5.models.common import Conv
+    from yolov5.models.yolo import Detect
+    
     model_list = {}
     ignore_bn_list = []
 
@@ -619,10 +625,6 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
     # ============================================================================== #
     
-    from dts.Model_compression.Pruning.Pytorch.P1.prune_utils import gather_bn_weights, obtain_bn_mask
-    
-    from yolov5.models.common import Conv
-    from yolov5.models.yolo import Detect
     maskbndict = {}
     for bnname, bnlayer in model.named_modules():
         if isinstance(bnlayer, nn.BatchNorm2d):
