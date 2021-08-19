@@ -30,7 +30,6 @@ def quantized_load(
         single_cls = False
     ):
 
-    # rel_path = '../../../../..'
 
     with open(data) as f:
         data_dict = yaml.safe_load(f)  # data dict
@@ -40,44 +39,22 @@ def quantized_load(
     with open(hyp) as f:
         hyp = yaml.safe_load(f)  # load hyps dict
 
-    # x = torch.load(f, map_location=torch.device('cpu'))
-    
     nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
     model = Model(cfg = cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)
-    model.train()
-    quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
+    # model.train()
+    model.eval()
+    quantization_config = torch.quantization.get_default_qconfig("fbgemm")
     model.qconfig = quantization_config
     # model.fuse()
-    torch.quantization.prepare_qat(model, inplace=True)
+    torch.quantization.prepare(model, inplace=True)
 
     imgs = torch.randint(255, (2,3, img_size, img_size))
     imgs = imgs.to(device = 'cpu', non_blocking=True).float() / 255.0
-    # nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
-    # model = Model(cfg = cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)
-    # necessary to fix the min_max tensors shape
     _ = model(imgs)
 
 
-    model.eval()
-    model = torch.quantization.convert(model)
-
-    # model.load_state_dict(x['model'])
-
-
-
-    # model.train()
-
-    # quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
-    # model.qconfig = quantization_config
-    # torch.quantization.prepare_qat(model, inplace=True)
-
     # model.eval()
-
-    # model = torch.quantization.convert(model)
-    
-    # print("is it errr")
-    # pred = model(imgs)
-    # print("pred1", pred.shape)
+    model = torch.quantization.convert(model)
 
     ckpt = torch.load(weights, map_location=torch.device(device))
 
@@ -86,18 +63,6 @@ def quantized_load(
     state_dict = intersect_dicts(state_dict, model.state_dict())  # intersect   
     model.load_state_dict(state_dict, strict=False)  # load
 
-    # print(model)
-    # pred = model(imgs)
-    # print("pred2", pred.shape)
-
-    # c = 2
-    # for i ,j in zip(state_dict.keys(), model.state_dict().keys()):
-    #     c = c - 1
-    #     print(state_dict[i])
-    #     print(model.state_dict()[i])
-    #     print('\n')
-    #     if c == 0:
-    #         break
         
 
     return model
@@ -117,19 +82,6 @@ def get_mAP_and_fitness_score(
     # save_dir = name
 
     model = quantized_load(weights, cfg, device, img_size, data, hyp, single_cls)
-
-
-    # imgs = torch.randint(255, (1,3, img_size, img_size))
-    # import numpy as np
-    # imgs = np.random.randint(256, size=(1,3, img_size, img_size)) # 0 to 255
-    # imgs = torch.from_numpy(imgs).to(device)
-    # imgs = imgs.float()  # uint8 to fp16/32
-    # _ = model(imgs)
-    # print("pred shape", pred.shape)
-
-
-    # ckpt = torch.load(weights, map_location=torch.device(device))
-    # fitness_score = ckpt['best_fitness'] if ckpt.get('best_fitness') else None
 
     with open(data) as f:
         data_dict = yaml.safe_load(f)  # data dict
@@ -157,13 +109,7 @@ def get_mAP_and_fitness_score(
     model.hyp = hyp  # attach hyperparameters to model
     model.gr = 1.0  # iou loss ratio (obj_loss = 1.0 or iou)
 
-    # compute_loss = ComputeLoss(model)
-    # print("loss value", compute_loss)
-
-    # train_path = data_dict['train']
     val_path = data_dict['val']
-    # print("****************")
-    # print(val_path)
 
     val_loader = create_dataloader(val_path, imgsz, batch_size // WORLD_SIZE * 2, gs,
                                         hyp=hyp, rect=True, rank=-1,
@@ -178,15 +124,7 @@ def get_mAP_and_fitness_score(
                                 # single_cls=single_cls,
                                 dataloader=val_loader,
                                 project=project,
-                                name = name,
-                                # save_dir=Path(save_dir),
-                                # conf_thres = 0.0001,
-                                # iou_thres = 0.00001,
-                                # save_json=is_coco and final_epoch,
-                                # verbose=nc < 50 and final_epoch,
-                                # plots=plots and final_epoch,
-                                # wandb_logger=wandb_logger,
-                                # compute_loss=compute_loss
+                                name = name
                                 )
 
     return results, class_wise_maps, t
@@ -206,30 +144,6 @@ def parse_opt(known=False):
 
 
 def main(opt):
-    # model = quantized_load(
-    #     weights = opt.weights,
-    #     cfg = opt.cfg,
-    #     device = 'cpu',
-    #     img_size = opt.img_size,
-    #     data = opt.data,
-    #     hyp = opt.hyp,
-    #     single_cls = opt.single_cls
-    # )
-    # imgs = torch.randint(255, (1,3, opt.img_size, opt.img_size))
-    # # pred = model(imgs)
-    # # print("pred shape", pred.shape)
-    
-    # from flopth import flopth
-    # try:
-    #     print("opoppp")
-    #     pred = model(imgs.float()/255.0)
-    #     print(list(pred.shape))
-    #     sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred.shape)])
-    #     print(sum_flops)
-    # except Exception as e:
-    #     print(e)
-
-    # print(model)
     results, class_wise_maps, t = get_mAP_and_fitness_score(
             weights = opt.weights,
             cfg = opt.cfg,
