@@ -42,8 +42,8 @@ def run(
     if device != 'cpu':
         device = 'cuda:'+device
 
-    ckpt = torch.load(weights, map_location=torch.device(device))
-    fitness_score = ckpt['best_fitness'] if ckpt.get('best_fitness') else None
+    # ckpt = torch.load(weights, map_location=torch.device(device))
+    # fitness_score = ckpt['best_fitness'] if ckpt.get('best_fitness') else None
 
     with open(data) as f:
         data_dict = yaml.safe_load(f)  # data dict
@@ -105,12 +105,12 @@ def run(
                                 )
 
     mp, mr, map50, map, loss, = [results[i] for i in range(0,5)] 
-    # from yolov5.utils.metrics import fitness
-    # import numpy as np
-    # fi = fitness(np.array([mp, mr, map50, map]).reshape(1, -1))
+    from yolov5.utils.metrics import fitness
+    import numpy as np
+    fi = fitness(np.array([mp, mr, map50, map]).reshape(1, -1))
     size = os.stat(weights).st_size/(1024.0*1024.0)
 
-    mAP50, mAP, fitness, size, latency, gflops = map50, map, fitness_score, size, t, None
+    mAP50, mAP, fitness, size, latency, gflops = map50, map, fi, size, t, None
     print("class_wise_maps", class_wise_maps)
     print("fitness_score", fitness)
     return {'mAP50' : mAP50, 'mAP' : mAP, 'fitness' : fitness, 'size' : size, 'latency' : latency, 'GFLOPS' : gflops}
