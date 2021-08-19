@@ -38,8 +38,8 @@ class P2(Pytorch):
     def __init__(self):
         Pytorch.__init__(self)
         # to save path
-    def prune():
-        prune_train.run()
+    def prune(self, **kwargs):
+        prune_train.run(**kwargs)
 
 class P3(Pytorch):
     def __init__(self):
@@ -99,8 +99,7 @@ def main(opt):
         #theta0 re-init
         p2_py = P2()
         for i in range(opt.num_iterations):
-            p2_py.prune(
-                # weights=opt.weights, 
+            p2_py.prune(weights=opt.weights, 
                     batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_retrain_epochs,
                     project = train_results_paths['Pruning']['Pytorch']['P2'],
                     name=model_names['Pruning']['Pytorch']['P2'],     
