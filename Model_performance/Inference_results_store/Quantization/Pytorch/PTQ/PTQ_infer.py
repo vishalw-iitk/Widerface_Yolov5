@@ -41,19 +41,18 @@ def quantized_load(
 
     nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
     model = Model(cfg = cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)
-    # model.train()
-    model.eval()
-    quantization_config = torch.quantization.get_default_qconfig("fbgemm")
+    model.train()
+    quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
     model.qconfig = quantization_config
     # model.fuse()
-    torch.quantization.prepare(model, inplace=True)
+    torch.quantization.prepare_qat(model, inplace=True)
 
     imgs = torch.randint(255, (2,3, img_size, img_size))
     imgs = imgs.to(device = 'cpu', non_blocking=True).float() / 255.0
     _ = model(imgs)
 
 
-    # model.eval()
+    model.eval()
     model = torch.quantization.convert(model)
 
     ckpt = torch.load(weights, map_location=torch.device(device))

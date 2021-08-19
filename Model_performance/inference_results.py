@@ -64,7 +64,8 @@ class PTQ_PyQ(PytorchQ):
     def __init__(self):
         PytorchQ.__init__(self)
     def metrics(self, **kwargs):
-        results_dictionary = PTQ_infer.run(**kwargs)
+        # results_dictionary = PTQ_infer.run(**kwargs)
+        results_dictionary = infer_pyt.run(**kwargs)
         return results_dictionary
 
 
@@ -200,7 +201,8 @@ def run(opt, running_model_paths):
         iou_thres = 0.6,
         project = infer_paths['Quantization']['Pytorch']['QAT'],
         name = model_name['Quantization']['Pytorch']['QAT'],
-        single_cls = False
+        single_cls = False,
+        fuse = True
     )
     print("the required...QAT.")
     print(running_model_metrics['Quantization']['Pytorch']['QAT'])
@@ -221,7 +223,8 @@ def run(opt, running_model_paths):
         iou_thres = 0.6,
         project = infer_paths['Quantization']['Pytorch']['PTQ'],
         name = model_name['Quantization']['Pytorch']['PTQ'],
-        single_cls = False
+        single_cls = False,
+        fuse = False
     )
     print("the required....PTQ")
     print(running_model_metrics['Quantization']['Pytorch']['PTQ'])

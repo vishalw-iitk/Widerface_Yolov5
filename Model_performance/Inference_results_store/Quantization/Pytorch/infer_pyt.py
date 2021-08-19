@@ -27,7 +27,8 @@ def quantized_load(
         img_size = 416,
         data = 'data.yaml',
         hyp = 'data/hyps/hyp.scratch.yaml',
-        single_cls = False
+        single_cls = False,
+        fuse = True
     ):
 
     # rel_path = '../../../../..'
@@ -47,7 +48,8 @@ def quantized_load(
     model.train()
     quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
     model.qconfig = quantization_config
-    model.fuse()
+    if fuse == True:
+        model.fuse()
     torch.quantization.prepare_qat(model, inplace=True)
 
     imgs = torch.randint(255, (2,3, img_size, img_size))
@@ -111,12 +113,13 @@ def get_mAP_and_fitness_score(
         hyp = 'data/hyps/hyp.scratch.yaml',
         single_cls = False,
         project = None,
-        name = None
+        name = None,
+        fuse = True
     ):
 
     # save_dir = name
 
-    model = quantized_load(weights, cfg, device, img_size, data, hyp, single_cls)
+    model = quantized_load(weights, cfg, device, img_size, data, hyp, single_cls, fuse)
 
 
     # imgs = torch.randint(255, (1,3, img_size, img_size))
@@ -126,23 +129,10 @@ def get_mAP_and_fitness_score(
     # imgs = imgs.float()  # uint8 to fp16/32
     # _ = model(imgs)
     # print("pred shape", pred.shape)
-    
-    from flopth import flopth
-    try:
-        print("opoppp")
-        pred = model(imgs.float()/255.0)
-        print(len(pred[0]), len(pred[1]), pred[0][0].shape, pred[1][0].shape)
-        sum_flops = flopth(model, in_size=[[1, 3, 416, 416], pred[1][0].shape])
-        print(sum_flops)
-    except Exception as e:
-        print(e)
 
 
-
-
-
-    ckpt = torch.load(weights, map_location=torch.device(device))
-    fitness_score = ckpt['best_fitness'] if ckpt.get('best_fitness') else None
+    # ckpt = torch.load(weights, map_location=torch.device(device))
+    # fitness_score = ckpt['best_fitness'] if ckpt.get('best_fitness') else None
 
     with open(data) as f:
         data_dict = yaml.safe_load(f)  # data dict
@@ -202,7 +192,7 @@ def get_mAP_and_fitness_score(
                                 # compute_loss=compute_loss
                                 )
 
-    return results, class_wise_maps, fitness_score, t
+    return results, class_wise_maps, t
 
 
 def parse_opt(known=False):
@@ -252,7 +242,8 @@ def main(opt):
             hyp = opt.hyp,
             single_cls = opt.single_cls,
             project = opt.project,
-            name = opt.name
+            name = opt.name,
+            fuse = opt.fuse
         )
     mp, mr, map50, map, loss, = [results[i] for i in range(0,5)] 
     from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.utils.metrics import fitness
