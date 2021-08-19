@@ -389,7 +389,6 @@ def run(opt, running_model_paths):
 
     del running_model_metrics['Regular']['Pytorch']['fp16']
     del running_model_metrics['Quantization']['Tflite']['int8']
-    del running_model_metrics['Pruning']['Tflite']['P1']
-    del running_model_metrics['Pruning']['Tflite']['P2']
-
+    del running_model_metrics['Pruning']['Tflite']
+    
     return running_model_metrics
