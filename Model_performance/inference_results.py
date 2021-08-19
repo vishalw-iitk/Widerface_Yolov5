@@ -2,6 +2,7 @@ import os
 from dts.Model_performance.Inference_results_store.Regular.Pytorch import infer_regular
 from dts.Model_performance.Inference_results_store.Quantization.Tflite import infer_tfl
 from dts.Model_performance.Inference_results_store.Quantization.Pytorch import infer_pyt
+from dts.Model_performance.Inference_results_store.Quantization.Pytorch.PTQ import PTQ_infer
 from dts.model_paths import infer_results_dictionary
 from dts.model_paths import model_defined_names
 
@@ -63,7 +64,7 @@ class PTQ_PyQ(PytorchQ):
     def __init__(self):
         PytorchQ.__init__(self)
     def metrics(self, **kwargs):
-        results_dictionary = infer_pyt.run(**kwargs)
+        results_dictionary = PTQ_infer.run(**kwargs)
         return results_dictionary
 
 
