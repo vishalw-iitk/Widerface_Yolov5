@@ -227,8 +227,6 @@ def parse_opt(known=False):
     parser.add_argument('--retrain-on-pre-trained', action='store_true', help= 'Retrain using the pre-trained weights')
     parser.add_argument('--skip-training', action='store_true', help='skip the time taking regular training')
     parser.add_argument('--skip-QAT-training', action='store_true', help='skip the time taking Quantizze Aware training training')
-    parser.add_argument('--skip-pruning', action='store_true', help='skip the time taking all Pruning training')
-    parser.add_argument('--skip-pruning-m1', action='store_true', help='skip the time taking Pruning m1 training')
     parser.add_argument('--qat-project', default='../runs_QAT/train', help='save to project/name')
     parser.add_argument('--qat-name', default='exp', help='save to project/name')
     parser.add_argument('--QAT-epochs', type=int, default=50, help='')
@@ -239,6 +237,11 @@ def parse_opt(known=False):
     parser.add_argument('--weights', type=str, default='', help='initial weights path')
     parser.add_argument('--local-rank', type=int, default=-1, help='DDP parameter, do not modify')
 
+    parser.add_argument('--skip-pruning', action='store_true', help='skip the time taking Pruning training')
+    parser.add_argument('--skip-Pruning-P1', action='store_true', help='skip the time taking Pruning m1 training')
+    parser.add_argument('--skip-Pruning-P2', action='store_true', help='skip the time taking Pruning m2 training')
+    parser.add_argument('--skip-Pruning-P3', action='store_true', help='skip the time taking Pruning m3 training')
+    parser.add_argument('--skip-Pruning-P4', action='store_true', help='skip the time taking Pruning m4 training')
     parser.add_argument('--prune-infer-on-pre-pruned-only', action='store_true', help='pruning inference on pre-pruned stored model only and not on recently pruned in pipeline')
 
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
