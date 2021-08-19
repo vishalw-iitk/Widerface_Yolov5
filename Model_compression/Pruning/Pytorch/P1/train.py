@@ -621,7 +621,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     
     from dts.Model_compression.Pruning.Pytorch.P1.prune_utils import gather_bn_weights, obtain_bn_mask
     
-    from yolov5.models.common import *
+    from yolov5.models.common import Conv
     from yolov5.models.yolo import Detect
     maskbndict = {}
     for bnname, bnlayer in model.named_modules():
