@@ -117,7 +117,7 @@ def main(opt):
                                     compute_loss=None
                                     )
     print("class_wise_maps", results)
-    size = os.stat(os.path.join(opt.results)).st_size/(1024.0*1024.0)
+    size = os.stat(os.path.join(opt.weights)).st_size/(1024.0*1024.0)
     print(size)
     shape = (batch_size, 3, imgsz, imgsz)
     print(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {shape}' % t)
