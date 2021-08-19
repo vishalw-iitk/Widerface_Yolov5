@@ -199,10 +199,10 @@ def run(data,
             t = time_sync()
             interpreter.invoke()
             t1 += time_sync() - t
-            pred = interpreter.get_tensor(output_details[-1]['index'])
+            pred = interpreter.get_tensor(output_details[0]['index'])
             if tfl_int8:
                 #certain operations
-                scale, zero_point = output_details[-1]['quantization']
+                scale, zero_point = output_details[0]['quantization']
                 pred = pred.astype(np.float32)
                 pred = (pred - zero_point) * scale
             out = torch.tensor(pred)

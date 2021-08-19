@@ -110,7 +110,8 @@ def pre_trained_model_dictionary():
                 'P1' : "../Pre_trained_model/Model_compression/Pruning/P1/best.pt", #"path"
                 'P2' : "../Pre_trained_model/Model_compression/Pruning/P2/best.pt",
                 'P3' : "../Pre_trained_model/Model_compression/Pruning/P3/best.pt",
-                'P4' : "../Pre_trained_model/Model_compression/Pruning/P4/best.pt"
+                'P4' : "../Pre_trained_model/Model_compression/Pruning/P4/best.pt",
+                'theta0' : '../Pre_trained_model/Regular/Pytorch/fp32/best.pt'
             }
         }
     }
