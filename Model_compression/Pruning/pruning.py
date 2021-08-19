@@ -121,7 +121,7 @@ def main(opt):
                     data=opt.data,cfg=opt.cfg,
                     hyp=opt.hyp,exist_ok=True)
     
-    if opt.skip_Pruning_P4 == False:
+    if opt.skip_P4_training == False:
         p4_py = P4()
         p4_py.prune(
             pre_trained_model_paths = opt.pre_trained_model_paths,
