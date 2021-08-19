@@ -10,7 +10,7 @@ import requests
 import torch
 import torch.nn as nn
 from torch.cuda import amp
-from yolov5s.models.common import Conv
+from yolov5.models.common import Conv
 
 
 class BottleneckPruned(nn.Module):
