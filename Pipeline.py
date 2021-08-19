@@ -243,6 +243,9 @@ def parse_opt(known=False):
     parser.add_argument('--skip-P3-training', action='store_true', help='skip the time taking Pruning m3 training')
     parser.add_argument('--skip-P4-training', action='store_true', help='skip the time taking Pruning m4 training')
     parser.add_argument('--prune-infer-on-pre-pruned-only', action='store_true', help='pruning inference on pre-pruned stored model only and not on recently pruned in pipeline')
+    parser.add_argument('--prune-iterations', type=int, default=5, help='prune+retrain total number of iterations') 
+    parser.add_argument('--prune-retrain-epochs', type=int, default=100, help=' number of retrain epochs after pruning')
+    parser.add_argument('--prune-perc', type=int, default=30, help=' initial pruning percentage')
 
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
