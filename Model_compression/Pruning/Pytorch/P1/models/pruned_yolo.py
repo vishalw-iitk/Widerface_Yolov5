@@ -241,7 +241,7 @@ class ModelPruned(nn.Module):
 
         # Define model
         ch = self.yaml['ch'] = self.yaml.get('ch', ch)  # input channels
-        print(ch)
+        # print(ch)
         if nc and nc != self.yaml['nc']:
             logger.info(f"Overriding model.yaml nc={self.yaml['nc']} with nc={nc}")
             self.yaml['nc'] = nc  # override yaml value
@@ -549,7 +549,6 @@ def parse_pruned_model(maskbndict, d, ch):  # model_dict, input_channels(3)
         elif m is Expand:
             c2 = ch[f] // args[0] ** 2
         else:
-
             c2 = ch[f]
             fromtmp = fromlayer[-1]
             fromlayer.append(fromtmp)

@@ -533,195 +533,196 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}")
 
     # ===================================================================
-    
-    from dts.Model_compression.Pruning.Pytorch.P1.prune_utils import gather_bn_weights, obtain_bn_mask
-    from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_common import C3Pruned, SPPPruned
-    from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_yolo import ModelPruned
-    
-    from yolov5.models.common import Conv, Focus, Concat
-    from yolov5.models.yolo import Detect
+    if False:
+        
+        from dts.Model_compression.Pruning.Pytorch.P1.prune_utils import gather_bn_weights, obtain_bn_mask
+        from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_common import C3Pruned, SPPPruned
+        from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_yolo import ModelPruned
+        
+        from yolov5.models.common import Conv, Focus, Concat
+        from yolov5.models.yolo import Detect
 
-    model_list = {}
-    ignore_bn_list = []
+        model_list = {}
+        ignore_bn_list = []
 
-    for i, layer in model.named_modules():
-        # if isinstance(layer, nn.Conv2d):
-        #     print("@Conv :",i,layer)
-        if isinstance(layer, Bottleneck):
-            if layer.add:
-                ignore_bn_list.append(i.rsplit(".",2)[0]+".cv1.bn")
-                ignore_bn_list.append(i + '.cv1.bn')
-                ignore_bn_list.append(i + '.cv2.bn')
-        if isinstance(layer, nn.BatchNorm2d):
-            if i not in ignore_bn_list:
-                model_list[i] = layer
-                print(i, layer)
-            # bnw = layer.state_dict()['weight']
-    model_list = {k:v for k,v in model_list.items() if k not in ignore_bn_list}
-  #  print("prune module :",model_list.keys())
-    prune_conv_list = [layer.replace("bn", "conv") for layer in model_list.keys()]
-    # print(prune_conv_list)
-    bn_weights = gather_bn_weights(model_list)
-    sorted_bn = torch.sort(bn_weights)[0]
-    # print("model_list:",model_list)
-    # print("bn_weights:",bn_weights)
-    highest_thre = []
-    for bnlayer in model_list.values():
-        highest_thre.append(bnlayer.weight.data.abs().max().item())
-    # print("highest_thre:",highest_thre)
-    highest_thre = min(highest_thre)
-    percent_limit = (sorted_bn == highest_thre).nonzero()[0, 0].item() / len(bn_weights)
+        for i, layer in model.named_modules():
+            # if isinstance(layer, nn.Conv2d):
+            #     print("@Conv :",i,layer)
+            if isinstance(layer, Bottleneck):
+                if layer.add:
+                    ignore_bn_list.append(i.rsplit(".",2)[0]+".cv1.bn")
+                    ignore_bn_list.append(i + '.cv1.bn')
+                    ignore_bn_list.append(i + '.cv2.bn')
+            if isinstance(layer, nn.BatchNorm2d):
+                if i not in ignore_bn_list:
+                    model_list[i] = layer
+                    print(i, layer)
+                # bnw = layer.state_dict()['weight']
+        model_list = {k:v for k,v in model_list.items() if k not in ignore_bn_list}
+    #  print("prune module :",model_list.keys())
+        prune_conv_list = [layer.replace("bn", "conv") for layer in model_list.keys()]
+        # print(prune_conv_list)
+        bn_weights = gather_bn_weights(model_list)
+        sorted_bn = torch.sort(bn_weights)[0]
+        # print("model_list:",model_list)
+        # print("bn_weights:",bn_weights)
+        highest_thre = []
+        for bnlayer in model_list.values():
+            highest_thre.append(bnlayer.weight.data.abs().max().item())
+        # print("highest_thre:",highest_thre)
+        highest_thre = min(highest_thre)
+        percent_limit = (sorted_bn == highest_thre).nonzero()[0, 0].item() / len(bn_weights)
 
-    print(f'Suggested Gamma threshold should be less than {highest_thre:.4f}.')
-    print(f'The corresponding prune ratio is {percent_limit:.3f}, but you can set higher.')
-    assert opt.percent < percent_limit, f"Prune ratio should less than {percent_limit}, otherwise it may cause error!!!"
+        print(f'Suggested Gamma threshold should be less than {highest_thre:.4f}.')
+        print(f'The corresponding prune ratio is {percent_limit:.3f}, but you can set higher.')
+        assert opt.percent < percent_limit, f"Prune ratio should less than {percent_limit}, otherwise it may cause error!!!"
 
-    # model_copy = deepcopy(model)
-    thre_index = int(len(sorted_bn) * opt.percent)
-    thre = sorted_bn[thre_index]
-    print(f'Gamma value that less than {thre:.4f} are set to zero!')
-    print("=" * 94)
-    print(f"|\t{'layer name':<25}{'|':<10}{'origin channels':<20}{'|':<10}{'remaining channels':<20}|")
-    remain_num = 0
-    modelstate = model.state_dict()
-    # ============================== save pruned model config yaml =================================#
-    pruned_yaml = {}
-    nc = model.model[-1].nc
-    pruned_yaml["nc"] = model.model[-1].nc
-    pruned_yaml["depth_multiple"] = 0.33
-    pruned_yaml["width_multiple"] = 0.50
-    pruned_yaml["anchors"] = [[10,13, 16,30, 33,23], [30,61, 62,45, 59,119], [116,90, 156,198, 373,326]]
-    anchors = [[10,13, 16,30, 33,23], [30,61, 62,45, 59,119], [116,90, 156,198, 373,326]]
-    pruned_yaml["backbone"] = [
-        [-1, 1, Focus, [64, 3]],  # 0-P1/2
-        [-1, 1, Conv, [128, 3, 2]],  # 1-P2/4
-        [-1, 3, C3Pruned, [128]],  # 2
-        [-1, 1, Conv, [256, 3, 2]],  # 3-P3/8
-        [-1, 9, C3Pruned, [256]],  # 4
-        [-1, 1, Conv, [512, 3, 2]],  # 5-P4/16
-        [-1, 9, C3Pruned, [512]],  # 6
-        [-1, 1, Conv, [1024, 3, 2]],  # 7-P5/32
-        [-1, 1, SPPPruned, [1024, [5, 9, 13]]],  # 8
-        [-1, 3, C3Pruned, [1024, False]],  # 9
-    ]
-    pruned_yaml["head"] = [
-        [-1, 1, Conv, [512, 1, 1]],
-        [-1, 1, nn.Upsample, [None, 2, 'nearest']],
-        [[-1, 6], 1, Concat, [1]],  # cat backbone P4
-        [-1, 3, C3Pruned, [512, False]],  # 13
+        # model_copy = deepcopy(model)
+        thre_index = int(len(sorted_bn) * opt.percent)
+        thre = sorted_bn[thre_index]
+        print(f'Gamma value that less than {thre:.4f} are set to zero!')
+        print("=" * 94)
+        print(f"|\t{'layer name':<25}{'|':<10}{'origin channels':<20}{'|':<10}{'remaining channels':<20}|")
+        remain_num = 0
+        modelstate = model.state_dict()
+        # ============================== save pruned model config yaml =================================#
+        pruned_yaml = {}
+        nc = model.model[-1].nc
+        pruned_yaml["nc"] = model.model[-1].nc
+        pruned_yaml["depth_multiple"] = 0.33
+        pruned_yaml["width_multiple"] = 0.50
+        pruned_yaml["anchors"] = [[10,13, 16,30, 33,23], [30,61, 62,45, 59,119], [116,90, 156,198, 373,326]]
+        anchors = [[10,13, 16,30, 33,23], [30,61, 62,45, 59,119], [116,90, 156,198, 373,326]]
+        pruned_yaml["backbone"] = [
+            [-1, 1, Focus, [64, 3]],  # 0-P1/2
+            [-1, 1, Conv, [128, 3, 2]],  # 1-P2/4
+            [-1, 3, C3Pruned, [128]],  # 2
+            [-1, 1, Conv, [256, 3, 2]],  # 3-P3/8
+            [-1, 9, C3Pruned, [256]],  # 4
+            [-1, 1, Conv, [512, 3, 2]],  # 5-P4/16
+            [-1, 9, C3Pruned, [512]],  # 6
+            [-1, 1, Conv, [1024, 3, 2]],  # 7-P5/32
+            [-1, 1, SPPPruned, [1024, [5, 9, 13]]],  # 8
+            [-1, 3, C3Pruned, [1024, False]],  # 9
+        ]
+        pruned_yaml["head"] = [
+            [-1, 1, Conv, [512, 1, 1]],
+            [-1, 1, nn.Upsample, [None, 2, 'nearest']],
+            [[-1, 6], 1, Concat, [1]],  # cat backbone P4
+            [-1, 3, C3Pruned, [512, False]],  # 13
 
-        [-1, 1, Conv, [256, 1, 1]],
-        [-1, 1, nn.Upsample, [None, 2, 'nearest']],
-        [[-1, 4], 1, Concat, [1]],  # cat backbone P3
-        [-1, 3, C3Pruned, [256, False]],  # 17 (P3/8-small)
+            [-1, 1, Conv, [256, 1, 1]],
+            [-1, 1, nn.Upsample, [None, 2, 'nearest']],
+            [[-1, 4], 1, Concat, [1]],  # cat backbone P3
+            [-1, 3, C3Pruned, [256, False]],  # 17 (P3/8-small)
 
-        [-1, 1, Conv, [256, 3, 2]],
-        [[-1, 14], 1, Concat, [1]],  # cat head P4
-        [-1, 3, C3Pruned, [512, False]],  # 20 (P4/16-medium)
+            [-1, 1, Conv, [256, 3, 2]],
+            [[-1, 14], 1, Concat, [1]],  # cat head P4
+            [-1, 3, C3Pruned, [512, False]],  # 20 (P4/16-medium)
 
-        [-1, 1, Conv, [512, 3, 2]],
-        [[-1, 10], 1, Concat, [1]],  # cat head P5
-        [-1, 3, C3Pruned, [1024, False]],  # 23 (P5/32-large)
+            [-1, 1, Conv, [512, 3, 2]],
+            [[-1, 10], 1, Concat, [1]],  # cat head P5
+            [-1, 3, C3Pruned, [1024, False]],  # 23 (P5/32-large)
 
-        [[17, 20, 23], 1, Detect, [nc, anchors]],  # Detect(P3, P4, P5)
-    ]
+            [[17, 20, 23], 1, Detect, [nc, anchors]],  # Detect(P3, P4, P5)
+        ]
 
-    # ============================================================================== #
-    
-    maskbndict = {}
-    for bnname, bnlayer in model.named_modules():
-        if isinstance(bnlayer, nn.BatchNorm2d):
-            bn_module = bnlayer
-            mask = obtain_bn_mask(bn_module, thre)
-            if bnname in ignore_bn_list:
-                mask = torch.ones(bnlayer.weight.data.size()).cuda()
-            maskbndict[bnname] = mask
-            # print("mask:",mask)
-            remain_num += int(mask.sum())
-            bn_module.weight.data.mul_(mask)
-            bn_module.bias.data.mul_(mask)
-            # print("bn_module:", bn_module.bias)
-            print(f"|\t{bnname:<25}{'|':<10}{bn_module.weight.data.size()[0]:<20}{'|':<10}{int(mask.sum()):<20}|")
-    print("=" * 94)
-   # print(maskbndict.keys())
+        # ============================================================================== #
+        
+        maskbndict = {}
+        for bnname, bnlayer in model.named_modules():
+            if isinstance(bnlayer, nn.BatchNorm2d):
+                bn_module = bnlayer
+                mask = obtain_bn_mask(bn_module, thre)
+                if bnname in ignore_bn_list:
+                    mask = torch.ones(bnlayer.weight.data.size()).cuda()
+                maskbndict[bnname] = mask
+                # print("mask:",mask)
+                remain_num += int(mask.sum())
+                bn_module.weight.data.mul_(mask)
+                bn_module.bias.data.mul_(mask)
+                # print("bn_module:", bn_module.bias)
+                print(f"|\t{bnname:<25}{'|':<10}{bn_module.weight.data.size()[0]:<20}{'|':<10}{int(mask.sum()):<20}|")
+        print("=" * 94)
+    # print(maskbndict.keys())
 
-    pruned_model = ModelPruned(maskbndict=maskbndict, cfg=pruned_yaml, ch=3).cuda()
-    # Compatibility updates
-    for m in pruned_model.modules():
-        if type(m) in [nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU, Detect, Model]:
-            m.inplace = True  # pytorch 1.7.0 compatibility
-        elif type(m) is Conv:
-            m._non_persistent_buffers_set = set()  # pytorch 1.6.0 compatibility
+        pruned_model = ModelPruned(maskbndict=maskbndict, cfg=pruned_yaml, ch=3).cuda()
+        # Compatibility updates
+        for m in pruned_model.modules():
+            if type(m) in [nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU, Detect, Model]:
+                m.inplace = True  # pytorch 1.7.0 compatibility
+            elif type(m) is Conv:
+                m._non_persistent_buffers_set = set()  # pytorch 1.6.0 compatibility
 
-    from_to_map = pruned_model.from_to_map
-    pruned_model_state = pruned_model.state_dict()
-    assert pruned_model_state.keys() == modelstate.keys()
-    # ======================================================================================= #
-    changed_state = []
-    for ((layername, layer),(pruned_layername, pruned_layer)) in zip(model.named_modules(), pruned_model.named_modules()):
-        assert layername == pruned_layername
-        if isinstance(layer, nn.Conv2d) and not layername.startswith("model.24"):
-            convname = layername[:-4]+"bn"
-            if convname in from_to_map.keys():
-                former = from_to_map[convname]
-                if isinstance(former, str):
-                    out_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[layername[:-4] + "bn"].cpu().numpy())))
-                    in_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[former].cpu().numpy())))
-                    w = layer.weight.data[:, in_idx, :, :].clone()
-                    w = w[out_idx, :, :, :].clone()
-                    if len(w.shape) ==3:
-                        w = w.unsqueeze(0)
-                    pruned_layer.weight.data = w.clone()
-                    changed_state.append(layername + ".weight")
-                if isinstance(former, list):
-                    orignin = [modelstate[i+".weight"].shape[0] for i in former]
-                    formerin = []
-                    for it in range(len(former)):
-                        name = former[it]
-                        tmp = [i for i in range(maskbndict[name].shape[0]) if maskbndict[name][i] == 1]
-                        if it > 0:
-                            tmp = [k + sum(orignin[:it]) for k in tmp]
-                        formerin.extend(tmp)
+        from_to_map = pruned_model.from_to_map
+        pruned_model_state = pruned_model.state_dict()
+        assert pruned_model_state.keys() == modelstate.keys()
+        # ======================================================================================= #
+        changed_state = []
+        for ((layername, layer),(pruned_layername, pruned_layer)) in zip(model.named_modules(), pruned_model.named_modules()):
+            assert layername == pruned_layername
+            if isinstance(layer, nn.Conv2d) and not layername.startswith("model.24"):
+                convname = layername[:-4]+"bn"
+                if convname in from_to_map.keys():
+                    former = from_to_map[convname]
+                    if isinstance(former, str):
+                        out_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[layername[:-4] + "bn"].cpu().numpy())))
+                        in_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[former].cpu().numpy())))
+                        w = layer.weight.data[:, in_idx, :, :].clone()
+                        w = w[out_idx, :, :, :].clone()
+                        if len(w.shape) ==3:
+                            w = w.unsqueeze(0)
+                        pruned_layer.weight.data = w.clone()
+                        changed_state.append(layername + ".weight")
+                    if isinstance(former, list):
+                        orignin = [modelstate[i+".weight"].shape[0] for i in former]
+                        formerin = []
+                        for it in range(len(former)):
+                            name = former[it]
+                            tmp = [i for i in range(maskbndict[name].shape[0]) if maskbndict[name][i] == 1]
+                            if it > 0:
+                                tmp = [k + sum(orignin[:it]) for k in tmp]
+                            formerin.extend(tmp)
+                        out_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[layername[:-4] + "bn"].cpu().numpy())))
+                        w = layer.weight.data[out_idx, :, :, :].clone()
+                        pruned_layer.weight.data = w[:,formerin, :, :].clone()
+                        changed_state.append(layername + ".weight")
+                else:
                     out_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[layername[:-4] + "bn"].cpu().numpy())))
                     w = layer.weight.data[out_idx, :, :, :].clone()
-                    pruned_layer.weight.data = w[:,formerin, :, :].clone()
+                    assert len(w.shape) == 4
+                    pruned_layer.weight.data = w.clone()
                     changed_state.append(layername + ".weight")
-            else:
-                out_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[layername[:-4] + "bn"].cpu().numpy())))
-                w = layer.weight.data[out_idx, :, :, :].clone()
-                assert len(w.shape) == 4
-                pruned_layer.weight.data = w.clone()
+
+            if isinstance(layer,nn.BatchNorm2d):
+                out_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[layername].cpu().numpy())))
+                pruned_layer.weight.data = layer.weight.data[out_idx].clone()
+                pruned_layer.bias.data = layer.bias.data[out_idx].clone()
+                pruned_layer.running_mean = layer.running_mean[out_idx].clone()
+                pruned_layer.running_var = layer.running_var[out_idx].clone()
                 changed_state.append(layername + ".weight")
+                changed_state.append(layername + ".bias")
+                changed_state.append(layername + ".running_mean")
+                changed_state.append(layername + ".running_var")
+                changed_state.append(layername + ".num_batches_tracked")
 
-        if isinstance(layer,nn.BatchNorm2d):
-            out_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[layername].cpu().numpy())))
-            pruned_layer.weight.data = layer.weight.data[out_idx].clone()
-            pruned_layer.bias.data = layer.bias.data[out_idx].clone()
-            pruned_layer.running_mean = layer.running_mean[out_idx].clone()
-            pruned_layer.running_var = layer.running_var[out_idx].clone()
-            changed_state.append(layername + ".weight")
-            changed_state.append(layername + ".bias")
-            changed_state.append(layername + ".running_mean")
-            changed_state.append(layername + ".running_var")
-            changed_state.append(layername + ".num_batches_tracked")
+            if isinstance(layer, nn.Conv2d) and layername.startswith("model.24"):
+                former = from_to_map[layername]
+                in_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[former].cpu().numpy())))
+                pruned_layer.weight.data = layer.weight.data[:, in_idx, :, :]
+                pruned_layer.bias.data = layer.bias.data
+                changed_state.append(layername + ".weight")
+                changed_state.append(layername + ".bias")
 
-        if isinstance(layer, nn.Conv2d) and layername.startswith("model.24"):
-            former = from_to_map[layername]
-            in_idx = np.squeeze(np.argwhere(np.asarray(maskbndict[former].cpu().numpy())))
-            pruned_layer.weight.data = layer.weight.data[:, in_idx, :, :]
-            pruned_layer.bias.data = layer.bias.data
-            changed_state.append(layername + ".weight")
-            changed_state.append(layername + ".bias")
+        missing = [i for i in pruned_model_state.keys() if i not in changed_state]
 
-    missing = [i for i in pruned_model_state.keys() if i not in changed_state]
-
-    pruned_model.eval()
-    pruned_model.names = model.names
-    # =============================================================================================== #
-    torch.save({"model": model}, "orign_model.pt")
-    model = pruned_model
-    torch.save({"model":model}, "pruned_model.pt")
-    # ===================================================================
+        pruned_model.eval()
+        pruned_model.names = model.names
+        # =============================================================================================== #
+        torch.save({"model": model}, "orign_model.pt")
+        model = pruned_model
+        torch.save({"model":model}, "pruned_model.pt")
+        # ===================================================================
 
     torch.cuda.empty_cache()
     return results
