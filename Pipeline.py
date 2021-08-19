@@ -6,6 +6,7 @@ from dts.model_paths import running_model_dictionary, train_results_dictionary
 from dts.model_paths import pre_trained_model_dictionary
 from dts.model_paths import train_results_dictionary
 from dts.model_paths import model_defined_names
+from dts.model_paths import prune_with_pre_trained_only
 # from dts.Data_preparation import df_percent
 from dts.Data_preparation import data_prep_yolo
 
@@ -108,16 +109,25 @@ def main(opt):
     )
 
     pruning.run(
-        skip_pruning_m1 = opt.skip_pruning_m1,
+        skip_pruning = opt.skip_pruning,
+        skip_P1_training = opt.skip_P1_training,
+        skip_P2_training= opt.skip_P2_training,
+        skip_P3_training = opt.skip_P3_training,
+        skip_P4_training = opt.skip_P4_training,
+        num_iterations = opt.prune_iterations,
         running_model_paths = running_model_paths,
         pre_trained_model_paths = pre_trained_model_paths,
-        # weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
-        weights = opt.weights,
+        weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
+        # weights = opt.weights,
         retrain_on_pre_trained = opt.retrain_on_pre_trained,
+        prune_retrain_epochs = opt.prune_retrain_epochs,
         data = opt.data,
         cfg = opt.cfg,
         hyp = opt.hyp,
+        img = opt.img_size,
         device = opt.device,
+        batch_size = opt.batch_size,
+        prune_perc = opt.prune_perc,
         cache_images = True,
         project = train_results_paths['Pruning']['Pytorch']['P1'],
         name = model_names['Pruning']['Pytorch']['P1'],
@@ -134,11 +144,11 @@ def main(opt):
         repr_images = opt.repr_images,
         img = opt.img,
         ncalib = opt.ncalib,
-        # cfg = opt.cfg,
+        cfg = opt.cfg,
         data = opt.data,
-        # hyp = opt.hyp,
-        cfg = './Model_compression/Quantization/Pytorch/QAT/yolov5_repo/models/yolov5s.yaml',
-        hyp = './Model_compression/Quantization/Pytorch/QAT/yolov5_repo/data/hyps/hyp.scratch.yaml',
+        hyp = opt.hyp,
+        # cfg = './Model_compression/Quantization/Pytorch/QAT/yolov5_repo/models/yolov5s.yaml',
+        # hyp = './Model_compression/Quantization/Pytorch/QAT/yolov5_repo/data/hyps/hyp.scratch.yaml',
         rect = False,
         resume = False,
         nosave = False,
@@ -172,7 +182,9 @@ def main(opt):
     # model_conversion.run('Quantized')
 
     # test_the_models() #detect.py
-
+    if opt.prune_infer_on_pre_pruned_only == True:
+        running_model_paths = prune_with_pre_trained_only(running_model_paths, pre_trained_model_paths)
+        # running_model_paths_modification for pruned model with pre-trained/pruned stored weights
     plot_results = inference_results.run(opt, running_model_paths) #mAP0.5, mAP0.5:0.95, fitness_score, latency, GFLOPs, Size
     print(plot_results)
     # arrnagement of results like segregation and density_threshold using val.py
@@ -215,7 +227,8 @@ def parse_opt(known=False):
     parser.add_argument('--retrain-on-pre-trained', action='store_true', help= 'Retrain using the pre-trained weights')
     parser.add_argument('--skip-training', action='store_true', help='skip the time taking regular training')
     parser.add_argument('--skip-QAT-training', action='store_true', help='skip the time taking Quantizze Aware training training')
-    parser.add_argument('--skip-pruning-m1', action='store_true', help='skip the time taking Pruning training')
+    parser.add_argument('--skip-pruning', action='store_true', help='skip the time taking all Pruning training')
+    parser.add_argument('--skip-pruning-m1', action='store_true', help='skip the time taking Pruning m1 training')
     parser.add_argument('--qat-project', default='../runs_QAT/train', help='save to project/name')
     parser.add_argument('--qat-name', default='exp', help='save to project/name')
     parser.add_argument('--QAT-epochs', type=int, default=50, help='')
@@ -225,6 +238,8 @@ def parse_opt(known=False):
 
     parser.add_argument('--weights', type=str, default='', help='initial weights path')
     parser.add_argument('--local-rank', type=int, default=-1, help='DDP parameter, do not modify')
+
+    parser.add_argument('--prune-infer-on-pre-pruned-only', action='store_true', help='pruning inference on pre-pruned stored model only and not on recently pruned in pipeline')
 
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt

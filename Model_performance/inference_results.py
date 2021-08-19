@@ -2,7 +2,7 @@ import os
 from dts.Model_performance.Inference_results_store.Regular.Pytorch import infer_regular
 from dts.Model_performance.Inference_results_store.Quantization.Tflite import infer_tfl
 from dts.Model_performance.Inference_results_store.Quantization.Pytorch import infer_pyt
-from dts.Model_performance.Inference_results_store.Quantization.Pytorch.PTQ import PTQ_infer
+# from dts.Model_performance.Inference_results_store.Quantization.Pytorch.PTQ import PTQ_infer
 from dts.model_paths import infer_results_dictionary
 from dts.model_paths import model_defined_names
 

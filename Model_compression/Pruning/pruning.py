@@ -3,8 +3,13 @@ import os
 # from dts.model_paths import running_model_dictionary
 # from dts.model_paths import pre_trained_model_dictionary
 # from dts.model_paths import frameworks
-from dts.Model_compression.Pruning.Pytorch.P1 import train
 from dts.Model_conversion import model_export
+from dts.Model_compression.Pruning.Pytorch import prune_train
+from dts.Model_compression.Pruning.Pytorch.P4 import train
+from dts.model_paths import train_results_dictionary
+from dts.model_paths import model_defined_names
+from dts.model_paths import pre_trained_model_dictionary
+
 
 class Pruning(object):
     def __init__(self):
@@ -27,14 +32,28 @@ class P1(Pytorch):
         Pytorch.__init__(self)
         # to save path
     def prune(self, **kwargs):
-        train.run(**kwargs)
+        prune_train.run(**kwargs)
         
 class P2(Pytorch):
     def __init__(self):
         Pytorch.__init__(self)
         # to save path
     def prune():
-        ptq.run()
+        prune_train.run()
+
+class P3(Pytorch):
+    def __init__(self):
+        Pytorch.__init__(self)
+        # to save path
+    def prune(self, **kwargs):
+        prune_train.run(**kwargs)
+        
+class P4(Pytorch):
+    def __init__(self):
+        Pytorch.__init__(self)
+        # to save path
+    def prune(self, **kwargs):
+        train.run(**kwargs)
 
 
 # Tflite
@@ -56,19 +75,65 @@ def main(opt):
     # framework_path = opt.framework_path
     # weights = running_model_paths['Regular']['Pytorch']['fp32']
     
-    if opt.skip_pruning_m1 == False:
+    train_results_paths = train_results_dictionary()
+    model_names = model_defined_names()
+    pre_trained_model_paths = pre_trained_model_dictionary()
+    # running_model_paths = opt.running_model_paths
+    # framework_path = opt.framework_path
+
+    if opt.skip_P1_training == False:
+    #random re-init
         p1_py = P1()
-        p1_py.prune(
-            running_model_paths = opt.running_model_paths,
+        for i in range(opt.num_iterations):
+            p1_py.prune(weights=opt.weights,
+                        batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_retrain_epochs,
+                        project = train_results_paths['Pruning']['Pytorch']['P1'],
+                        name=model_names['Pruning']['Pytorch']['P1'],     
+                        prune_perc=opt.prune_perc,prune_iter=i,
+                        random_reinit=False, theta0_reinit=False,
+                        data=opt.data,cfg=opt.cfg, 
+                        hyp=opt.hyp,exist_ok=True,cache_images=True,device='cpu')
+
+
+    if opt.skip_P2_training == False:
+        #theta0 re-init
+        p2_py = P2()
+        for i in range(opt.num_iterations):
+            p2_py.prune(weights=opt.weights, 
+                    batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_epochs,
+                    project = train_results_paths['Pruning']['Pytorch']['P2'],
+                    name=model_names['Pruning']['Pytorch']['P2'],     
+                    prune_perc=opt.prune_perc,prune_iter=i,
+                    random_reinit=False, theta0_reinit=True,theta0_weights=pre_trained_model_paths['Pruning']['Pytorch']['theta0'],
+                    data=opt.data,cfg=opt.cfg, 
+                    hyp=opt.hyp,exist_ok=True)
+
+    if opt.skip_P3_training == False:
+        #no reinit
+        p3_py = P3()
+        for i in range(opt.num_iterations):
+            p3_py.prune(weights=opt.weights, 
+                    batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_epochs,
+                    project = train_results_paths['Pruning']['Pytorch']['P3'],
+                    name=model_names['Pruning']['Pytorch']['P3'],     
+                    prune_perc=opt.prune_perc,prune_iter=i,
+                    random_reinit=False, theta0_reinit=False,
+                    data=opt.data,cfg=opt.cfg,
+                    hyp=opt.hyp,exist_ok=True)
+    
+    if opt.skip_Pruning_P4 == False:
+        p4_py = P4()
+        p4_py.prune(
             pre_trained_model_paths = opt.pre_trained_model_paths,
-            weights = opt.pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
+            weights = opt.weights,
+            # weights = opt.pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
             data = opt.data,
             cfg = opt.cfg,
             hyp = opt.hyp,
             device = opt.device,
             cache_images = True,
-            project = opt.project,
-            name = opt.name,
+            project = train_results_paths['Pruning']['Pytorch']['P4'],
+            name = model_names['Pruning']['Pytorch']['P4'],
             st = opt.st,
             sr = opt.sr
             )

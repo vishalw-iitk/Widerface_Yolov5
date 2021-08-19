@@ -233,7 +233,7 @@ def main(opt):
     #     print(e)
 
     # print(model)
-    results, class_wise_maps, fitness, t = get_mAP_and_fitness_score(
+    results, class_wise_maps, t = get_mAP_and_fitness_score(
             weights = opt.weights,
             cfg = opt.cfg,
             device = 'cpu',

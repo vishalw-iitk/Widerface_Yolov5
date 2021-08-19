@@ -78,6 +78,8 @@ def running_model_dictionary():
             'Pytorch' : {
                 'P1' : "../Model_compression/Pruning/Pytorch/P1.pt", #"path-Time-Taker(store-expicitly)",
                 'P2' : "../Model_compression/Pruning/Pytorch/P2.pt", #"path"
+                'P3' : "../Model_compression/Pruning/Pytorch/P3.pt", #"path-Time-Taker(store-expicitly)",
+                'P4' : "../Model_compression/Pruning/Pytorch/P4.pt", #"path"
             },
             'Tflite' : {
                 'P1' : "../Model_compression/Pruning/Tflite/P1.pt", #"path",
@@ -105,7 +107,10 @@ def pre_trained_model_dictionary():
         },
         'Pruning' : {
             'Pytorch' : {
-                'P1' : "../Pre_trained_model/Model_compression/Pruning/P1/best.pt" #"path"
+                'P1' : "../Pre_trained_model/Model_compression/Pruning/P1/best.pt", #"path"
+                'P2' : "../Pre_trained_model/Model_compression/Pruning/P2/best.pt",
+                'P3' : "../Pre_trained_model/Model_compression/Pruning/P3/best.pt",
+                'P4' : "../Pre_trained_model/Model_compression/Pruning/P4/best.pt"
             }
         }
     }
@@ -115,10 +120,22 @@ def update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_mod
     running_model_paths['Regular']['Pytorch']['fp32'] = pre_trained_model_paths['Regular']['Pytorch']['fp32']
     running_model_paths['Regular']['Pytorch']['fp16'] = pre_trained_model_paths['Regular']['Pytorch']['fp16']
     running_model_paths['Regular']['Tflite']['fp32'] = pre_trained_model_paths['Regular']['Tflite']['fp32']
+    
     running_model_paths['Quantization']['Pytorch']['QAT'] = pre_trained_model_paths['Quantization']['Pytorch']['QAT']
+    
     running_model_paths['Pruning']['Pytorch']['P1'] = pre_trained_model_paths['Pruning']['Pytorch']['P1']
+    running_model_paths['Pruning']['Pytorch']['P2'] = pre_trained_model_paths['Pruning']['Pytorch']['P2']
+    running_model_paths['Pruning']['Pytorch']['P3'] = pre_trained_model_paths['Pruning']['Pytorch']['P3']
+    running_model_paths['Pruning']['Pytorch']['P4'] = pre_trained_model_paths['Pruning']['Pytorch']['P4']
 
     return running_model_paths
+
+def prune_with_pre_trained_only(running_model_paths, pre_trained_model_paths):
+    running_model_paths['Pruning']['Pytorch']['P1'] = pre_trained_model_paths['Pruning']['Pytorch']['P1']
+    running_model_paths['Pruning']['Pytorch']['P2'] = pre_trained_model_paths['Pruning']['Pytorch']['P2']
+    running_model_paths['Pruning']['Pytorch']['P3'] = pre_trained_model_paths['Pruning']['Pytorch']['P3']
+    running_model_paths['Pruning']['Pytorch']['P4'] = pre_trained_model_paths['Pruning']['Pytorch']['P4']
+
 
 def train_results_dictionary():
     train_results_paths = {
@@ -135,7 +152,9 @@ def train_results_dictionary():
         'Pruning': {
             'Pytorch' : {
                 'P1' : '../runs/Pruning/P1',
-                'P2' : '../runs/Pruning/P2'
+                'P2' : '../runs/Pruning/P2',
+                'P3' : '../runs/Pruning/P3',
+                'P4' : '../runs/Pruning/P4'                
             }
         }
     }
@@ -164,7 +183,9 @@ def infer_results_dictionary():
         'Pruning': {
             'Pytorch' : {
                 'P1' : '../Model_performance/Inference_results/Pruning/Pytorch/P1/val',
-                'P2' : '../Model_performance/Inference_results/Pruning/Pytorch/P1/val'
+                'P2' : '../Model_performance/Inference_results/Pruning/Pytorch/P2/val',
+                'P3' : '../Model_performance/Inference_results/Pruning/Pytorch/P3/val',
+                'P4' : '../Model_performance/Inference_results/Pruning/Pytorch/P4/val'
             },
             'Tflite' : {
                 'P1' : '../Model_performance/Inference_results/Pruning/Tflite/P1/val',
@@ -197,7 +218,9 @@ def test_results_dictionary():
         'Pruning': {
             'Pytorch' : {
                 'P1' : '../Model_performance/TestData_results/Pruning/Pytorch/P1',
-                'P2' : '../Model_performance/TestData_results/Pruning/Pytorch/P2'
+                'P2' : '../Model_performance/TestData_results/Pruning/Pytorch/P2',
+                'P3' : '../Model_performance/TestData_results/Pruning/Pytorch/P3',
+                'P4' : '../Model_performance/TestData_results/Pruning/Pytorch/P4'
             },
             'Tflite' : {
                 'P1' : '../Model_performance/TestData_results/Pruning/Tflite/P1',
@@ -230,7 +253,9 @@ def model_defined_names():
         'Pruning': {
             'Pytorch' : {
                 'P1' : 'Pruned_Pytorch_P1',
-                'P2' : 'Pruned_Pytorch_P2'
+                'P2' : 'Pruned_Pytorch_P2',
+                'P3' : 'Pruned_Pytorch_P3',
+                'P4' : 'Pruned_Pytorch_P4'
             },
             'Tflite' : {
                 'P1' : 'Pruned_Tflite_P1',
@@ -313,6 +338,22 @@ def plot_dictionary():
                     'size' : 1
                 },
                 'P2' : {
+                    'mAP50' : 40,
+                    'mAP' : 10,
+                    'fitness' : 10,
+                    'latency' : 10,
+                    'GFLOPS' : 100,
+                    'size' : 1,
+                },
+                'P3' : {
+                    'mAP50' : 40,
+                    'mAP' : 10,
+                    'fitness' : 10,
+                    'latency' : 10,
+                    'GFLOPS' : 100,
+                    'size' : 1,
+                },
+                'P4' : {
                     'mAP50' : 40,
                     'mAP' : 10,
                     'fitness' : 10,
