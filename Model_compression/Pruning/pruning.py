@@ -74,6 +74,8 @@ def main(opt):
     # running_model_paths = opt.running_model_paths
     # framework_path = opt.framework_path
     # weights = running_model_paths['Regular']['Pytorch']['fp32']
+    if opt.skip_pruning == True:
+        return
     
     train_results_paths = train_results_dictionary()
     model_names = model_defined_names()
