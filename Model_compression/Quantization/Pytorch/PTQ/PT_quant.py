@@ -28,7 +28,7 @@ def main(opt):
     with open(hyp) as f:
             hyp = yaml.safe_load(f)
     nc = 1 # number of classes
-    exclude = ['anchor'] # exclude keys
+    # exclude = ['anchor'] # exclude keys
 
     # print(model)
     # print(model.state_dict())
@@ -40,7 +40,7 @@ def main(opt):
     model.eval()
     ckpt = torch.load(opt.weights, map_location=device)  # load checkpoint
     csd = ckpt['model'].float().state_dict()  # checkpoint state_dict as FP32
-    csd = intersect_dicts(csd, model.state_dict(), exclude=exclude)  # intersect
+    csd = intersect_dicts(csd, model.state_dict())  # intersect
     model.load_state_dict(csd, strict=False) ##load checkpoints into created architecture
 
     # print(model)
