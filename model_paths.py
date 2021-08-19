@@ -76,14 +76,14 @@ def running_model_dictionary():
         },
         'Pruning': {
             'Pytorch' : {
-                'P1' : "../Model_compression/Pruning/Pytorch/P1.pt", #"path-Time-Taker(store-expicitly)",
-                'P2' : "../Model_compression/Pruning/Pytorch/P2.pt", #"path"
-                'P3' : "../Model_compression/Pruning/Pytorch/P3.pt", #"path-Time-Taker(store-expicitly)",
-                'P4' : "../Model_compression/Pruning/Pytorch/P4.pt", #"path"
+                'P1' : "../Model_compression/Pruning/Pytorch/P1/best.pt", #"path-Time-Taker(store-expicitly)",
+                'P2' : "../Model_compression/Pruning/Pytorch/P2/best.pt", #"path"
+                'P3' : "../Model_compression/Pruning/Pytorch/P3/best.pt", #"path-Time-Taker(store-expicitly)",
+                'P4' : "../Model_compression/Pruning/Pytorch/P4/best.pt", #"path"
             },
             'Tflite' : {
-                'P1' : "../Model_compression/Pruning/Tflite/P1.pt", #"path",
-                'P2' : "../Model_compression/Pruning/Tflite/P2.pt", #"path"
+                'P1' : "../Model_compression/Pruning/Tflite/P1/best.pt", #"path",
+                'P2' : "../Model_compression/Pruning/Tflite/P2/best.pt", #"path"
             }
         }
     }
@@ -137,6 +137,7 @@ def prune_with_pre_trained_only(running_model_paths, pre_trained_model_paths):
     running_model_paths['Pruning']['Pytorch']['P3'] = pre_trained_model_paths['Pruning']['Pytorch']['P3']
     running_model_paths['Pruning']['Pytorch']['P4'] = pre_trained_model_paths['Pruning']['Pytorch']['P4']
 
+    return running_model_paths
 
 def train_results_dictionary():
     train_results_paths = {
