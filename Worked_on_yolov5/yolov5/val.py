@@ -10,7 +10,7 @@ import os
 import sys
 from pathlib import Path
 from threading import Thread
-
+import traceback
 import numpy as np
 import torch
 from tqdm import tqdm
