@@ -346,7 +346,7 @@ def run(data,
             gflops = None
     elif suffix=='.tflite':
         gflops = None
-    return {'mAP50': map50, 'mAP' : map, 'fitness' : fi[0], 'size': size, 'latency' : t, 'gflops' : gflops} #maps just to check how different from map50, map
+    return {'mAP50': map50, 'mAP' : map, 'fitness' : fi[0], 'size': size, 'latency' : t, 'GFLOPS' : gflops} #maps just to check how different from map50, map
 
 
 def parse_opt():

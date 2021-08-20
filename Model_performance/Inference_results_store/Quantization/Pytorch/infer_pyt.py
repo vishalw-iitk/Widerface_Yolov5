@@ -251,7 +251,7 @@ def main(opt):
     fi = fitness(np.array([mp, mr, map50, map]).reshape(1, -1))
     size = os.stat(opt.weights).st_size/(1024.0*1024.0)
 
-    mAP50, mAP, fitness, size, latency, gflops = map50, map, fi, size, t, None
+    mAP50, mAP, fitness, size, latency, gflops = map50, map, fi[0], size, t, None
     print("class_wise_maps", class_wise_maps)
     print("fitness_score", fitness)
     return {'mAP50' : mAP50, 'mAP' : mAP, 'fitness' : fitness, 'size' : size, 'latency' : latency, 'GFLOPS' : gflops}
