@@ -54,9 +54,13 @@ $ cd dts/
 
 ## <div align="center"> Pipeline </div>
 ***
+Every pipeline run, you will get the summary of the model performance in the form of well analysed plots in the plot_metrics folder.
+
 <details open>
 <summary>Arranging Repo </summary>
 Arranging the repo is integrated into the pipeline.
+You can always attempt to get all the results with the latest ultralytics repository changes
+If the recent version of the ultralytics repository is not compatible with dts repository codes, then we can skip cloning and use the older version of ultralytics repo.
 
 ```python 
 '''args 
@@ -143,9 +147,9 @@ python Pipeline.py --batch-size 32 --img-size 416 --epochs 1 --device '0' --adam
 
 <div align="center">
 
-|Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) | |GFOPs<br><sup>416 (M) |Size<br><sup> (Mb)
+|Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) | |GFOPs<br><sup>416 |Size<br><sup> (Mb)
 |---                    |---  |---  |---      |---      |---      |---     |---|---   |---
-|YOLOv5s      |416  |fp16  |0.605|0.31 |-     |**-** |   |-   |14.4
+|YOLOv5s      |416  |fp16  |0.605|0.31 |-     |**-** |   |6.92   |14.4
 |             |     |     |         |         |         |        |   |      |
 |Pruning_1(G)     |416 |fp16     |-     |-     |-     |-    |   |-  |-
 |Pruning_2(P)     |416 |fp16     |-     |-     |-     |-    |   |-  |-
