@@ -50,7 +50,7 @@ def main(opt):
     from dts.Model_conversion import model_export
     from dts.Model_compression.Quantization import quantization
     from dts.Model_compression.Pruning import pruning
-    from dts.Model_performance import inference_results
+    from dts.Model_performance import inference_results, plot_the_performance
     running_model_paths = running_model_dictionary()
     pre_trained_model_paths = pre_trained_model_dictionary()
     framework_path = frameworks(opt.skip_training, running_model_paths, pre_trained_model_paths)
@@ -188,7 +188,7 @@ def main(opt):
     plot_results = inference_results.run(opt, running_model_paths) #mAP0.5, mAP0.5:0.95, fitness_score, latency, GFLOPs, Size
     print(plot_results)
     # arrnagement of results like segregation and density_threshold using val.py
-
+    plot_the_performance.run(plot_results,save_dir = '../plot_metrics')
     # plot_the_performance.run(plot_results)
     
 
