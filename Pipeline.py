@@ -214,9 +214,9 @@ def parse_opt(known=False):
     parser.add_argument('--arranged-data-path', type=str, default = '../ARRANGED_DATASET', help='Path of the arranged dataset')
 
     parser.add_argument('--partial-dataset', action='store_true', help='willing to select custom percentage of dataset')
-    parser.add_argument('--percent-traindata', type=int, help=' percent_of_the_train_data_required')
-    parser.add_argument('--percent-validationdata', type=int, help=' percent_of_the_validation_data_required')
-    parser.add_argument('--percent-testdata', type=int, help=' percent_of_the_test_data_required')
+    parser.add_argument('--percent-traindata', type=int, default=100, help=' percent_of_the_train_data_required')
+    parser.add_argument('--percent-validationdata', type=int, default=100, help=' percent_of_the_validation_data_required')
+    parser.add_argument('--percent-testdata', type=int, default=100, help='percent_of_the_test_data_required')
 
     parser.add_argument('--batch-size', type=int, default=128, help='')
     parser.add_argument('--epochs', type=int, default=300, help='')   
