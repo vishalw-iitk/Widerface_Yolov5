@@ -212,8 +212,8 @@ def run(opt, running_model_paths):
     
     project = infer_paths['Quantization']['Pytorch']['QAT']
     name = model_name['Quantization']['Pytorch']['QAT']
-    print("project", project, type(project), project[0])
-    save_dir = os.path.join(project[0], name)
+    # print("project", project, type(project), project[0])
+    save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
     (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Quantization']['Pytorch']['QAT']) if not os.path.exists(infer_paths['Quantization']['Pytorch']['QAT']) else None
@@ -242,8 +242,8 @@ def run(opt, running_model_paths):
     
     project = infer_paths['Quantization']['Pytorch']['PTQ']
     name = model_name['Quantization']['Pytorch']['PTQ']
-    print("project", project, type(project), project[0])
-    save_dir = os.path.join(project[0], name)
+    # print("project", project, type(project), project[0])
+    save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
     (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
     ptq_py = PTQ_PyQ()
@@ -331,8 +331,8 @@ def run(opt, running_model_paths):
 
     project = infer_paths['Pruning']['Pytorch']['P1']
     name = model_name['Pruning']['Pytorch']['P1']
-    print("project", project, type(project), project[0])
-    save_dir = os.path.join(project[0], name)
+    # print("project", project, type(project), project[0])
+    save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
     (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Pruning']['Pytorch']['P1']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P1']) else None
@@ -355,7 +355,7 @@ def run(opt, running_model_paths):
     
     project = infer_paths['Pruning']['Pytorch']['P2']
     name = model_name['Pruning']['Pytorch']['P2']
-    save_dir = os.path.join(project[0], name)
+    save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
     (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Pruning']['Pytorch']['P2']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P2']) else None
@@ -378,7 +378,7 @@ def run(opt, running_model_paths):
 
     project = infer_paths['Pruning']['Pytorch']['P3']
     name = model_name['Pruning']['Pytorch']['P3']
-    save_dir = os.path.join(project[0], name)
+    save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
     (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Pruning']['Pytorch']['P3']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P3']) else None
@@ -399,7 +399,7 @@ def run(opt, running_model_paths):
 
     project = infer_paths['Pruning']['Pytorch']['P4']
     name = model_name['Pruning']['Pytorch']['P4']
-    save_dir = os.path.join(project[0], name)
+    save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
     (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Pruning']['Pytorch']['P4']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P4']) else None
