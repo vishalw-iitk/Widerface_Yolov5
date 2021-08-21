@@ -7,10 +7,26 @@ RUN mkdir dts
 
 WORKDIR /usr/src/app/dts
 
+COPY Requirements/requirements.txt /usr/src/app/dts
+RUN pip3 install -qr requirements.txt
+
 # Comment it if cloning inside docker
 COPY . /usr/src/app/dts
+# ===================================
+# FROM python:3
 
-RUN pip3 install -qr Requirements/requirements.txt
+# WORKDIR /usr/src/app
+
+# # RUN git clone ......
+# RUN mkdir dts
+
+# WORKDIR /usr/src/app/dts
+
+# # Comment it if cloning inside docker
+# COPY . /usr/src/app/dts
+
+# RUN pip3 install -qr Requirements/requirements.txt
+# =======================
 
 # ENTRYPOINT [ "python" ]
 
