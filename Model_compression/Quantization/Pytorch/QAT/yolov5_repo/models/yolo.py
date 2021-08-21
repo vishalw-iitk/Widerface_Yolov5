@@ -62,16 +62,17 @@ class Detect(nn.Module):
             x[i] = x[i].view(bs, self.na, self.no, ny, nx).permute(0, 1, 3, 4, 2).contiguous()
 
             if not self.training:  # inference
+            
+                print("check device", self.stride[i].is_cuda, self.grid[i].is_cuda, self.anchor_grid[i].is_cuda)
+                if self.grid[i].is_cuda == True and self.anchor_grid[i].is_cuda == False:
+                    self.grid[i] = self.grid[i].cpu()
+                print("check device11", self.stride[i].is_cuda, self.grid[i].is_cuda, self.anchor_grid[i].is_cuda)
+
                 if self.grid[i].shape[2:4] != x[i].shape[2:4] or self.onnx_dynamic:
                     self.grid[i] = self._make_grid(nx, ny).to(x[i].device)
 
                 y = x[i].sigmoid()
                 if self.inplace:
-                    print("check device", self.stride[i].is_cuda, self.grid[i].is_cuda, y[..., 0:2].is_cuda, self.anchor_grid[i].is_cuda)
-                    if self.grid[i].is_cuda == True and y[..., 0:2].is_cuda == False:
-                        self.grid[i] = self.grid[i].cpu()
-                    print("check device11", self.stride[i].is_cuda, self.grid[i].is_cuda, y[..., 0:2].is_cuda, self.anchor_grid[i].is_cuda)
-
                     y[..., 0:2] = (y[..., 0:2] * 2. - 0.5 + self.grid[i]) * self.stride[i]  # xy
                     y[..., 2:4] = (y[..., 2:4] * 2) ** 2 * self.anchor_grid[i]  # wh
                 else:  # for YOLOv5 on AWS Inferentia https://github.com/ultralytics/yolov5/pull/2953
