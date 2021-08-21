@@ -190,6 +190,9 @@ class ComputeLoss:
             t = targets * gain
             if nt:
                 # Matches
+                if t.is_cuda == True and anchors[:, None].is_cuda == False:
+                    t = t.cpu()
+
                 r = t[:, :, 4:6] / anchors[:, None]  # wh ratio
                 j = torch.max(r, 1. / r).max(2)[0] < self.hyp['anchor_t']  # compare
                 # j = wh_iou(anchors, t[:, 4:6]) > model.hyp['iou_t']  # iou(3,n)=wh_iou(anchors(3,2), gwh(n,2))
