@@ -153,6 +153,7 @@ class ComputeLoss:
                 # with open('targets.txt', 'a') as file:
                 #     [file.write('%11.5g ' * 4 % tuple(x) + '\n') for x in torch.cat((txy[i], twh[i]), 1)]
 
+            print("in new loss", pi.is_cuda, tobj.is_cuda)
             if pi.is_cuda == True and tobj.is_cuda == False:
                 pi = pi.cpu()
             
