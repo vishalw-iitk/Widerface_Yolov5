@@ -192,8 +192,8 @@ class ComputeLoss:
                 # Matches
                 print("in loss.py", t[:, :, 4:6].is_cuda, t.is_cuda, anchors[:, None].is_cuda)
 
-                if t.is_cuda == True and anchors[:, None].is_cuda == False:
-                    t = t.cpu()
+                if anchors[:, None].is_cuda == True and t.is_cuda == False:
+                    anchors = anchors.cpu()
 
                 
                 r = t[:, :, 4:6] / anchors[:, None]  # wh ratio
