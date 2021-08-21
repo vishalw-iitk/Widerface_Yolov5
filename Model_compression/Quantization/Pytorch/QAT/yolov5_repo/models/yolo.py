@@ -67,6 +67,7 @@ class Detect(nn.Module):
 
                 y = x[i].sigmoid()
                 if self.inplace:
+                    print("check device", self.stride[i].is_cuda, self.grid[i].is_cuda, y[..., 0:2].is_cuda, self.anchor_grid[i].is_cuda)
                     if self.stride[i].is_cuda == True and y[..., 0:2].is_cuda == False:
                         self.stride[i] = self.stride[i].cpu()
 
