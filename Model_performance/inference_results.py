@@ -227,7 +227,7 @@ def run(opt, running_model_paths):
         conf_thres = 0.001,
         iou_thres = 0.6,
         single_cls = False,
-        save_dir = save_dir,
+        save_dir = Path(save_dir),
         fuse = True,
         save_txt = opt.save_txt
     )
@@ -255,7 +255,7 @@ def run(opt, running_model_paths):
         conf_thres = 0.001,
         iou_thres = 0.6,
         single_cls = False,
-        save_dir = save_dir,
+        save_dir = Path(save_dir),
         fuse = False,
         save_txt = opt.save_txt
     )
