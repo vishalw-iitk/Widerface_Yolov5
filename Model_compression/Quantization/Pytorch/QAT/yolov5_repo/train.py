@@ -428,7 +428,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 with torch.no_grad():
                     # print("prepara qat model", model.state_dict().keys())
                     model.eval()
-                    temp_quantized_model = torch.quantization.convert(deepcopy(ema.qat_ema))
+                    temp_quantized_model = torch.quantization.convert(deepcopy(ema.qat_ema).to(torch.device('cpu')))
                     # print(temp_quantized_model)
                     print("in the loop quant")
                             
@@ -469,10 +469,10 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         # Save model
         with torch.no_grad():
             model.eval()
-            quantized_model = torch.quantization.convert(deepcopy(model))
+            quantized_model = torch.quantization.convert(deepcopy(model).to(torch.device('cpu')))
 
             ema.qat_ema.eval()
-            quantized_model_ema = torch.quantization.convert(deepcopy(ema.qat_ema))
+            quantized_model_ema = torch.quantization.convert(deepcopy(ema.qat_ema).to(torch.device('cpu')))
         
         # Scheduler
         lr = [x['lr'] for x in optimizer.param_groups]  # for loggers
