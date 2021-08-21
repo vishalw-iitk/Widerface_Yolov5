@@ -5,7 +5,6 @@ Usage:
 """
 
 import argparse
-from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.train import train
 import json
 import os
 import sys
