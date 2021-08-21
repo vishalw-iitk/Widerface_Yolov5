@@ -1,6 +1,6 @@
 from dts.utils.load_the_models import load_the_model
 import os
-# import torch
+import torch
 
 def fp_type_conversion(type_conversion, device, running_model_paths):
     # rel_path = '../'
