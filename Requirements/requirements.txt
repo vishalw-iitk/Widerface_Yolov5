@@ -6,3 +6,4 @@ pandas
 matplotlib
 scipy
 tqdm
+numpy
