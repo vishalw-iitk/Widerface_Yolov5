@@ -5,6 +5,7 @@ from dts.Model_performance.Inference_results_store.Quantization.Pytorch import i
 # from dts.Model_performance.Inference_results_store.Quantization.Pytorch.PTQ import PTQ_infer
 from dts.model_paths import infer_results_dictionary
 from dts.model_paths import model_defined_names
+from pathlib import Path
 
 class model_performance_Results:
     def __init__(self):
@@ -149,7 +150,12 @@ def run(opt, running_model_paths):
     # Regular model Pytroch val results
     # infer_paths['Regular']['Pytorch']['fp32']
     # model_name['Regular']['Pytorch']['fp32']
-    os.makedirs(infer_paths['Regular']['Pytorch']['fp32']) if not os.path.exists(infer_paths['Regular']['Pytorch']['fp32']) else None
+    
+    project = infer_paths['Regular']['Pytorch']['fp32'],
+    name = model_name['Regular']['Pytorch']['fp32']
+    save_dir = os.path.join(project[0], name)
+    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
+    # os.makedirs(infer_paths['Regular']['Pytorch']['fp32']) if not os.path.exists(infer_paths['Regular']['Pytorch']['fp32']) else None
     regularp = PytorchR()
     running_model_metrics['Regular']['Pytorch']['fp32'] = regularp.metrics(
         weights = running_model_paths['Regular']['Pytorch']['fp32'],
@@ -159,8 +165,8 @@ def run(opt, running_model_paths):
         data = opt.data,
         hyp = opt.hyp,
         single_cls = opt.single_cls,
-        project = infer_paths['Regular']['Pytorch']['fp32'],
-        name = model_name['Regular']['Pytorch']['fp32']
+        save_dir = Path(save_dir),
+        save_txt = opt.save_txt
     )
     print("the required...regular pyt.")
     print(running_model_metrics['Regular']['Pytorch']['fp32'])
@@ -202,7 +208,12 @@ def run(opt, running_model_paths):
     # 1) QAT
     # infer_paths['Quantization']['Pytorch']['QAT']
     # model_name['Quantization']['Pytorch']['QAT']
-    os.makedirs(infer_paths['Quantization']['Pytorch']['QAT']) if not os.path.exists(infer_paths['Quantization']['Pytorch']['QAT']) else None
+    
+    project = infer_paths['Quantization']['Pytorch']['QAT']
+    name = model_name['Quantization']['Pytorch']['QAT']
+    save_dir = os.path.join(project[0], name)
+    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
+    # os.makedirs(infer_paths['Quantization']['Pytorch']['QAT']) if not os.path.exists(infer_paths['Quantization']['Pytorch']['QAT']) else None
     qat_py = QAT_PyQ()
     running_model_metrics['Quantization']['Pytorch']['QAT'] = qat_py.metrics(
         weights = running_model_paths['Quantization']['Pytorch']['QAT'],
@@ -213,8 +224,6 @@ def run(opt, running_model_paths):
         hyp = opt.hyp,
         conf_thres = 0.001,
         iou_thres = 0.6,
-        project = infer_paths['Quantization']['Pytorch']['QAT'],
-        name = model_name['Quantization']['Pytorch']['QAT'],
         single_cls = False,
         fuse = True
     )
@@ -225,6 +234,11 @@ def run(opt, running_model_paths):
     # 2) PTQ
     # infer_paths['Quantization']['Pytorch']['PTQ']
     # model_name['Quantization']['Pytorch']['PTQ']
+    
+    project = infer_paths['Quantization']['Pytorch']['PTQ']
+    name = model_name['Quantization']['Pytorch']['PTQ']
+    save_dir = os.path.join(project[0], name)
+    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
     ptq_py = PTQ_PyQ()
     running_model_metrics['Quantization']['Pytorch']['PTQ'] = ptq_py.metrics(
         weights = running_model_paths['Quantization']['Pytorch']['PTQ'],
@@ -235,8 +249,6 @@ def run(opt, running_model_paths):
         hyp = opt.hyp,
         conf_thres = 0.001,
         iou_thres = 0.6,
-        project = infer_paths['Quantization']['Pytorch']['PTQ'],
-        name = model_name['Quantization']['Pytorch']['PTQ'],
         single_cls = False,
         fuse = False
     )
@@ -307,7 +319,12 @@ def run(opt, running_model_paths):
     '''*********************  Pruning  ***************'''
     # Pytorch
     # method 1
-    os.makedirs(infer_paths['Pruning']['Pytorch']['P1']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P1']) else None
+
+    project = infer_paths['Pruning']['Pytorch']['P1']
+    name = model_name['Pruning']['Pytorch']['P1']
+    save_dir = os.path.join(project[0], name)
+    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
+    # os.makedirs(infer_paths['Pruning']['Pytorch']['P1']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P1']) else None
     p1_reinit = P1_PyP()
     running_model_metrics['Pruning']['Pytorch']['P1'] = p1_reinit.metrics(
         weights = running_model_paths['Pruning']['Pytorch']['P1'],
@@ -317,14 +334,19 @@ def run(opt, running_model_paths):
         data = opt.data,
         hyp = opt.hyp,
         single_cls = opt.single_cls,
-        project = infer_paths['Pruning']['Pytorch']['P1'],
-        name = model_name['Pruning']['Pytorch']['P1']
+        save_dir = Path(save_dir),
+        save_txt = opt.save_txt
     )
     print("the required...regular P1")
     print(running_model_metrics['Pruning']['Pytorch']['P1'])
 
     # method 2
-    os.makedirs(infer_paths['Pruning']['Pytorch']['P2']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P2']) else None
+    
+    project = infer_paths['Pruning']['Pytorch']['P2']
+    name = model_name['Pruning']['Pytorch']['P2']
+    save_dir = os.path.join(project[0], name)
+    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
+    # os.makedirs(infer_paths['Pruning']['Pytorch']['P2']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P2']) else None
     p2_theta0 = P2_PyP()
     running_model_metrics['Pruning']['Pytorch']['P2'] = p2_theta0.metrics(
         weights = running_model_paths['Pruning']['Pytorch']['P2'],
@@ -334,13 +356,19 @@ def run(opt, running_model_paths):
         data = opt.data,
         hyp = opt.hyp,
         single_cls = opt.single_cls,
-        project = infer_paths['Pruning']['Pytorch']['P2'],
-        name = model_name['Pruning']['Pytorch']['P2']
+        save_dir = Path(save_dir),
+        save_txt = opt.save_txt
     )
     print("the required...regular P2")
     print(running_model_metrics['Pruning']['Pytorch']['P2'])
 
-    os.makedirs(infer_paths['Pruning']['Pytorch']['P3']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P3']) else None
+
+
+    project = infer_paths['Pruning']['Pytorch']['P3']
+    name = model_name['Pruning']['Pytorch']['P3']
+    save_dir = os.path.join(project[0], name)
+    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
+    # os.makedirs(infer_paths['Pruning']['Pytorch']['P3']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P3']) else None
     p3_finetune = P3_PyP()
     running_model_metrics['Pruning']['Pytorch']['P3'] = p3_finetune.metrics(
         weights = running_model_paths['Pruning']['Pytorch']['P3'],
@@ -350,13 +378,17 @@ def run(opt, running_model_paths):
         data = opt.data,
         hyp = opt.hyp,
         single_cls = opt.single_cls,
-        project = infer_paths['Pruning']['Pytorch']['P3'],
-        name = model_name['Pruning']['Pytorch']['P3']
+        save_dir = Path(save_dir),
+        save_txt = opt.save_txt
     )
     print("the required...regular P3")
     print(running_model_metrics['Pruning']['Pytorch']['P3'])
 
-    os.makedirs(infer_paths['Pruning']['Pytorch']['P4']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P4']) else None
+    project = infer_paths['Pruning']['Pytorch']['P4']
+    name = model_name['Pruning']['Pytorch']['P4']
+    save_dir = os.path.join(project[0], name)
+    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
+    # os.makedirs(infer_paths['Pruning']['Pytorch']['P4']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P4']) else None
     p4_layerprune = P4_PyP()
     running_model_metrics['Pruning']['Pytorch']['P4'] = p4_layerprune.metrics(
         weights = running_model_paths['Pruning']['Pytorch']['P4'],
@@ -366,8 +398,8 @@ def run(opt, running_model_paths):
         data = opt.data,
         hyp = opt.hyp,
         single_cls = opt.single_cls,
-        project = infer_paths['Pruning']['Pytorch']['P4'],
-        name = model_name['Pruning']['Pytorch']['P4']
+        save_dir = Path(save_dir),
+        save_txt = opt.save_txt
     )
     print("the required...regular P4")
     print(running_model_metrics['Pruning']['Pytorch']['P4'])

@@ -1,5 +1,6 @@
 import os
 import argparse
+import shutil
 
 CUDA_compatible_command = 'pip3 install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html'
 
@@ -15,12 +16,13 @@ CUDA_compatible_command = 'pip3 install torch==1.7.1+cu110 torchvision==0.8.2+cu
 
 # now we need to install the packages from yolov5 repository
 def main(opt):
-    device = opt.device
-    if opt.device == device:
-        os.system('cp ../yolov5/requirements.txt ../requirements.txt')
-    else:
-        os.system('cp gpu_requirements.txt ../requirements.txt')
-    
+    # from_P = str(os.path.join('..', 'yolov5', 'requirements.txt'))
+    shutil.copy(os.path.join('..', 'yolov5', 'requirements.txt'), os.path.join('..', 'requirements.txt'))
+    # os.system('cp ../yolov5/requirements.txt ../requirements.txt')
+    os.system('pip3 install -qr ../requirements.txt')
+    os.remove('../requirements.txt')
+    # os.system('cp Requirements/requirements.txt ../requirements.txt')
+    shutil.copy(os.path.join('Requirements', 'requirements.txt'), os.path.join('..', 'requirements.txt'))
     os.system('pip3 install -qr ../requirements.txt')
 
 def parse_opt(known=False):

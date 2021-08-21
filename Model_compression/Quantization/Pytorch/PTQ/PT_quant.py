@@ -11,9 +11,19 @@ from pathlib import Path
 from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo import val
 
 def main(opt):
-    opt.weights = str(Path(opt.weights).absolute())
-    opt.results = str(Path(opt.results).absolute())
-    os.makedirs(opt.results.replace('/best.pt', '')) if not os.path.exists(opt.results.replace('/best.pt', '')) else None
+    if '/best.pt' in opt.results:
+        opt.results = opt.results.replace('/best.pt', '')
+    elif r'\best.pt' in opt.results:
+        opt.results = opt.results.replace(r'\best.pt', '')
+    
+    weights = Path(opt.weights)
+    store_result = Path(opt.results)
+    # opt.results = opt.results.replace('/best.pt', '')
+    print("print opt results", opt.results)
+    # w = Path(opt.results)
+
+    store_result.mkdir(parents=True, exist_ok=True)
+    # if not os.path.exists(opt.results.replace('/best.pt', '')) else None
     # cfg = "models/yolov5s.yaml"
     cfg = opt.cfg
     # hyp = 'data/hyps/hyp.scratch.yaml'
@@ -38,7 +48,7 @@ def main(opt):
     model = Model(cfg = cfg , ch=3, nc=nc, anchors=hyp.get('anchors')).to(device) ###creating architecture instance
     # model must be set to eval mode for static quantization logic to work
     model.eval()
-    ckpt = torch.load(opt.weights, map_location=device)  # load checkpoint
+    ckpt = torch.load(weights, map_location=device)  # load checkpoint
     csd = ckpt['model'].float().state_dict()  # checkpoint state_dict as FP32
     csd = intersect_dicts(csd, model.state_dict())  # intersect
     model.load_state_dict(csd, strict=False) ##load checkpoints into created architecture
@@ -81,7 +91,10 @@ def main(opt):
     ckpt = {
         'model' : model_int8.state_dict()
     }
-    torch.save(ckpt, os.path.join(opt.results))
+
+    
+    best = store_result / 'best.pt'
+    torch.save(ckpt, best)
     ###validation
 # # =======================================================================================
     # batch_size = 4

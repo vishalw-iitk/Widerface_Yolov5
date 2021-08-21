@@ -112,8 +112,8 @@ def get_mAP_and_fitness_score(
         data = 'data.yaml',
         hyp = 'data/hyps/hyp.scratch.yaml',
         single_cls = False,
-        project = None,
-        name = None,
+        save_dir = Path(''),
+        save_txt = True,
         fuse = True
     ):
 
@@ -174,15 +174,17 @@ def get_mAP_and_fitness_score(
                                         cache = True,
                                         prefix=colorstr('val: '))[0]
 
+    # save_dir = os.path.join(project, name)
     results, class_wise_maps, t = val.run(data_dict,
                                 batch_size=batch_size // WORLD_SIZE * 2,
                                 imgsz=imgsz,
                                 model=model,
                                 # single_cls=single_cls,
                                 dataloader=val_loader,
-                                project=project,
-                                name = name,
-                                # save_dir=Path(save_dir),
+                                # project=project,
+                                # name = name,
+                                save_dir=save_dir,
+                                save_txt = save_txt,
                                 # conf_thres = 0.0001,
                                 # iou_thres = 0.00001,
                                 # save_json=is_coco and final_epoch,

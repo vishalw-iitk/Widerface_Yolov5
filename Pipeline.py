@@ -8,9 +8,9 @@ from dts.model_paths import train_results_dictionary
 from dts.model_paths import model_defined_names
 from dts.model_paths import prune_with_pre_trained_only
 # from dts.Data_preparation import df_percent
-from dts.Data_preparation import data_prep_yolo
 
-from dts.Requirements import requirements
+
+
 # from dts.model_paths import  update_the_paths
 
 
@@ -19,7 +19,6 @@ from dts.Requirements import requirements
 from dts.model_paths import frameworks
 # from dts.Model_compression.Pruning import pruning
 from dts.model_paths import update_to_running_paths_with_pretrianed
-from dts.Model_conversion.fp_type_conversion import fp_type_conversion
 
 
 import argparse
@@ -32,10 +31,12 @@ def main(opt):
         clone_updated_yolov5 = opt.clone_updated_yolov5,
     )
 
+    from dts.Requirements import requirements
     requirements.run(
         device = opt.device
     )
 
+    from dts.Data_preparation import data_prep_yolo
     data_prep_yolo.run(
         raw_dataset_path = opt.raw_dataset_path,
         partial_dataset = opt.partial_dataset,
@@ -51,6 +52,8 @@ def main(opt):
     from dts.Model_compression.Quantization import quantization
     from dts.Model_compression.Pruning import pruning
     from dts.Model_performance import inference_results, plot_the_performance
+    from dts.Model_conversion.fp_type_conversion import fp_type_conversion
+
     running_model_paths = running_model_dictionary()
     pre_trained_model_paths = pre_trained_model_dictionary()
     framework_path = frameworks(opt.skip_training, running_model_paths, pre_trained_model_paths)
@@ -102,6 +105,7 @@ def main(opt):
     
     # Not to use fp16 path onwards
     # Use fp32 path
+    # import onnx
     model_export.run(
         model_type_for_export = model_names['Regular']['Pytorch']['fp32'],
         framework_path = framework_path,
@@ -219,6 +223,7 @@ def parse_opt(known=False):
     parser.add_argument('--adam', action='store_true', help='use torch.optim.Adam() optimizer') 
     parser.add_argument('--img-size', type=int, default = 416, help = 'Image size suitable for feeding to the model')
     parser.add_argument('--single-cls', action='store_true', help='treat as single-class dataset')
+    parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
 
     parser.add_argument('--cfg', type=str, default='../yolov5/models/yolov5s.yaml', help='model.yaml path')
     parser.add_argument('--data', type=str, default='data.yaml', help='dataset.yaml path')

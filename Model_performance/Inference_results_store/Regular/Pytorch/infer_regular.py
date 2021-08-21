@@ -3,6 +3,7 @@ from yolov5.utils.loss import ComputeLoss
 from yolov5.utils.datasets import create_dataloader
 from yolov5.utils.general import colorstr
 from yolov5 import val
+from pathlib import Path
 
 import os
 import torch
@@ -17,8 +18,8 @@ def run(
         data = 'data.yaml',
         hyp = 'data/hyps/hyp.scratch.yaml',
         single_cls = False,
-        project = None,
-        name = None
+        save_dir = Path(''),
+        save_txt = True
     ):
 
     
@@ -86,15 +87,17 @@ def run(
                                         cache = True,
                                         prefix=colorstr('val: '))[0]
 
+    
     results, class_wise_maps, t = val.run(data_dict,
                                 batch_size=batch_size // WORLD_SIZE * 2,
                                 imgsz=imgsz,
                                 model=model,
                                 # single_cls=single_cls,
                                 dataloader=val_loader,
-                                project=project,
-                                name = name,
-                                # save_dir=Path(save_dir),
+                                # project=project,
+                                # name = name,
+                                save_dir=save_dir,
+                                save_txt = save_txt,
                                 # conf_thres = 0.0001,
                                 # iou_thres = 0.00001,
                                 # save_json=is_coco and final_epoch,

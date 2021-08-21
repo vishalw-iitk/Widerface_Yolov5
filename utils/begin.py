@@ -3,6 +3,8 @@ import os
 import stat
 import argparse
 from os import path
+import shutil
+from distutils.dir_util import copy_tree
 
 # from dts.model_paths import running_model_dictionary
 
@@ -19,8 +21,9 @@ def remove_access_denied_folders(folder):
 
 
 def main(opt):
+    print("having access")
     yolov5_repo_name = opt.yolov5_repo_name
-    cloned_yolov5_path = '../'+yolov5_repo_name
+    cloned_yolov5_path = os.path.join('..', yolov5_repo_name)
     worked_on_yolov5_path = os.path.join('Worked_on_yolov5', yolov5_repo_name)
     results_folder_path = opt.results_folder_path
     clone_updated_yolov5 = opt.clone_updated_yolov5
@@ -36,9 +39,11 @@ def main(opt):
         os.system('git clone https://github.com/ultralytics/yolov5.git')
         # del running_model_paths['Regular']['Pytorch']['fp32']
         # del running_model_paths['Regular']['Tflite']['fp32']
-        os.system('mv '+cloned_yolov5_path[3:]+' ../')
+        # os.system('mv '+cloned_yolov5_path[3:]+' ../')
+        shutil.move(cloned_yolov5_path[3:], os.path.join('..', 'yolov5'))
     else:
-        os.system('cp -r '+worked_on_yolov5_path+' ../')
+        # os.system('cp -r '+worked_on_yolov5_path+' ../')
+        copy_tree(worked_on_yolov5_path, os.path.join('..', 'yolov5'))
 
     # return running_model_paths
 

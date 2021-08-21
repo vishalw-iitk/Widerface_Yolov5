@@ -6,11 +6,11 @@ import sys
 
 # from dts.Model_compression.model_conversion.model_paths import framework_path
 
-import torch
+# import torch
 import onnx
 import os
 
-rel_path = '../..'
+# rel_path = '../..'
 
 class load_the_model:
     def __init__(self, device_name):
