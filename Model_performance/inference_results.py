@@ -225,6 +225,7 @@ def run(opt, running_model_paths):
         conf_thres = 0.001,
         iou_thres = 0.6,
         single_cls = False,
+        save_dir = save_dir,
         fuse = True
     )
     print("the required...QAT.")
@@ -250,6 +251,7 @@ def run(opt, running_model_paths):
         conf_thres = 0.001,
         iou_thres = 0.6,
         single_cls = False,
+        save_dir = save_dir,
         fuse = False
     )
     print("the required....PTQ")
