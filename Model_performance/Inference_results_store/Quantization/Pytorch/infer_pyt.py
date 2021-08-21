@@ -243,8 +243,8 @@ def main(opt):
             data = opt.data,
             hyp = opt.hyp,
             single_cls = opt.single_cls,
-            project = opt.project,
-            name = opt.name,
+            save_dir = opt.save_dir,
+            save_txt = opt.save_txt,
             fuse = opt.fuse
         )
     mp, mr, map50, map, loss, = [results[i] for i in range(0,5)] 
