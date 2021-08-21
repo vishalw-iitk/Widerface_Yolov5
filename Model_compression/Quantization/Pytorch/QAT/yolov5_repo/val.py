@@ -5,6 +5,7 @@ Usage:
 """
 
 import argparse
+from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.train import train
 import json
 import os
 import sys
@@ -173,6 +174,9 @@ def run(data,
 
         # Compute loss
         if compute_loss:
+            print("in val", train_out.is_cuda, targets.is_cuda)
+            if train_out.is_cuda == False and targets.is_cuda == True:
+                targets = targets.cpu()
             loss += compute_loss([x.float() for x in train_out], targets)[1][:3]  # box, obj, cls
 
         # Run NMS
