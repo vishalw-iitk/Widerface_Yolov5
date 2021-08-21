@@ -228,7 +228,8 @@ def run(opt, running_model_paths):
         iou_thres = 0.6,
         single_cls = False,
         save_dir = save_dir,
-        fuse = True
+        fuse = True,
+        save_txt = opt.save_txt
     )
     print("the required...QAT.")
     print(running_model_metrics['Quantization']['Pytorch']['QAT'])
@@ -255,7 +256,8 @@ def run(opt, running_model_paths):
         iou_thres = 0.6,
         single_cls = False,
         save_dir = save_dir,
-        fuse = False
+        fuse = False,
+        save_txt = opt.save_txt
     )
     print("the required....PTQ")
     print(running_model_metrics['Quantization']['Pytorch']['PTQ'])
