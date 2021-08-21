@@ -433,7 +433,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                     tempm = deepcopy(ema.qat_ema)
                     tempm = tempm.to(dev_cpu)
                     temp_quantized_model = torch.quantization.convert(tempm)
-                    
+                    temp_quantized_model = temp_quantized_model.to(dev_cpu)
                     # temp_quantized_model = torch.quantization.convert(deepcopy(ema.qat_ema).to(torch.device('cpu')))
                     # print(temp_quantized_model)
                     print("in the loop quant")
