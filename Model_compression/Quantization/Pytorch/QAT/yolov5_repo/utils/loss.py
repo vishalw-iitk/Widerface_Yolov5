@@ -95,7 +95,7 @@ class ComputeLoss:
         # device = torch.device('cpu')
         # device = torch.device('cpu')
         h = model.hyp  # hyperparameters
-        print("type(h", type(h))
+        # print("type(h", type(h))
         # print("still loss func", device, model.device)
 
         # Define criteria
@@ -199,7 +199,7 @@ class ComputeLoss:
             t = targets * gain
             if nt:
                 # Matches
-                print("in loss.py", t[:, :, 4:6].is_cuda, t.is_cuda, anchors[:, None].is_cuda)
+                # print("in loss.py", t[:, :, 4:6].is_cuda, t.is_cuda, anchors[:, None].is_cuda)
 
                 if anchors[:, None].is_cuda == True and t.is_cuda == False:
                     anchors = anchors.cpu()

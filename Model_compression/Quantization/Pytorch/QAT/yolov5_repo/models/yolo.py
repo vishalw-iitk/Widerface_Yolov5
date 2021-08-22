@@ -51,8 +51,8 @@ class Detect(nn.Module):
 
     # edited
     def forward(self, x):
-        print("number of layers", self.nl)
-        print("is training", self.training)
+        # print("number of layers", self.nl)
+        # print("is training", self.training)
         # x = x.copy()  # for profiling
         z = []  # inference output
         for i in range(self.nl):
@@ -63,10 +63,10 @@ class Detect(nn.Module):
 
             if not self.training:  # inference
             
-                print("check device", self.stride[i].is_cuda, self.grid[i].is_cuda, self.anchor_grid[i].is_cuda)
+                # print("check device", self.stride[i].is_cuda, self.grid[i].is_cuda, self.anchor_grid[i].is_cuda)
                 if self.grid[i].is_cuda == True and self.anchor_grid[i].is_cuda == False:
                     self.grid[i] = self.grid[i].cpu()
-                print("check device11", self.stride[i].is_cuda, self.grid[i].is_cuda, self.anchor_grid[i].is_cuda)
+                # print("check device11", self.stride[i].is_cuda, self.grid[i].is_cuda, self.anchor_grid[i].is_cuda)
 
                 if self.grid[i].shape[2:4] != x[i].shape[2:4] or self.onnx_dynamic:
                     self.grid[i] = self._make_grid(nx, ny).to(x[i].device)
