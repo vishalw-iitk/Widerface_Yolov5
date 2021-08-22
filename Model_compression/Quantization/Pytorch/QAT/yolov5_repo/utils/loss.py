@@ -90,9 +90,11 @@ class ComputeLoss:
     def __init__(self, model, autobalance=False):
         super(ComputeLoss, self).__init__()
         self.sort_obj_iou = False
-        # device = next(model.parameters()).device  # get model device
-        device = torch.device('cpu')
+        device = next(model.parameters()).device  # get model device
+        # device = torch.device('cpu')
         h = model.hyp  # hyperparameters
+        print("type(h", type(h))
+        print("still loss func", device.is_cuda, h.is_cuda)
 
         # Define criteria
         BCEcls = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([h['cls_pw']], device=device))
