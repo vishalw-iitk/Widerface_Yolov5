@@ -90,7 +90,8 @@ class ComputeLoss:
     def __init__(self, model, autobalance=False):
         super(ComputeLoss, self).__init__()
         self.sort_obj_iou = False
-        device = next(model.parameters()).device  # get model device
+        # device = next(model.parameters()).device  # get model device
+        device = torch.device('cpu')
         h = model.hyp  # hyperparameters
 
         # Define criteria
@@ -153,9 +154,9 @@ class ComputeLoss:
                 # with open('targets.txt', 'a') as file:
                 #     [file.write('%11.5g ' * 4 % tuple(x) + '\n') for x in torch.cat((txy[i], twh[i]), 1)]
 
-            print("in new loss", pi.is_cuda, tobj.is_cuda)
-            if pi.is_cuda == True and tobj.is_cuda == False:
-                pi = pi.cpu()
+            # print("in new loss", pi.is_cuda, tobj.is_cuda)
+            # if pi.is_cuda == True and tobj.is_cuda == False:
+                # pi = pi.cpu()
             
             obji = self.BCEobj(pi[..., 4], tobj)
             lobj += obji * self.balance[i]  # obj loss
