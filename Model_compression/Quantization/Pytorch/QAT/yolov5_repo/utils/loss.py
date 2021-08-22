@@ -91,6 +91,7 @@ class ComputeLoss:
         super(ComputeLoss, self).__init__()
         self.sort_obj_iou = False
         device = next(model.parameters()).device  # get model device
+        device = torch.device('cpu')
         # device = torch.device('cpu')
         h = model.hyp  # hyperparameters
         print("type(h", type(h))
