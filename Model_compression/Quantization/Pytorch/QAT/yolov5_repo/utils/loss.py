@@ -94,7 +94,7 @@ class ComputeLoss:
         # device = torch.device('cpu')
         h = model.hyp  # hyperparameters
         print("type(h", type(h))
-        print("still loss func", device, h['cls_pw'].is_cuda)
+        print("still loss func", device, model.device)
 
         # Define criteria
         BCEcls = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([h['cls_pw']], device=device))
