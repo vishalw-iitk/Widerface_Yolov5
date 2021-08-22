@@ -104,8 +104,8 @@ def run(data,
     # Initialize/load model and set device
     training = model is not None
     if training:  # called by train.py
-        device = torch.device('cpu')
-        # device = next(model.parameters()).device  # get model device
+        # device = torch.device('cpu')
+        device = next(model.parameters()).device  # get model device
 
     else:  # called directly
         device = select_device(device, batch_size=batch_size)
