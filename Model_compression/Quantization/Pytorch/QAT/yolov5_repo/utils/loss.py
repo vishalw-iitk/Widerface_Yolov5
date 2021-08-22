@@ -89,10 +89,10 @@ class ComputeLoss:
     # Compute losses
     def __init__(self, model, autobalance=False):
         super(ComputeLoss, self).__init__()
-        model = model.to(torch.device('cpu'))
+        # model = model.to(torch.device('cpu'))
         self.sort_obj_iou = False
         device = next(model.parameters()).device  # get model device
-        device = torch.device('cpu')
+        # device = torch.device('cpu')
         # device = torch.device('cpu')
         h = model.hyp  # hyperparameters
         print("type(h", type(h))
