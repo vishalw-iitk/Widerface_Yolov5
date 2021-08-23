@@ -16,9 +16,6 @@ import torch
 import yaml
 from tqdm import tqdm
 
-# FILE = Path(__file__).absolute()
-#sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
-# sys.path.append('../yolov5/')
 from yolov5.models.experimental import attempt_load
 from yolov5.utils.datasets import create_dataloader
 from yolov5.utils.general import coco80_to_coco91_class, check_dataset, check_file, check_img_size, check_requirements, \
@@ -134,8 +131,6 @@ def run(data,
             # Get input and output details
             input_details = interpreter.get_input_details()
             output_details = interpreter.get_output_details()
-            #print("input_details:",input_details)
-            #print("output_details:",output_details)
         # Multi-GPU disabled, incompatible with .half() https://github.com/ultralytics/yolov5/issues/99
         # if device.type != 'cpu' and torch.cuda.device_count() > 1:
         #     model = nn.DataParallel(model)
@@ -169,7 +164,6 @@ def run(data,
 
     seen = 0
     confusion_matrix = ConfusionMatrix(nc=nc)
-    #names = {k: v for k, v in enumerate(model.names if hasattr(model, 'names') else model.module.names)}
     class_map = coco80_to_coco91_class() if is_coco else list(range(1000))
     s = ('%20s' + '%11s' * 6) % ('Class', 'Images', 'Labels', 'P', 'R', 'mAP@.5', 'mAP@.5:.95')
     p, r, f1, mp, mr, map50, map, t0, t1, t2 = 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.
@@ -192,16 +186,19 @@ def run(data,
         elif suffix=='.tflite':
             input_data = np.array(img)
             if tfl_int8:
+                #Transform input data to format required by integer tflite model
                 scale, zero_point = input_details[0]['quantization']
                 input_data = input_data / scale + zero_point
                 input_data = input_data.astype(input_details[0]['dtype'])
+            #set input data at input node index
             interpreter.set_tensor(input_details[0]['index'], input_data)
             t = time_sync()
             interpreter.invoke()
             t1 += time_sync() - t
+            #get output data from output node index
             pred = interpreter.get_tensor(output_details[0]['index'])
             if tfl_int8:
-                #certain operations
+                #Transform back predicted data
                 scale, zero_point = output_details[0]['quantization']
                 pred = pred.astype(np.float32)
                 pred = (pred - zero_point) * scale
@@ -328,25 +325,11 @@ def run(data,
     maps = np.zeros(nc) + map
     for i, c in enumerate(ap_class):
         maps[c] = ap[i]
-    #return (mp, mr, map50, map, *(loss.cpu() / len(dataloader)).tolist()), maps, t
     from yolov5.utils.metrics import fitness
     fi = fitness(np.array([mp, mr, map50, map]).reshape(1, -1))
     size = os.stat(weights).st_size/(1024.0*1024.0)
-    #gflops calculation
-    if suffix=='.pt':
-        try:  # FLOPs
-            from thop import profile
-            from copy import deepcopy
-            stride = max(int(model.stride.max()), 32) if hasattr(model, 'stride') else 32
-            img = torch.zeros((1, model.yaml.get('ch', 3), stride, stride), device=next(model.parameters()).device)  # input
-            flops = profile(deepcopy(model), inputs=(img,), verbose=False)[0] / 1E9 * 2  # stride GFLOPs
-            imgsz = imgsz if isinstance(imgsz, list) else [imgsz, imgsz]  # expand if int/float
-            gflops = (flops * imgsz[0] / stride * imgsz[1] / stride) # GFLOPs
-        except (ImportError, Exception):
-            gflops = None
-    elif suffix=='.tflite':
-        gflops = None
-    return {'mAP50': map50, 'mAP' : map, 'fitness' : fi[0], 'size': size, 'latency' : t, 'GFLOPS' : gflops} #maps just to check how different from map50, map
+    gflops = None
+    return {'mAP50': map50, 'mAP' : map, 'fitness' : fi[0], 'size': size, 'latency' : t, 'GFLOPS' : gflops}
 
 
 def parse_opt():

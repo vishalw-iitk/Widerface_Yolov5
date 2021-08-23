@@ -1,18 +1,14 @@
 import sys
-# import onnx
 
 from cv2 import data
-# sys.path.append("../../..")
 
 
 from dts.utils.load_the_models import load_the_model
 from dts.model_paths import running_model_dictionary
 from dts.model_paths import pre_trained_model_dictionary
-# from yolov5.models.yolo import Model
 from yolov5 import export
 from pathlib import Path
 
-# from dts.Model_compression.model_conversion import get_modelutils
 from dts.Model_conversion import onnx_export
 from yolov5.utils.datasets import LoadImages
 
@@ -24,7 +20,6 @@ import argparse
 import numpy as np
 import tensorflow as tf
 
-# rel_path = '../..'
 
 
  
@@ -35,9 +30,6 @@ class transform_the_model:
         self.model_names = model_names
 
     def pytorch_to_onnx(self, framework_from, model_type, pytorch_name_user_defined, onnx_name_user_defined,  framework_to):
-        # pass
-        # self.model = None
-        # onnx_model_storage_path = self.framework_path[framework_to][model_type]
         if model_type == self.model_names['Regular']['Pytorch']['fp32']:
             export.run(
                 weights = os.path.join(self.framework_path[framework_from][model_type]),
@@ -137,14 +129,12 @@ class transform_the_model:
 
 def main(opt):
     model_type = opt.model_type_for_export
-    # model_type = 'Quantized'
-    # model_type = 'Pruned'
 
     transform = transform_the_model(opt.framework_path, opt.model_names)
     transform.pytorch_to_onnx(framework_from = 'Pytorch', model_type = model_type, \
         pytorch_name_user_defined = 'Pytorch '+model_type+ ' model', \
         onnx_name_user_defined = 'Onnx '+model_type, framework_to = 'ONNX')
-    # transform.pytorch_to_onnx(os.path.join(rel_path, pytorch_model_path))
+
     print("********************************")
     print(transform.statement)
     print("********************************")
@@ -159,7 +149,7 @@ def main(opt):
 
 
     def representative_dataset_gen():
-        # Representative dataset for use with converter.representative_dataset
+        # Representative dataset for use with converter.representative_dataset(int8 quantization)
         n = 0
         for path, img, im0s, vid_cap in dataset:
             # Get sample input data as a numpy array in a method of your choosing.
@@ -177,9 +167,7 @@ def main(opt):
             return opt.ncalib, LoadImages(opt.repr_images, img_size=opt.img), representative_dataset_gen
         except:
             return None, None, None
-            # return 100, LoadImages('../../ARRANGED_DATASET/images/validation/', img_size=[640, 640]), representative_dataset_gen
     ncalib, dataset, representative_dataset_gen = repr_im()
-    # print(ncalib, dataset, representative_dataset_gen)
     
 
     transform.tfpbconverter_to_tflite(framework_from = 'tf_pb', model_type = model_type, \
@@ -198,11 +186,9 @@ def parse_opt(known=False):
     running_model_paths = running_model_dictionary()
     pre_trained_model_paths = pre_trained_model_dictionary()
     opt.framework_path = frameworks(opt.skip_training, running_model_paths, pre_trained_model_paths)
-    # opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 
 def run(**kwargs):
-    # Usage: import train; train.run(imgsz=320, weights='yolov5m.pt')
     opt = parse_opt(True)
     for k, v in kwargs.items():
         setattr(opt, k, v)
