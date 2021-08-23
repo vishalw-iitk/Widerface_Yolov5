@@ -89,9 +89,14 @@ class ComputeLoss:
     # Compute losses
     def __init__(self, model, autobalance=False):
         super(ComputeLoss, self).__init__()
+        # model = model.to(torch.device('cpu'))
         self.sort_obj_iou = False
         device = next(model.parameters()).device  # get model device
+        # device = torch.device('cpu')
+        # device = torch.device('cpu')
         h = model.hyp  # hyperparameters
+        # print("type(h", type(h))
+        # print("still loss func", device, model.device)
 
         # Define criteria
         BCEcls = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([h['cls_pw']], device=device))
@@ -153,6 +158,10 @@ class ComputeLoss:
                 # with open('targets.txt', 'a') as file:
                 #     [file.write('%11.5g ' * 4 % tuple(x) + '\n') for x in torch.cat((txy[i], twh[i]), 1)]
 
+            # print("in new loss", pi[...,4].is_cuda, tobj.is_cuda)
+            # if pi[...,4].is_cuda == True and tobj.is_cuda == False:
+                # pi[...,4] = pi[...,4].cpu()
+            
             obji = self.BCEobj(pi[..., 4], tobj)
             lobj += obji * self.balance[i]  # obj loss
             if self.autobalance:
@@ -190,6 +199,12 @@ class ComputeLoss:
             t = targets * gain
             if nt:
                 # Matches
+                # print("in loss.py", t[:, :, 4:6].is_cuda, t.is_cuda, anchors[:, None].is_cuda)
+
+                if anchors[:, None].is_cuda == True and t.is_cuda == False:
+                    anchors = anchors.cpu()
+
+                
                 r = t[:, :, 4:6] / anchors[:, None]  # wh ratio
                 j = torch.max(r, 1. / r).max(2)[0] < self.hyp['anchor_t']  # compare
                 # j = wh_iou(anchors, t[:, 4:6]) > model.hyp['iou_t']  # iou(3,n)=wh_iou(anchors(3,2), gwh(n,2))

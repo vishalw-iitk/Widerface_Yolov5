@@ -1,4 +1,5 @@
 import sys
+# import onnx
 
 from cv2 import data
 # sys.path.append("../../..")
@@ -9,6 +10,7 @@ from dts.model_paths import running_model_dictionary
 from dts.model_paths import pre_trained_model_dictionary
 # from yolov5.models.yolo import Model
 from yolov5 import export
+from pathlib import Path
 
 # from dts.Model_compression.model_conversion import get_modelutils
 from dts.Model_conversion import onnx_export
@@ -111,8 +113,17 @@ class transform_the_model:
             converter.experimental_new_quantizer = False
 
         tflite_model = converter.convert()
-        if not os.path.exists(tflite_model_storage_path.replace('/best.tflite', '')):
-            os.makedirs(tflite_model_storage_path.replace('/best.tflite', ''))
+        if '/best.tflite' in tflite_model_storage_path:
+            tflite_model_storage_path = tflite_model_storage_path.replace('/best.tflite', '')
+        elif r'\best.tflite' in tflite_model_storage_path:
+            tflite_model_storage_path = tflite_model_storage_path.replace(r'\best.tflite', '')
+        
+        if not os.path.exists(tflite_model_storage_path):
+            os.makedirs(tflite_model_storage_path)
+        
+        tflite_model_storage_path = Path(tflite_model_storage_path)
+        tflite_model_storage_path = tflite_model_storage_path / 'best.tflite'
+
         open(tflite_model_storage_path, "wb").write(tflite_model)
         self.statement = tf_pb_name_user_defined + " has been transformed to " + tflite_name_user_defined
 
