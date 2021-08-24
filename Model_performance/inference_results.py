@@ -155,7 +155,7 @@ def run(opt, running_model_paths):
     name = model_name['Regular']['Pytorch']['fp32']
     save_dir = os.path.join(project[0], name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-    (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    (Path(save_dir) / 'labels' if opt.save_txt else Path(save_dir)).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Regular']['Pytorch']['fp32']) if not os.path.exists(infer_paths['Regular']['Pytorch']['fp32']) else None
     regularp = PytorchR()
     running_model_metrics['Regular']['Pytorch']['fp32'] = regularp.metrics(
@@ -215,7 +215,7 @@ def run(opt, running_model_paths):
     # print("project", project, type(project), project[0])
     save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-    (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    (Path(save_dir) / 'labels' if opt.save_txt else Path(save_dir)).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Quantization']['Pytorch']['QAT']) if not os.path.exists(infer_paths['Quantization']['Pytorch']['QAT']) else None
     qat_py = QAT_PyQ()
     running_model_metrics['Quantization']['Pytorch']['QAT'] = qat_py.metrics(
@@ -223,6 +223,7 @@ def run(opt, running_model_paths):
         cfg = opt.cfg,
         device = 'cpu',
         img_size = opt.img_size,
+        batch_size_inferquant = opt.batch_size_inferquant,
         data = opt.data,
         hyp = opt.hyp,
         conf_thres = 0.001,
@@ -245,13 +246,14 @@ def run(opt, running_model_paths):
     # print("project", project, type(project), project[0])
     save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-    (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    (Path(save_dir) / 'labels' if opt.save_txt else Path(save_dir)).mkdir(parents=True, exist_ok=True)  # make dir
     ptq_py = PTQ_PyQ()
     running_model_metrics['Quantization']['Pytorch']['PTQ'] = ptq_py.metrics(
         weights = running_model_paths['Quantization']['Pytorch']['PTQ'],
         cfg = opt.cfg,
         device = 'cpu',
         img_size = opt.img_size,
+        batch_size_inferquant = opt.batch_size_inferquant,
         data = opt.data,
         hyp = opt.hyp,
         conf_thres = 0.001,
@@ -334,7 +336,7 @@ def run(opt, running_model_paths):
     # print("project", project, type(project), project[0])
     save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-    (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    (Path(save_dir) / 'labels' if opt.save_txt else Path(save_dir)).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Pruning']['Pytorch']['P1']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P1']) else None
     p1_reinit = P1_PyP()
     running_model_metrics['Pruning']['Pytorch']['P1'] = p1_reinit.metrics(
@@ -357,7 +359,7 @@ def run(opt, running_model_paths):
     name = model_name['Pruning']['Pytorch']['P2']
     save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-    (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    (Path(save_dir) / 'labels' if opt.save_txt else Path(save_dir)).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Pruning']['Pytorch']['P2']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P2']) else None
     p2_theta0 = P2_PyP()
     running_model_metrics['Pruning']['Pytorch']['P2'] = p2_theta0.metrics(
@@ -380,7 +382,7 @@ def run(opt, running_model_paths):
     name = model_name['Pruning']['Pytorch']['P3']
     save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-    (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    (Path(save_dir) / 'labels' if opt.save_txt else Path(save_dir)).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Pruning']['Pytorch']['P3']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P3']) else None
     p3_finetune = P3_PyP()
     running_model_metrics['Pruning']['Pytorch']['P3'] = p3_finetune.metrics(
@@ -401,7 +403,7 @@ def run(opt, running_model_paths):
     name = model_name['Pruning']['Pytorch']['P4']
     save_dir = os.path.join(project, name)
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-    (Path(save_dir) / 'labels' if opt.save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    (Path(save_dir) / 'labels' if opt.save_txt else Path(save_dir)).mkdir(parents=True, exist_ok=True)  # make dir
     # os.makedirs(infer_paths['Pruning']['Pytorch']['P4']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P4']) else None
     p4_layerprune = P4_PyP()
     running_model_metrics['Pruning']['Pytorch']['P4'] = p4_layerprune.metrics(

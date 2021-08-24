@@ -7,12 +7,11 @@ from PIL import Image
 from tqdm import tqdm
 import glob
 import os
-# import sys
 
-DATA_PATH = '../RAW_DATASET'
+DATA_PATH = '../RAW_DATASET' # Relative path for RAW dataset
 
 
-imgsize = 416
+imgsize = 416 # delete this line
 
 
 
@@ -90,6 +89,7 @@ class images_labels_bbox_as_grouped:
 
 
 class three_dataframe_preparation:
+    '''To get all the 3 required dataframes that too based on percentage of dataset which is required.'''
     def __init__(self, data_type_train, train_frac, data_type_validation, validation_frac, data_type_test, test_frac):
         self.data_type_train = data_type_train
         self.train_frac = train_frac
@@ -109,7 +109,6 @@ class three_dataframe_preparation:
         folders_path_images.wider_face_way()
         df1 = dframe_imagepaths(folders_path_images.folders_path)
         df1.images_based_df()
-        # df1_sample = df1.df.sample(frac=DF_FRAC)
 
         if dtype == 'test':
             df_grouped = images_labels_bbox_as_grouped(df1.df, frac)
@@ -122,8 +121,6 @@ class three_dataframe_preparation:
             folders_path_labels.wider_face_way()
             df2 = dframe_labels_train_and_val(folders_path_labels.folders_path)
             df2.labels_based_df_for_matfiles()
-            # df2_sample = df2.df.sample(frac=DF_FRAC)
-
 
             img_lbl_df = images_labels_merged_df(df1.df, df2.df)
             img_lbl_df.merge_df()
@@ -131,10 +128,3 @@ class three_dataframe_preparation:
             df_grouped = images_labels_bbox_as_grouped(img_lbl_df.df_merged, frac)
             df_grouped.grouping()
             return df_grouped.df_required_sample
-
-
-
-
-# def main(opt):
-#     gt_overlay(**vars(opt))
-    

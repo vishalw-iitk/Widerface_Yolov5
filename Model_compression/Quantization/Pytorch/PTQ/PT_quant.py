@@ -76,15 +76,18 @@ def main(opt):
 
     # print(model_fp32_prepared)
     dataset = LoadImages(data_dict['train'], img_size=416, stride=32)
+    num_of_calib_images = 200
+    temp = 0
     for path, img, im0s, vid_cap in dataset:
+        temp += 1
         img = torch.from_numpy(img).to(device)
         img = img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
-        # model_fp32_prepared(img)
-        # calibrate
         model_fp32_prepared(img)
+        if temp > num_of_calib_images:
+            break
         
 
     model_int8 = torch.quantization.convert(model_fp32_prepared)

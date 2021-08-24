@@ -121,7 +121,7 @@ def main(opt):
         num_iterations = opt.prune_iterations,
         running_model_paths = running_model_paths,
         pre_trained_model_paths = pre_trained_model_paths,
-        weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
+        weights = running_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
         # weights = opt.weights,
         retrain_on_pre_trained = opt.retrain_on_pre_trained,
         prune_retrain_epochs = opt.prune_retrain_epochs,
@@ -143,9 +143,11 @@ def main(opt):
         skip_QAT_training = opt.skip_QAT_training,
         running_model_paths = running_model_paths,
         framework_path = framework_path,
-        weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
+        # weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
+        weights = running_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
         # weights = running_model_paths['Regular']['Pytorch']['fp32'],
         repr_images = opt.repr_images,
+        batch_size_QAT = opt.batch_size_QAT,
         img = opt.img,
         ncalib = opt.ncalib,
         cfg = opt.cfg,
@@ -218,7 +220,9 @@ def parse_opt(known=False):
     parser.add_argument('--percent-validationdata', type=int, default=100, help=' percent_of_the_validation_data_required')
     parser.add_argument('--percent-testdata', type=int, default=100, help='percent_of_the_test_data_required')
 
-    parser.add_argument('--batch-size', type=int, default=128, help='')
+    parser.add_argument('--batch-size', type=int, default=128, help='training batch size')
+    parser.add_argument('--batch-size-QAT', type=int, default=64, help='training batch size for Quantize aware training')
+
     parser.add_argument('--epochs', type=int, default=300, help='')   
     parser.add_argument('--adam', action='store_true', help='use torch.optim.Adam() optimizer') 
     parser.add_argument('--img-size', type=int, default = 416, help = 'Image size suitable for feeding to the model')
@@ -235,6 +239,8 @@ def parse_opt(known=False):
     parser.add_argument('--qat-project', default='../runs_QAT/train', help='save to project/name')
     parser.add_argument('--qat-name', default='exp', help='save to project/name')
     parser.add_argument('--QAT-epochs', type=int, default=50, help='')
+    parser.add_argument('--batch-size-inferquant', type=int, default=32, help='batch size for quantization inference')
+
     parser.add_argument('--repr-images', type=str, default='../ARRANGED_DATASET/images/validation/', help='path of representative dataset')
     parser.add_argument('--img', nargs='+', type=int, default=[640, 640], help='image size')  # height, width
     parser.add_argument('--ncalib', type=int, default=100, help='number of calibration images')

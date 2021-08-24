@@ -1,11 +1,5 @@
 from dts.Data_preparation.df_percent import three_dataframe_preparation as  all_df
-from dts.utils.begin import remove_access_denied_folders
-# from df_percent import images_folder_path
-# from df_percent import dframe_imagepaths
-# from df_percent import labels_folder_path
-# from df_percent import dframe_labels_train_and_val
-# from df_percent import images_labels_merged_df
-# from df_percent import images_labels_bbox_as_grouped 
+from dts.utils.begin import remove_access_denied_folders 
 
 #Library imports
 import numpy as np
@@ -14,18 +8,9 @@ import matplotlib.pyplot as plt
 from scipy.io import loadmat
 from PIL import Image
 from tqdm import tqdm
-# import glob
 import os
 import sys
 import argparse
-
-# DATA_PATH = '../RAW_DATASET'
-# OUTPUT_PATH = '../ARRANGED_DATASET'
-
-# DF_FRAC_TRAIN = 0.50
-# DF_FRAC_VALIDATION = 0.50
-# DF_FRAC_TEST = 0.50
-
 
 def yolo_type_data(opt, data, data_type = 'train'):
     
@@ -60,11 +45,6 @@ def yolo_type_data(opt, data, data_type = 'train'):
             to_path = os.path.join(opt.arranged_data_path, "images", data_type, image_name)
         resized_image.save(to_path)
         
-#         shutil.copyfile(
-#             os.path.join(DATA_PATH, data_type, "images", folder_name, image_name),
-#             os.path.join(OUTPUT_PATH, "images", data_type, image_name)
-#         )
-        
         if data_type != 'test':
             
             bounding_boxes = row[1][0] #(0th column) at position 1
@@ -86,7 +66,6 @@ def yolo_type_data(opt, data, data_type = 'train'):
 
             #saving the label for an image at the suitable location for yolo
             np.savetxt(
-                #os.path.join(OUTPUT_PATH, f"labels/{data_type}/{image_name[:-4]}.txt"),
                 os.path.join(opt.arranged_data_path, "labels", data_type, image_name[:-4]+".txt"),
                 yolo_data,
                 fmt = ["%d", "%f", "%f", "%f", "%f"]
@@ -102,8 +81,6 @@ def main(opt):
             remove_access_denied_folders(opt.arranged_data_path)
             remove_access_denied_folders(opt.arranged_data_path + '_TEST')
             print("Removed the existed data as you want partial dataset")
-            # os.system('rmdir '+opt.arranged_data_path)
-            # os.system('rmdir '+opt.arranged_data_path + '_TEST')
             print("recreating the dataset again.....")
         else:    
             print("**************************************************************************************")
@@ -113,7 +90,6 @@ def main(opt):
             print("If not then delete the arranged dataset folder and run the code again")
             print("**************************************************************************************")
             flag = "stop run"
-            # sys.exit()
     if flag == "run all":
         #To form the dataframe out of the data scattered inside folders    
         df = all_df('train', opt.percent_traindata/100, 'validation', opt.percent_validationdata/100, 'test', opt.percent_testdata/100)
@@ -141,7 +117,6 @@ def parse_opt(known = False):
     return opt
 
 def run(**kwargs):
-    # Usage: import train; train.run(imgsz=320, weights='yolov5m.pt')
     opt = parse_opt(True)
     for k, v in kwargs.items():
         setattr(opt, k, v)

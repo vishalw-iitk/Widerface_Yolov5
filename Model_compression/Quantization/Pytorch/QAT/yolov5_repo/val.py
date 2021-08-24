@@ -77,7 +77,7 @@ def process_batch(predictions, labels, iouv):
 @torch.no_grad()
 def run(data,
         weights=None,  # model.pt path(s)
-        batch_size=32,  # batch size
+        batch_size_QAT=64,  # batch size
         imgsz=640,  # inference size (pixels)
         conf_thres=0.001,  # confidence threshold
         iou_thres=0.6,  # NMS IoU threshold
@@ -101,11 +101,15 @@ def run(data,
         wandb_logger=None,
         compute_loss=None,
         ):
+    batch_size = batch_size_QAT
     # Initialize/load model and set device
     training = model is not None
     if training:  # called by train.py
-        device = torch.device('cpu')
-        # device = next(model.parameters()).device  # get model device
+        # device = torch.device('cpu')
+        try:
+            device = next(model.parameters()).device  # get model device
+        except:
+            device = torch.device('cpu')
 
     else:  # called directly
         device = select_device(device, batch_size=batch_size)
@@ -304,7 +308,7 @@ def parse_opt():
     parser = argparse.ArgumentParser(prog='val.py')
     parser.add_argument('--data', type=str, default='data/coco128.yaml', help='dataset.yaml path')
     parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
-    parser.add_argument('--batch-size', type=int, default=32, help='batch size')
+    parser.add_argument('--batch-size_QAT', type=int, default=64, help='batch size')
     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.001, help='confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.6, help='NMS IoU threshold')
@@ -338,7 +342,7 @@ def main(opt):
 
     elif opt.task == 'speed':  # speed benchmarks
         for w in opt.weights if isinstance(opt.weights, list) else [opt.weights]:
-            run(opt.data, weights=w, batch_size=opt.batch_size, imgsz=opt.imgsz, conf_thres=.25, iou_thres=.45,
+            run(opt.data, weights=w, batch_size_QAT=opt.batch_size_QAT, imgsz=opt.imgsz, conf_thres=.25, iou_thres=.45,
                 save_json=False, plots=False)
 
     elif opt.task == 'study':  # run over a range of settings and save/plot
@@ -349,7 +353,7 @@ def main(opt):
             y = []  # y axis
             for i in x:  # img-size
                 print(f'\nRunning {f} point {i}...')
-                r, _, t = run(opt.data, weights=w, batch_size=opt.batch_size, imgsz=i, conf_thres=opt.conf_thres,
+                r, _, t = run(opt.data, weights=w, batch_size_QAT=opt.batch_size_QAT, imgsz=i, conf_thres=opt.conf_thres,
                               iou_thres=opt.iou_thres, save_json=opt.save_json, plots=False)
                 y.append(r + t)  # results and times
             np.savetxt(f, y, fmt='%10.4g')  # save

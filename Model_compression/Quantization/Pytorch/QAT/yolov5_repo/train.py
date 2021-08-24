@@ -61,7 +61,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
           device,
           ):
     save_dir, epochs, batch_size, weights, single_cls, evolve, data, cfg, resume, noval, nosave, workers, = \
-        opt.save_dir, opt.epochs, opt.batch_size, opt.weights, opt.single_cls, opt.evolve, opt.data, opt.cfg, \
+        opt.save_dir, opt.epochs, opt.batch_size_QAT, opt.weights, opt.single_cls, opt.evolve, opt.data, opt.cfg, \
         opt.resume, opt.noval, opt.nosave, opt.workers
 
     # Directories
@@ -117,7 +117,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     is_coco = data.endswith('coco.yaml') and nc == 80  # COCO dataset
 
     # Model
-    print("********", weights)
+    # print("********", weights)
     pretrained = weights.endswith('.pt')
     if pretrained:
 
@@ -431,10 +431,10 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
                     temp_quantized_model = torch.quantization.convert(deepcopy(ema.qat_ema).to(torch.device('cpu')))
                     # print(temp_quantized_model)
-                    print("in the loop quant")
+                    # print("in the loop quant")
                             
-                    print("dict keys 2")
-                    print(temp_quantized_model.__dict__.keys())
+                    # print("dict keys 2")
+                    # print(temp_quantized_model.__dict__.keys())
                     
                     # # for k, v in temp_quantized_model.parameters():
                     # ilp = 1
@@ -444,7 +444,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                     #     ilp+=1
                     #     print(k, v)
                     #     print('\n')
-                    print("state dicts")
+                    # print("state dicts")
                     # print(temp_quantized_model.state_dict())
                     # print(temp_quantized_model)
                     # print("temp quantized model", temp_quantized_model.state_dict().keys())
@@ -489,14 +489,14 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             if not noval or final_epoch:  # Calculate mAP
                 wandb_logger.current_epoch = epoch + 1
                 results, maps, _ = val.run(data_dict,
-                                           batch_size=batch_size // WORLD_SIZE * 2,
+                                           batch_size_QAT=batch_size // WORLD_SIZE * 2,
                                            imgsz=imgsz,
                                         #  Validating on the ema quantized model
                                         #  (So, [P, R, mAP@.5, mAP@.5-.95] will be stored as per the quantized model)
                                         # Hence, best_fitness score will be based on the quantized model and not the quantized aware model
-                                           model=deepcopy(quantized_model_ema),
+                                        #    model=deepcopy(quantized_model_ema),
                                         #    model=deepcopy(quantized_model),
-                                        #    model=deepcopy(ema.qat_ema),
+                                           model=deepcopy(ema.qat_ema),
                                         #    model=deepcopy(model),
                                            single_cls=single_cls,
                                            dataloader=val_loader,
@@ -505,7 +505,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                                            verbose=nc < 50 and final_epoch,
                                            plots=plots and final_epoch,
                                            wandb_logger=wandb_logger,
-                                        #    compute_loss=compute_loss
+                                           compute_loss=compute_loss
                                            )
 
             # Write
@@ -560,14 +560,14 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     # end training -----------------------------------------------------------------------------------------------------
     # print("s8", model.state_dict())
     
-    print("*************")
+    # print("*************")
     # print(ema.qat_ema)
 
-    print("*************")
-    print("*************")
+    # print("*************")
+    # print("*************")
 
     # print(quantized_model_ema)
-    print("*************")
+    # print("*************")
 
     
     
@@ -673,14 +673,14 @@ def main(opt):
         opt.save_dir = str(increment_path(Path(opt.project) / opt.name, exist_ok=opt.exist_ok or opt.evolve))
 
     # DDP mode
-    device = select_device(opt.device, batch_size=opt.batch_size)
+    device = select_device(opt.device, batch_size=opt.batch_size_QAT)
     if LOCAL_RANK != -1:
         from datetime import timedelta
         assert torch.cuda.device_count() > LOCAL_RANK, 'insufficient CUDA devices for DDP command'
         torch.cuda.set_device(LOCAL_RANK)
         device = torch.device('cuda', LOCAL_RANK)
         dist.init_process_group(backend="nccl" if dist.is_nccl_available() else "gloo", timeout=timedelta(seconds=60))
-        assert opt.batch_size % WORLD_SIZE == 0, '--batch-size must be multiple of CUDA device count'
+        assert opt.batch_size_QAT % WORLD_SIZE == 0, '--batch-size must be multiple of CUDA device count'
         assert not opt.image_weights, '--image-weights argument is not compatible with DDP training'
 
     # Train

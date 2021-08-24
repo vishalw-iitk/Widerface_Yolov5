@@ -109,6 +109,7 @@ def get_mAP_and_fitness_score(
         cfg = None,
         device = 'cpu',
         img_size = 416,
+        batch_size_inferquant = 32,
         data = 'data.yaml',
         hyp = 'data/hyps/hyp.scratch.yaml',
         single_cls = False,
@@ -143,7 +144,7 @@ def get_mAP_and_fitness_score(
         hyp = yaml.safe_load(f)  # load hyps dict
 
     nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
-    batch_size = 4
+    # batch_size = 4
     # WORLD_SIZE = 2
     WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
     imgsz = img_size
@@ -168,7 +169,7 @@ def get_mAP_and_fitness_score(
     # print("****************")
     # print(val_path)
 
-    val_loader = create_dataloader(val_path, imgsz, batch_size // WORLD_SIZE * 2, gs,
+    val_loader = create_dataloader(val_path, imgsz, batch_size_inferquant // WORLD_SIZE * 2, gs,
                                         hyp=hyp, rect=True, rank=-1,
                                         workers=workers, pad=0.5,
                                         cache = True,
@@ -176,7 +177,8 @@ def get_mAP_and_fitness_score(
 
     # save_dir = os.path.join(project, name)
     results, class_wise_maps, t = val.run(data_dict,
-                                batch_size=batch_size // WORLD_SIZE * 2,
+                                # batch_size=batch_size // WORLD_SIZE * 2,
+                                batch_size_QAT = batch_size_inferquant  // WORLD_SIZE * 2,
                                 imgsz=imgsz,
                                 model=model,
                                 # single_cls=single_cls,
@@ -203,6 +205,7 @@ def parse_opt(known=False):
     parser.add_argument('--cfg', type=str, default='models/yolov5s.yaml', help='model.yaml path')
     parser.add_argument('--device', default='cpu', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--img-size', type=int, default=416, help='inference size (pixels)')
+    parser.add_argument('--batch-size-inferquant', type=int, default=32, help='batch size for quantization inference')
     parser.add_argument('--data', type=str, default='../../../../../val_data.yaml', help='dataset.yaml path')
     parser.add_argument('--hyp', type=str, default='data/hyps/hyp.scratch.yaml', help='hyperparameters path')
     parser.add_argument('--single-cls', action='store_true', help='treat as single-class dataset')
@@ -240,6 +243,7 @@ def main(opt):
             cfg = opt.cfg,
             device = 'cpu',
             img_size = opt.img_size,
+            batch_size_inferquant = opt.batch_size_inferquant,
             data = opt.data,
             hyp = opt.hyp,
             single_cls = opt.single_cls,

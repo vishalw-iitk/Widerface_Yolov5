@@ -64,8 +64,8 @@ class Detect(nn.Module):
             if not self.training:  # inference
             
                 # print("check device", self.stride[i].is_cuda, self.grid[i].is_cuda, self.anchor_grid[i].is_cuda)
-                if self.grid[i].is_cuda == True and self.anchor_grid[i].is_cuda == False:
-                    self.grid[i] = self.grid[i].cpu()
+                # if self.grid[i].is_cuda == True and self.anchor_grid[i].is_cuda == False:
+                    # self.grid[i] = self.grid[i].cpu()
                 # print("check device11", self.stride[i].is_cuda, self.grid[i].is_cuda, self.anchor_grid[i].is_cuda)
 
                 if self.grid[i].shape[2:4] != x[i].shape[2:4] or self.onnx_dynamic:

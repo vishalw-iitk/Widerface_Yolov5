@@ -28,14 +28,12 @@ class Tflite(Quantization):
 class QAT(Pytorch):
     def __init__(self):
         Pytorch.__init__(self)
-        # to save path
     def quantize(self, **kwargs):
         train.run(**kwargs)
         
 class PTQ(Pytorch):
     def __init__(self):
         Pytorch.__init__(self)
-        # to save path
     def quantize(self, **kwargs):
         PT_quant.run(**kwargs)
 
@@ -65,19 +63,14 @@ def main(opt):
         running_model_paths =  running_model_dictionary()
         pre_trained_model_paths =  pre_trained_model_dictionary()
         framework_path = frameworks(opt.skip_QAT_training, running_model_paths, pre_trained_model_paths)
-    
-    # if not os.path.exists(running_model_paths['Quantization']['Pytorch']['QAT'].replace('/ptq.pt', '')) and \
-    # if not os.path.exists(running_model_paths['Quantization']['Tflite']['fp16'].replace('/best.tflite', '')) and \
-        # not os.path.exists(running_model_paths['Quantization']['Tflite']['int8'].replace('/best.tflite', '')):
-    #     os.mkdir(running_model_paths['Quantization']['Pytorch']['QAT'].replace('/ptq.pt', ''))
-        # os.mkdir(running_model_paths['Quantization']['Tflite']['fp16'].replace('/best.tflite', ''))
-        # os.mkdir(running_model_paths['Quantization']['Tflite']['int8'].replace('/best.tflite', ''))
+
     
     if opt.skip_QAT_training == False:
         qat_py = QAT()
         qat_py.quantize(
                 save_dir = running_model_paths['Quantization']['Pytorch']['QAT'],
                 weights = opt.weights,
+                batch_size_QAT = opt.batch_size_QAT,
                 cfg = opt.cfg,
                 data = opt.data,
                 hyp = opt.hyp,
@@ -90,7 +83,6 @@ def main(opt):
                 bucket = False,
                 cache_images = True,
                 image_weights = False,
-                # device = 'cpu',
                 device = opt.device,
                 multi_scale = False,
                 single_cls = False,
@@ -112,8 +104,6 @@ def main(opt):
                 freeze = 0
                 )
 
-    # root_model_path = weights = running_model_paths['Regular']['Pytorch']['fp32']
-    # model_storage = running_model_paths['Quantization']['Pytorch']['PTQ']
     ptq_py = PTQ()
     ptq_py.quantize(
         weights = running_model_paths['Regular']['Pytorch']['fp32'],
@@ -152,6 +142,7 @@ def parse_opt(known=False):
     parser.add_argument('--hyp', type=str, default='data/hyps/hyp.scratch.yaml', help='hyperparameters path')
     parser.add_argument('--epochs', type=int, default=300)
     parser.add_argument('--batch-size', type=int, default=16, help='total batch size for all GPUs')
+    parser.add_argument('--batch-size-QAT', type=int, default=64, help='training batch size for Quantize aware training')
     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640, help='train, val image size (pixels)')
     parser.add_argument('--rect', action='store_true', help='rectangular training')
     parser.add_argument('--resume', nargs='?', const=True, default=False, help='resume most recent training')
