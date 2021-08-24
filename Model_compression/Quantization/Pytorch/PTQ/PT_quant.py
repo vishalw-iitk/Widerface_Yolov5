@@ -80,13 +80,18 @@ def main(opt):
     """
 
     dataset = LoadImages(data_dict['train'], img_size=416, stride=32)
-    for img in dataset[0:100]:
+    num_of_calib_images = 200
+    temp = 0
+    for img in dataset:
+        temp += 1
         img = torch.from_numpy(img).to(device)
         img = img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
         model_fp32_prepared(img)
+        if temp > num_of_calib_images:
+            break
     
     """
     Step 5:
