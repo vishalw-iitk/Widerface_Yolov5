@@ -1,36 +1,34 @@
 import argparse
+import yaml
+import torch
 from pathlib import Path
 from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.models.yolo import Model
 from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.utils.torch_utils import intersect_dicts
-import yaml
-import os
-import torch
-from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.utils.datasets import create_dataloader, LoadImages
-from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.utils.general import colorstr
-from pathlib import Path
-from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo import val
+from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.utils.datasets import  LoadImages
 
 def main(opt):
+    """creates a Quantized model using Post Training Quantization approach.
+
+    Arguments:
+        weights (str): name of float32 or floart16 model, i.e. 'best.pt'.
+        results (str): name of directory to store  quantized int8 model.
+
+    """
+
     if '/best.pt' in opt.results:
         opt.results = opt.results.replace('/best.pt', '')
     elif r'\best.pt' in opt.results:
         opt.results = opt.results.replace(r'\best.pt', '')
     
+    # Get requied paths of files/directory.
     weights = Path(opt.weights)
     store_result = Path(opt.results)
-    # opt.results = opt.results.replace('/best.pt', '')
     print("print opt results", opt.results)
-    # w = Path(opt.results)
 
     store_result.mkdir(parents=True, exist_ok=True)
-    # if not os.path.exists(opt.results.replace('/best.pt', '')) else None
-    # cfg = "models/yolov5s.yaml"
     cfg = opt.cfg
-    # hyp = 'data/hyps/hyp.scratch.yaml'
     hyp = opt.hyp
-    # device = 'cpu'
     device = opt.device
-    # data = 'data_widerface.yaml'
     data = opt.data
 
     with open(data) as f:
@@ -38,43 +36,49 @@ def main(opt):
     with open(hyp) as f:
             hyp = yaml.safe_load(f)
     nc = 1 # number of classes
-    # exclude = ['anchor'] # exclude keys
-
-    # print(model)
-    # print(model.state_dict())
-
-    ###PTQ
+    
+    # *************************************PTQ************************************
     # create a model instance
     model = Model(cfg = cfg , ch=3, nc=nc, anchors=hyp.get('anchors')).to(device) ###creating architecture instance
     # model must be set to eval mode for static quantization logic to work
     model.eval()
-    ckpt = torch.load(weights, map_location=device)  # load checkpoint
-    csd = ckpt['model'].float().state_dict()  # checkpoint state_dict as FP32
-    csd = intersect_dicts(csd, model.state_dict())  # intersect
-    model.load_state_dict(csd, strict=False) ##load checkpoints into created architecture
+    ckpt = torch.load(weights, map_location=device)     # load checkpoint
+    csd = ckpt['model'].float().state_dict()            # checkpoint state_dict as FP32
+    csd = intersect_dicts(csd, model.state_dict())      # intersect
+    model.load_state_dict(csd, strict=False)            # load checkpoints into created architecture
 
-    # print(model)
     model_fp32 = model
-    # attach a global qconfig, which contains information about what kind
-    # of observers to attach. Use 'fbgemm' for server inference and
-    # 'qnnpack' for mobile inference. Other quantization configurations such
-    # as selecting symmetric or assymetric quantization and MinMax or L2Norm
-    # calibration techniques can be specified here.
+
+    """
+    Step 1:
+        attach a global qconfig, which contains information about what kind of observers to attach. Use 'fbgemm' for server inference and
+        'qnnpack' for mobile inference. Other quantization configurations such as selecting symmetric or assymetric quantization and MinMax or L2Norm
+        calibration techniques can be specified here.
+    """
+
     model_fp32.qconfig = torch.quantization.get_default_qconfig('fbgemm')
 
-    # Fuse the activations to preceding layers, where applicable.
-    # This needs to be done manually depending on the model architecture.
-    # Common fusions include `conv + relu` and `conv + batchnorm + relu`
-    # model_fp32_fused = torch.quantization.fuse_modules(model_fp32, [['conv', 'bn']])
+    """
+    Step 2: (optional)
+        Fuse the activations to preceding layers, where applicable. This needs to be done manually depending on the model architecture.
+        Common fusions include `conv + relu` and `conv + batchnorm + relu`.
+        # model_fp32_fused = torch.quantization.fuse_modules(model_fp32, [['conv', 'bn']])
+    """
+    
+    """
+    Step 3:
+        Prepare the model for static quantization. This inserts observers in the model that will observe activation tensors during calibration.
 
-    # print(model_fp32_fused)
+    """
 
-    # Prepare the model for static quantization. This inserts observers in
-    # the model that will observe activation tensors during calibration.
     model_fp32_prepared = torch.quantization.prepare(model_fp32)
 
 
-    # print(model_fp32_prepared)
+    """
+    Step 4:
+        calibrate the prepared model to determine quantization parameters for activations in a real world setting, the calibration would be done with a representative dataset
+    """
+
     dataset = LoadImages(data_dict['train'], img_size=416, stride=32)
     num_of_calib_images = 200
     temp = 0
@@ -88,62 +92,27 @@ def main(opt):
         model_fp32_prepared(img)
         if temp > num_of_calib_images:
             break
-        
+    
+    """
+    Step 5:
+        Convert the observed model to a quantized model. This does several things:
+        quantizes the weights, computes and stores the scale and bias value to be used with each activation tensor, and replaces key operators with quantized implementations.
+    """
 
     model_int8 = torch.quantization.convert(model_fp32_prepared)
+
+    # Saving converted model
     ckpt = {
         'model' : model_int8.state_dict()
     }
-
-    
     best = store_result / 'best.pt'
     torch.save(ckpt, best)
-    ###validation
-# # =======================================================================================
-    # batch_size = 4
-    # WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
-    # imgsz = 416
-    # val_path = data_dict['val']
-    # gs = max(int(model.stride.max()), 32)
-    # workers = 8
-    # single_cls = False
-    # # compute_loss = ComputeLoss(model)  # init loss class
-    # val_loader = create_dataloader(val_path, imgsz, batch_size // WORLD_SIZE * 2, gs, single_cls,
-    #                                     hyp=hyp, cache='true', rect=True, rank=-1,
-    #                                     workers=workers, pad=0.5,
-    #                                     prefix=colorstr('val: '))[0]
-    # ###
-    # if not os.path.exists(opt.results):
-    #     os.makedirs(opt.results)
-    # results, class_wise_maps, t = val.run(data_dict,
-    #                                 batch_size=batch_size // WORLD_SIZE * 2,
-    #                                 imgsz=imgsz,
-    #                                 model=model_int8,
-    #                                 dataloader=val_loader,
-    #                                 project='../Model_performance/Inference_results/Quantization/Pytorch/PTQ/val',
-    #                                 name = 'Quantized_Pytorch_PTQ',
-    #                                 # save_dir=Path(opt.results),
-    #                                 # iou_thres = 0.7,
-    #                                 compute_loss=None
-    #                                 )
-    # print("class_wise_maps", results)
-    # size = os.stat(os.path.join(opt.results)).st_size/(1024.0*1024.0)
-    # print(size)
-    # shape = (batch_size, 3, imgsz, imgsz)
-    # print(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {shape}' % t)
-    # val_res = {'mAP50' : results[2], 'mAP' : results[3], 'fitness' : None, 'size' : str(size)+"MB", 'latency' : str(t[1])+"ms", 'GFLOPS' : None}
-    # print("PTQ: ", val_res)
-    # =========================================================================================
-    # return val_res
-    # https://github.com/pytorch/pytorch/issues/20756
 
 
 def parse_opt(known = False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str, help='best_widerface_f32.pt')
     parser.add_argument('--results', type=str, help='val_results')
-    
-    # opt = parser.parse_args()
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 

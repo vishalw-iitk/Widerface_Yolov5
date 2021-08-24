@@ -4,12 +4,9 @@ from pathlib import Path
 import torch
 import os
 
-# sys.path.append("../../..")
 from dts.utils.load_the_models import load_the_model
-# from dts.model_paths import framework_path
 from yolov5.utils.general import colorstr, check_img_size, check_requirements, file_size
 
-# rel_path = '../../..'
 
 def export_onnx(
     model,
@@ -28,7 +25,6 @@ def export_onnx(
 
         print(f'\n{prefix} starting export with onnx {onnx.__version__}...')
         f = file.with_suffix('.onnx')
-        print(3, f)
         p =torch.onnx.TrainingMode.TRAINING if train else torch.onnx.TrainingMode.EVAL
         print(p)
         torch.onnx.export(model, img, f, verbose=False, opset_version=opset_version,
@@ -41,13 +37,11 @@ def export_onnx(
                                         } if dynamic else None)
 
         # Checks
-        print(1)
         model_onnx = onnx.load(f)  # load onnx model
         onnx.checker.check_model(model_onnx)  # check onnx model
         # print(onnx.helper.printable_graph(model_onnx.graph))  # print
 
         # Simplify
-        print(2)
         if simplify:
             try:
                 import onnxsim
@@ -69,7 +63,6 @@ def export_onnx(
 def get_modelutils(weights, img_size = (416, 416), batch_size = 4, half = False, train = False, device = 'cpu'):
     rel_path = '../../..'
     
-    # file = Path(os.path.join(rel_path, weights))
     file = Path(os.path.join(weights))
 
     MLmodel = load_the_model('cpu')
@@ -88,16 +81,7 @@ def get_modelutils(weights, img_size = (416, 416), batch_size = 4, half = False,
         single_cls = False,
         model_class = model_type
     )
-    # MLmodel.load_pytorch(
-    #     model_path = os.path.join(rel_path, framework_path[framework][model_type]),
-    #     model_name_user_defined = model_name_user_defined,
-    #     cfg = os.path.join(rel_path, 'yolov5/models/yolov5s.yaml'),
-    #     imgsz = 416,
-    #     data = os.path.join(rel_path, 'dts/data.yaml'),
-    #     hyp = os.path.join(rel_path, 'yolov5/data/hyps/hyp.scratch.yaml'),
-    #     single_cls = False,
-    #     model_class = model_type
-    # )
+
     print(MLmodel.statement)
     model = MLmodel.model
 
@@ -139,7 +123,6 @@ def main(opt):
     export_onnx(model, img, file, opt.opset_version, opt.train, opt.dynamic, opt.simplify)
 
 def run(**kwargs):
-    # Usage: import train; train.run(imgsz=416, weights='best.pt')
     opt = parse_opt(True)
     for k, v in kwargs.items():
         setattr(opt, k, v)

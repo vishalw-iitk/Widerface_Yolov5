@@ -14,6 +14,15 @@ from pathlib import Path
 
 # get BBoxes for each sample 
 def get_Bboxes(Txtpath, img_width, img_height):
+  """creates Bounding Box coordinates. eg: #[x_cen, y_cen, w, d]
+
+    Arguments:
+      Txtpath   : output txt file path in yolo format.
+      img_width : Width of the Image.
+      img_height: Height of the Image
+    
+    Returns: gives Bounding Box coordinates.
+  """
   boxes=[]
   txt_file = open(Txtpath, 'r')
   Lines = txt_file.readlines()
@@ -32,6 +41,12 @@ def get_Bboxes(Txtpath, img_width, img_height):
   return boxes
 
 def MeshGrid(x,y):
+  """
+
+    Specify a meshgrid which will use 100 points interpolation on each axis. (e.g. mgrid(xmin:xmax:100j))
+    Define the borders
+
+  """
   deltaX = (max(x) - min(x))/50
   deltaY = (max(y) - min(y))/50
   xmin = min(x) - deltaX
@@ -41,16 +56,40 @@ def MeshGrid(x,y):
   return np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
 
 def fit_gaussian_kernel(xx,yy,x,y):
+  """
+
+    Fit a gaussian kernel using the scipy’s gaussian_kde method
+    Returns: MeshGrid
+
+  """
   positions = np.vstack([xx.ravel(), yy.ravel()])
   values = np.vstack([x, y])
   kernel = st.gaussian_kde(values)
   return np.reshape(kernel(positions).T, xx.shape)
 
 def kl_divergence(p, q):
+  """
+  
+  Calculate the KL divergence of two probability density distributions.
+  Make sure that we don’t include any probabilities equal to 0 because the log of 0 is negative infinity.
+  
+
+  """
+
   return np.sum(np.where(p != 0, p * np.log(p / q), 0))
 
 
 def main(opt):
+  """
+    Creates density threshold value.
+
+    Arguments:
+      validationImages    : Directory path of validation Images.
+      groundTruth_TxtPath : Directory path of Ground truths Txt files.
+      predicted_TxtPath   : Directory path of predicted Txt files
+      npy_path            : Directory path to save numpy file result.
+
+  """
   opt.validationImages = str(Path(opt.validationImages).absolute())
   opt.groundTruth_TxtPath = str(Path(opt.groundTruth_TxtPath).absolute())
   opt.predicted_TxtPath = str(Path(opt.predicted_TxtPath).absolute())

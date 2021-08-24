@@ -2,13 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-# replace none values in results list with zeros
 def none_to_zero(lst):
+    """
+        Replace all None values in the list with zeros
+    """
     array = np.array(lst)
     array[array==None]=0
     return array
 
+
 def plot_each_metric(metric_list,names_list,metric_name,nums,save_dir):
+    """
+    plot each metric to a seperate file in save_dir directory
+    """
     fig = plt.figure(figsize = (10, 5))
     # creating the bar plot
     plt.bar(range(len(names_list)), metric_list, color =['green']*nums[0]+['blue']*nums[1]+['cyan']*nums[2],width = 0.4)
@@ -18,11 +24,13 @@ def plot_each_metric(metric_list,names_list,metric_name,nums,save_dir):
     plt.xlabel("Technique")
     plt.ylabel("Value of "+metric_name)
     plt.title(metric_name+" with different techniques")
-    #plt.show()
     plt.savefig(os.path.join(save_dir,metric_name+'.png'),bbox_inches = 'tight')
 
 
 def run(plot_results,save_dir):
+    """
+    extract metrics from dictionary and plot to seperate files
+    """
     os.makedirs(save_dir) if not os.path.exists(save_dir) else None
     mAP50_list = []
     mAP_list = []
@@ -32,6 +40,7 @@ def run(plot_results,save_dir):
     size_list = []
     names_list = []
     metric_names = ['mAP50','mAP','fitness','latency','GFLOPS','size']
+    #nums to track number of methods/platforms under each optimization technique
     nums = []
     #iterate through the dictionary
     for technique, platform_results in plot_results.items():
