@@ -1,44 +1,20 @@
-import sys
-# sys.path.append("../..")
-# sys.path.append(path.join(path.dirname(__file__), '..'))
-# from yolov5.models.yolo import Model
-
-
-# from dts.Model_compression.model_conversion.model_paths import framework_path
-
-# import torch
 import onnx
-import os
-
-# rel_path = '../..'
+import torch
 
 class load_the_model:
     def __init__(self, device_name):
-        # self.model_path = model_path
         self.device_name = device_name
-        # self.model_name_user_defined = model_name_user_defined
     def load_pytorch(self, model_path, model_name_user_defined, cfg, imgsz, data, hyp, single_cls, model_class = 'any'):
         if model_class == 'Regular':
-            # attempt load (loads the normal model in fp32)
             from yolov5.models.experimental import attempt_load
             self.model = attempt_load(model_path, map_location=self.device_name)  # load FP32 model
             
         elif model_class == 'QAT quantized':
-            # infer_qat load (load the QAT quantized qint8 model)
-            # from Model_compression.Quantization.Pytorch.QAT import load_and_infer
-            # from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.load_and_infer import quantized_load
             self.model = quantized_load(model_path, cfg, self.device_name, imgsz, data, hyp, single_cls)
-            # self.model = infer_qat.run(model_path, map_location=torch.device(self.device_name))
             
         else:
             self.model = torch.load(model_path, map_location = torch.device(self.device_name))
             pass
-        # try:
-        #     self.model_architechture = model_class(cfg)
-        #     self.model_info = torch.load(self.model_path, map_location=torch.device(self.device_name))
-        # except:
-        #     self.model_architechture = model_class(cfg)
-        #     self.model = torch.load(self.model_path, map_location=torch.device(self.device_name))
         self.statement = model_name_user_defined + " has been loaded"
     
     def load_onnx(self, model_path, model_name_user_defined):
@@ -47,8 +23,6 @@ class load_the_model:
 
     def load_tf_pb(self, model_path, model_name_user_defined):
         import tensorflow as tf
-        # we are probably not loading the tf_pb model in the tf_pb format
-        # self.statement = self.model_name_user_defined + " has been loaded"
         pass
     
     def load_tf_pb_as_tflite_converter(self, model_path, model_name_user_defined):

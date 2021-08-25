@@ -1,28 +1,14 @@
 '''
-    To perform face detection over WIDERFACE dataset and get the trained model and \
-        then optimize the obtained model using Pruning and Quantization.
-    Model architechture used : Yolov5s
-    
-    Implementation :
-        
-        Model trained :
-            Pytorch fp16 and fp32 models
-            Tflite fp32 model via export
-        
-        Export to tflite via ONNX :
-            Pytorch -> ONNX -> tf_pb_keras -> TFLITE
-        
-        Quantization:
-            Pytorch :
-                Quantize Aware training(fp32 -> int8)
-                Static Post Training Quantization(fp32 -> int8)
-            Tflite : 
-                fp32 -> fp16
-                fp32 -> int8 (Inference not implemented yet)
-        
-        Pruning :
-            Global Unstructured (called P1, P2, P3 here)
-            Channel-wise Structured (called P4 here)
+To perform face detection over WIDERFACE dataset and get the trained model and \
+    then optimize the obtained model using Pruning and Quantization.
+Model architechture used : Yolov5s
+Implementation       :
+    -Model trained   :   Pytorch fp16 and fp32 models         |   Tflite fp32 model via export
+    -ONNX export     :   Pytorch->ONNX->tf_pb_keras->TFLITE
+    -Quantization:
+        Pytorch  :   Quantize Aware training(fp32 -> int8)    |   Static Post Training Quantization(PTQ)(fp32 -> int8)
+        Tflite   :    fp32 -> fp16(PTQ)                       |   fp32 -> int8(PTQ) (Inference not implemented yet)
+    -Pruning     :   Global Unstructured (P1, P2, P3 here)    |   Channel-wise Structured (called P4 here)
 '''
 
 ''' Importing the libraries '''
@@ -32,7 +18,7 @@ import argparse
 ''' Adding the file import root to the parent of Pipeline.py '''
 sys.path.append('..')
 
-''' File imports '''
+''' Files and functions imports '''
 from dts.utils import begin
 from dts.model_paths \
     import \
@@ -43,8 +29,8 @@ from dts.model_paths \
 
 def main(opt):
     '''
-        To clone the Ultralytics-repository's latest version or\
-        to continue working it's older version which we already have inside this repo.
+    To clone the Ultralytics-repository's latest version or\
+    to continue working it's older version which we already have inside this repo.
     '''
     begin.run(
         yolov5_repo_name = opt.yolov5_repo_name,
@@ -53,15 +39,13 @@ def main(opt):
     )
 
     '''
-        To install the requirements if not already installed.
-        This step can be easily avoided if all the requirements are pre-installed beforehand
+    To install the requirements if not already installed.
+    This step can be easily avoided if all the requirements are pre-installed beforehand
     '''
     from dts.Requirements import requirements
     requirements.run()
 
-    '''
-        Data preparation step
-    '''
+    '''Data preparation step'''
     from dts.Data_preparation import data_prep_yolo
     data_prep_yolo.run(
         raw_dataset_path = opt.raw_dataset_path, arranged_data_path = opt.arranged_data_path, img_size = opt.img_size,
@@ -70,8 +54,8 @@ def main(opt):
     )
 
     '''
-        Now, as the system is setup with Repository, requiremnts and dataset,\
-        we can import the yolov5 repo libraries to use in the codes ahead
+    Now, as the system is setup with Repository, requiremnts and dataset,\
+    we can import the yolov5 repo libraries to use in the codes ahead
     '''
     from yolov5 import train
     from dts.Model_conversion import model_export
@@ -111,9 +95,9 @@ def main(opt):
     # Not to use fp16 path onwards
     # Use fp32 path
     '''
-        Basic model export step
-        Once the pytorch model is trained, we can export it to ONNX -> tf_pb_keras -> TFLITE model
-        Same is done with pre-trained models if pre-trained weights are being used
+    Basic model export step
+    Once the pytorch model is trained, we can export it to ONNX -> tf_pb_keras -> TFLITE model
+    Same is done with pre-trained models if pre-trained weights are being used
     '''
     model_export.run(
         model_type_for_export = model_names['Regular']['Pytorch']['fp32'],
@@ -122,10 +106,10 @@ def main(opt):
     )
 
     '''
-        ****************  PRUNING  *******************
-        Two major section of pruning are implemented
-        1) Unstructured with different initialization schemes
-        2) Structured(Pre-trained-model-yet-to-achieve)
+    ****************  PRUNING  *******************
+    Two major section of pruning are implemented
+    1) Unstructured with different initialization schemes
+    2) Structured(Pre-trained-model-yet-to-achieve)
     '''
     pruning.run(
         skip_pruning = opt.skip_pruning,
@@ -140,12 +124,12 @@ def main(opt):
         )
 
     '''
-        ****************  QUANTIZATION  *******************
-        Four Quantization schemes implemented
-        1) Quantize aware training
-        2) Static Post training Quantization(Static PTQ)
-        3) Tflite fp32 PTQ
-        4) Tflite int8 PTQ
+    ****************  QUANTIZATION  *******************
+    Four Quantization schemes implemented
+    1) Quantize aware training
+    2) Static Post training Quantization(Static PTQ)
+    3) Tflite fp32 PTQ
+    4) Tflite int8 PTQ
     '''
     quantization.run(
         skip_QAT_training = opt.skip_QAT_training,
@@ -171,10 +155,10 @@ def main(opt):
         running_model_paths = prune_with_pre_trained_only(running_model_paths, pre_trained_model_paths)
     
     '''
-        Inference on every model which have been implemented above.
-        Getting the inference results stored inside Model performance folder and also return the \
-        performance dictionary so as to plot the performance results
-        Inference not yet available for Tflite int8 quantized model
+    Inference on every model which have been implemented above.
+    Getting the inference results stored inside Model performance folder and also return the \
+    performance dictionary so as to plot the performance results
+    Inference not yet available for Tflite int8 quantized model
     '''
     plot_results = inference_results.run(opt, running_model_paths) #mAP0.5, mAP0.5:0.95, fitness_score, latency, GFLOPs, Size
     print(plot_results)
@@ -254,7 +238,6 @@ def parse_opt(known=False):
 
 
 def run(**kwargs):
-    # Usage: import train; train.run(imgsz=320, weights='yolov5m.pt')
     opt = parse_opt(True)
     for k, v in kwargs.items():
         setattr(opt, k, v)

@@ -1,8 +1,13 @@
-# class check_file_size_in_the_given_path:
+'''To get the file size given the file path and user defined name
+This file is not in use for this pipeline
+'''
+
+'''Importing libraries'''
 import os
 import numpy as np
 
 class check_file_size:
+    '''check_file_size_in_the_given_path'''
     def __init__(self, file_path, file_name_user_defined):
         self.file_path = file_path
         self.file_name_user_defined = file_name_user_defined
