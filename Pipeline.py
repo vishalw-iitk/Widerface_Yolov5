@@ -7,17 +7,10 @@ from dts.model_paths import pre_trained_model_dictionary
 from dts.model_paths import train_results_dictionary
 from dts.model_paths import model_defined_names
 from dts.model_paths import prune_with_pre_trained_only
-# from dts.Data_preparation import df_percent
-
-
-
-# from dts.model_paths import  update_the_paths
-
 
 
 
 from dts.model_paths import frameworks
-# from dts.Model_compression.Pruning import pruning
 from dts.model_paths import update_to_running_paths_with_pretrianed
 
 
@@ -60,10 +53,10 @@ def main(opt):
     train_results_paths = train_results_dictionary()
     model_names = model_defined_names()
 
-    if opt.skip_training == True: # Use Pre-trained weighths
-        running_model_paths = update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths)
-    else: # train the model
-        # print(weights)
+    # The paths updated here will be taken for inference results
+    running_model_paths = update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths, opt.skip_train, opt.skip_QAT_train, opt.skip_Pruning, opt.skip_P1_training, opt.skip_P2_training, opt.skip_P3_training, opt.skip_P4_training)
+
+    if opt.skip_training == False:
         train.run(
             weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
             cfg = opt.cfg,
@@ -133,8 +126,6 @@ def main(opt):
         batch_size = opt.batch_size,
         prune_perc = opt.prune_perc,
         cache_images = True,
-        # project = train_results_paths['Pruning']['Pytorch']['P1'],
-        # name = model_names['Pruning']['Pytorch']['P1'],
         st = True,
         sr = 0.0001
         )
@@ -143,9 +134,7 @@ def main(opt):
         skip_QAT_training = opt.skip_QAT_training,
         running_model_paths = running_model_paths,
         framework_path = framework_path,
-        # weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
         weights = running_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
-        # weights = running_model_paths['Regular']['Pytorch']['fp32'],
         repr_images = opt.repr_images,
         batch_size_QAT = opt.batch_size_QAT,
         img = opt.img,
@@ -153,8 +142,6 @@ def main(opt):
         cfg = opt.cfg,
         data = opt.data,
         hyp = opt.hyp,
-        # cfg = './Model_compression/Quantization/Pytorch/QAT/yolov5_repo/models/yolov5s.yaml',
-        # hyp = './Model_compression/Quantization/Pytorch/QAT/yolov5_repo/data/hyps/hyp.scratch.yaml',
         rect = False,
         resume = False,
         nosave = False,
@@ -170,9 +157,7 @@ def main(opt):
         adam = False,
         sync_bn = False,
         workers = 8,
-        project = train_results_paths['Quantization']['Pytorch']['QAT'],
         entity = None,
-        name = model_names['Quantization']['Pytorch']['QAT'],
         exist_ok = False,
         quad = False,
         linear_lr = False,
