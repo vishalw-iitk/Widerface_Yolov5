@@ -1,36 +1,44 @@
+'''
+    ****************  QUANTIZATION  *******************
+    Four Quantization schemes implemented
+    1) Quantize aware training  2) Static Post training Quantization(Static PTQ)
+    3) Tflite fp32 PTQ          4) Tflite int8 PTQ
+'''
+
+''' Importing the libraries '''
 import argparse
-import os
+
+''' File imports '''
+from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo import train
+from dts.Model_compression.Quantization.Pytorch.PTQ import PT_quant
+from dts.Model_conversion import model_export
 from dts.model_paths import running_model_dictionary
 from dts.model_paths import pre_trained_model_dictionary
 from dts.model_paths import frameworks
 from dts.model_paths import train_results_dictionary
 from dts.model_paths import model_defined_names
-from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo import train
-from dts.Model_compression.Quantization.Pytorch.PTQ import PT_quant
-from dts.Model_conversion import model_export
 
 class Quantization(object):
     def __init__(self):
-        # base_model_path
         pass
 
 class Pytorch(Quantization):
     def __init__(self):
         Quantization.__init__(self)
-        # new model definition
 
 class Tflite(Quantization):
     def __init__(self):
         Quantization.__init__(self)
 
 
-# Pytorch
+'''Pytorch Quantize Aware training'''
 class QAT(Pytorch):
     def __init__(self):
         Pytorch.__init__(self)
     def quantize(self, **kwargs):
         train.run(**kwargs)
-        
+
+'''Pytorch Static Post Training Quantization(PTQ)'''    
 class PTQ(Pytorch):
     def __init__(self):
         Pytorch.__init__(self)
@@ -38,13 +46,14 @@ class PTQ(Pytorch):
         PT_quant.run(**kwargs)
 
 
-# Tflite
+'''Tflite fp32->fp16 PTQ'''
 class TFL_fp16(Tflite):
     def __init__(self):
         Tflite.__init__(self)
     def quantize(self, **kwargs):
         model_export.run(**kwargs)
 
+'''Tflite fp32->int8 PTQ'''
 class TFL_int8(Tflite):
     def __init__(self):
         Tflite.__init__(self)
@@ -52,69 +61,58 @@ class TFL_int8(Tflite):
         model_export.run(**kwargs)
 
 
+
+
 def main(opt):
-    # Pytorch
+    '''
+    Implementation of four Quantization schemes
+    '''
+
     train_results_paths = train_results_dictionary()
     model_names = model_defined_names()
+
     try:
+        '''Running from the pipeline'''
         running_model_paths = opt.running_model_paths
         framework_path = opt.framework_path
     except:
+        ''' If directly executing quantization.py(Not yet tested) '''
         running_model_paths =  running_model_dictionary()
         pre_trained_model_paths =  pre_trained_model_dictionary()
         framework_path = frameworks(opt.skip_QAT_training, running_model_paths, pre_trained_model_paths)
-
     
+    '''Pytorch'''
+
+    '''Pytorch Quantize Aware training'''
     if opt.skip_QAT_training == False:
         qat_py = QAT()
         qat_py.quantize(
                 save_dir = running_model_paths['Quantization']['Pytorch']['QAT'],
                 weights = opt.weights,
                 batch_size_QAT = opt.batch_size_QAT,
-                cfg = opt.cfg,
-                data = opt.data,
-                hyp = opt.hyp,
-                rect = False,
-                resume = False,
-                nosave = False,
-                noval = False,
-                noautoanchor = False,
-                evolve = 0, #doubt
-                bucket = False,
-                cache_images = True,
-                image_weights = False,
-                device = opt.device,
-                multi_scale = False,
-                single_cls = False,
-                adam = False,
-                sync_bn = False,
-                workers = 8,
+                cfg = opt.cfg, data = opt.data, hyp = opt.hyp,
+                rect = False, resume = False, nosave = False, noval = False, noautoanchor = False, evolve = 0, #doubt
+                bucket = False, cache_images = True, image_weights = False, device = opt.device, multi_scale = False,
+                single_cls = False, adam = False, sync_bn = False, workers = 8, entity = None,
                 project = train_results_paths['Quantization']['Pytorch']['QAT'],
-                entity = None,
                 name = model_names['Quantization']['Pytorch']['QAT'],
-                exist_ok = False,
-                quad = False,
-                linear_lr = False,
-                label_smoothing = 0.0,
-                upload_dataset = False,
-                bbox_interval = -1,
-                save_period = -1,
-                artifact_alias = 'latest',
-                local_rank = -1,
-                freeze = 0
+                exist_ok = False, quad = False, linear_lr = False, label_smoothing = 0.0, upload_dataset = False,
+                bbox_interval = -1, save_period = -1, artifact_alias = 'latest', local_rank = -1, freeze = 0
                 )
 
+    '''Pytorch Static Post Training Quantization(PTQ)'''
     ptq_py = PTQ()
     ptq_py.quantize(
         weights = running_model_paths['Regular']['Pytorch']['fp32'],
         results = running_model_paths['Quantization']['Pytorch']['PTQ'],
-        cfg = opt.cfg,
-        hyp = opt.hyp,
-        device = 'cpu',
-        data = opt.data
+        cfg = opt.cfg, hyp = opt.hyp, device = 'cpu', data = opt.data
     )
 
-    # Tflite
+
+
+    '''Tflite'''
+
+    '''Tflite fp32->fp16 PTQ'''
     tfl_fp16 = TFL_fp16()
     tfl_fp16.quantize(
         model_type_for_export = model_names['Quantization']['Tflite']['fp16'],
@@ -122,14 +120,13 @@ def main(opt):
         model_names = model_names
         )
 
+    '''Tflite fp32->int8 PTQ'''
     tfl_int8 = TFL_int8()
     tfl_int8.quantize(
         model_type_for_export = model_names['Quantization']['Tflite']['int8'],
         framework_path = framework_path,
         model_names = model_names,
-        repr_images = opt.repr_images,
-        img = opt.img,
-        ncalib = opt.ncalib
+        repr_images = opt.repr_images, img = opt.img, ncalib = opt.ncalib
     )
         
 
@@ -176,7 +173,6 @@ def parse_opt(known=False):
 
 
 def run(**kwargs):
-    # Usage: import train; train.run(imgsz=320, weights='yolov5m.pt')
     opt = parse_opt(True)
     for k, v in kwargs.items():
         setattr(opt, k, v)

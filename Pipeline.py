@@ -25,7 +25,7 @@
             Channel-wise Structured (called P4 here)
 '''
 
-''' importing the libraries '''
+''' Importing the libraries '''
 import sys
 import argparse
 
