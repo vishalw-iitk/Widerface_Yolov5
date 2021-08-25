@@ -1,44 +1,26 @@
+''' To install the requirements if not already installed.\
+    This step can be easily avoided if all the requirements are pre-installed beforehand '''
+
+# Library imports
 import os
-import argparse
 import shutil
 
-CUDA_compatible_command = 'pip3 install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html'
-
-# try:
-#     # if requirements.txt is absent or it is blank then we get error while uninstalling it
-#     # if os.path.exists('requirements.txt'):
-#         # os.system('cp requirements.txt gpu_requirements.txt')
-#     os.system('pip3 freeze > ../requirements.txt && pip3 uninstall -r ../requirements.txt -y 2> /dev/null') #not displaying error message if requirements.txt is empty
-#     os.remove('../requirements.txt')
-# except:
-#     #if we don't get uninstallation error. It means we have uninstallation step was done correctly
-#     pass
-
 # now we need to install the packages from yolov5 repository
-def main(opt):
-    # from_P = str(os.path.join('..', 'yolov5', 'requirements.txt'))
+def run():
+    '''
+    Installs the requiremnts as mentioned in ultralytics yolov5 repo
+    Installs the requiremnts which we have mentioned explicitly
+    Installs cuda's torch library for CUDA support
+    '''
+    # Installs the requiremnts as mentioned in ultralytics yolov5 repo
     shutil.copy(os.path.join('..', 'yolov5', 'requirements.txt'), os.path.join('..', 'requirements.txt'))
-    # os.system('cp ../yolov5/requirements.txt ../requirements.txt')
     os.system('pip3 install -qr ../requirements.txt')
+
     os.remove('../requirements.txt')
-    # os.system('cp Requirements/requirements.txt ../requirements.txt')
+
+    # Installs the requiremnts which we have mentioned explicitly
     shutil.copy(os.path.join('Requirements', 'requirements.txt'), os.path.join('..', 'requirements.txt'))
     os.system('pip3 install -qr ../requirements.txt')
-
-def parse_opt(known=False):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--device', default='cpu', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    opt = parser.parse_known_args()[0] if known else parser.parse_args()
-    return opt
-
-def run(**kwargs):
-    # Usage: import train; train.run(imgsz=320, weights='yolov5m.pt')
-    opt = parse_opt(True)
-    for k, v in kwargs.items():
-        setattr(opt, k, v)
-    main(opt)
-
-
-if __name__ == "__main__":
-    opt = parse_opt()
-    main(opt)
+    
+    # Installs torch library for CUDA support
+    os.system('pip3 install --no-cache torch==1.9.0+cu111 torchvision==0.10.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html')
