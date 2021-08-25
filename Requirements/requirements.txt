@@ -1,0 +1,9 @@
+jupyter
+onnx_tf
+onnx
+tensorflow
+pandas
+matplotlib
+scipy
+tqdm
+numpy

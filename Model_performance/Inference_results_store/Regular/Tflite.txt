@@ -1,0 +1,1 @@
+For Tflite_fp32, inference is performed in the Tflite_fp16 script itself
