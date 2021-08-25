@@ -137,6 +137,19 @@ def pre_trained_model_dictionary():
     return pre_trained_model_paths
 
 def update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths, skip_train, skip_QAT_train, skip_Pruning, skip_P1_training, skip_P2_training, skip_P3_training, skip_P4_training):
+    '''
+    Updates the paths as per what training part we are skiping.
+    Replaces the paths with pre-trained models
+    ARGS :
+        running_model_paths : running model paths for exact paths as per the use-case
+        pre_trained_model_paths : pretrained-model-paths
+        skip_train : Skips the regular training part
+        skip_QAT_train : skips the QAT training part
+        skip_Pruning : Skip the entire pruning training part
+        skip_P1_training, skip_P2_training, skip_P3_training, skip_P4_training : Skips the individual training parts
+    RETURNS :
+        running_model_paths : Stores the path of model on which inference could be done(training sometimes)
+    '''
     if skip_train:
         running_model_paths['Regular']['Pytorch']['fp32'] = pre_trained_model_paths['Regular']['Pytorch']['fp32']
         running_model_paths['Regular']['Pytorch']['fp16'] = pre_trained_model_paths['Regular']['Pytorch']['fp16']
@@ -164,6 +177,15 @@ def update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_mod
 
 
 def prune_with_pre_trained_only(running_model_paths, pre_trained_model_paths):
+    '''
+    To force the inference on pre-trained model as pruning training could take more than enough time
+    ARGS : 
+        running_model_paths : Stores the path of model on which inference could be done(training sometimes)
+        pre_trained_model_paths : Pre-trained model paths required for assigning the paths to running model paths
+    RETURNS :
+        running_model_paths : Stores the path of model on which inference could be done(training sometimes).
+                            Returning after forced inference paths of pre-trained pruning models
+    '''
     running_model_paths['Pruning']['Pytorch']['P1'] = pre_trained_model_paths['Pruning']['Pytorch']['P1']
     running_model_paths['Pruning']['Pytorch']['P2'] = pre_trained_model_paths['Pruning']['Pytorch']['P2']
     running_model_paths['Pruning']['Pytorch']['P3'] = pre_trained_model_paths['Pruning']['Pytorch']['P3']
@@ -172,6 +194,11 @@ def prune_with_pre_trained_only(running_model_paths, pre_trained_model_paths):
     return running_model_paths
 
 def train_results_dictionary():
+    '''
+    To get the paths where runs of related training task would be saved just after the completion of training
+    RETURNS :
+        train_results_paths : training results paths ahead of running model training paths
+    '''
     train_results_paths = {
         'Regular': {
             'Pytorch' : {
@@ -195,6 +222,11 @@ def train_results_dictionary():
     return train_results_paths
 
 def infer_results_dictionary():
+    '''
+    To get the paths where results of related inference task would be saved just after the completion of inference.
+    RETURNS :
+        infer_paths : inference results paths to be stored in Model Performance folder
+    '''
     infer_paths = {
         'Regular': {
             'Pytorch' : {
@@ -230,6 +262,13 @@ def infer_results_dictionary():
     return infer_paths
 
 def test_results_dictionary():
+    '''
+    Not implemented in the pipeline yet.
+    To get the paths where results of related testing task would be saved just after the completion of\
+        teting over the test images which can be basically any folder of any images.
+    RETURNS :
+        test_results_paths : test results paths to be stored in Model Performance or Test_results folder
+    '''
     test_results_paths = {
         'Regular': {
             'Pytorch' : {
@@ -265,6 +304,13 @@ def test_results_dictionary():
     return test_results_paths
 
 def model_defined_names():
+    '''
+    Giving the name to every model.
+    Useful when displaying over the graphs.
+    Also useful to locate the model tored in runs or inference sections
+    RETURNS :
+        model_names : Uer defined names of models
+    '''
     model_names = {
         'Regular': {
             'Pytorch' : {
