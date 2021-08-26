@@ -87,25 +87,24 @@ def main(opt):
     if opt.skip_QAT_training == False:
         qat_py = QAT()
         qat_py.quantize(
-                save_dir = running_model_paths['Quantization']['Pytorch']['QAT'],
                 weights = opt.weights,
-                batch_size_QAT = opt.batch_size_QAT,
+                
                 cfg = opt.cfg, data = opt.data, hyp = opt.hyp,
-                rect = False, resume = False, nosave = False, noval = False, noautoanchor = False, evolve = 0, #doubt
-                bucket = False, cache_images = True, image_weights = False, device = opt.device, multi_scale = False,
-                single_cls = False, adam = False, sync_bn = False, workers = 8, entity = None,
+                batch_size_QAT = opt.batch_size_QAT, QAT_epochs = opt.QAT_epochs,
+                img_size = opt.img_size, cache_images = opt.cache_images,
+                device = opt.device,
+                single_cls = opt.single_cls, adam = opt.adam, workers = opt.workers,
+
                 project = train_results_paths['Quantization']['Pytorch']['QAT'],
                 name = model_names['Quantization']['Pytorch']['QAT'],
-                exist_ok = False, quad = False, linear_lr = False, label_smoothing = 0.0, upload_dataset = False,
-                bbox_interval = -1, save_period = -1, artifact_alias = 'latest', local_rank = -1, freeze = 0
                 )
 
     '''Pytorch Static Post Training Quantization(PTQ)'''
     ptq_py = PTQ()
     ptq_py.quantize(
-        weights = running_model_paths['Regular']['Pytorch']['fp32'],
+        weights = opt.weights,
+        cfg = opt.cfg, hyp = opt.hyp, device = 'cpu', data = opt.data,
         results = running_model_paths['Quantization']['Pytorch']['PTQ'],
-        cfg = opt.cfg, hyp = opt.hyp, device = 'cpu', data = opt.data
     )
 
 
@@ -132,42 +131,29 @@ def main(opt):
 
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--skip-train', action='store_true', help='skip the time taking regular training')
+    '''Arguments modifiable from Pipeline.py as well'''
+
+    '''For Pytroch QAT and PTQ'''
     parser.add_argument('--weights', type=str, default='yolov5s.pt', help='initial weights path')
     parser.add_argument('--cfg', type=str, default='', help='model.yaml path')
     parser.add_argument('--data', type=str, default='data/coco128.yaml', help='dataset.yaml path')
     parser.add_argument('--hyp', type=str, default='data/hyps/hyp.scratch.yaml', help='hyperparameters path')
-    parser.add_argument('--epochs', type=int, default=300)
-    parser.add_argument('--batch-size', type=int, default=16, help='total batch size for all GPUs')
-    parser.add_argument('--batch-size-QAT', type=int, default=64, help='training batch size for Quantize aware training')
+
+    '''For Pytorch QAT only'''
+    parser.add_argument('--QAT-epochs', type=int, default=30)
+    parser.add_argument('--batch-size-QAT', type=int, default=64, help='total batch size for all GPUs')
     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640, help='train, val image size (pixels)')
-    parser.add_argument('--rect', action='store_true', help='rectangular training')
-    parser.add_argument('--resume', nargs='?', const=True, default=False, help='resume most recent training')
-    parser.add_argument('--nosave', action='store_true', help='only save final checkpoint')
-    parser.add_argument('--noval', action='store_true', help='only validate final epoch')
-    parser.add_argument('--noautoanchor', action='store_true', help='disable autoanchor check')
-    parser.add_argument('--evolve', type=int, nargs='?', const=300, help='evolve hyperparameters for x generations')
-    parser.add_argument('--bucket', type=str, default='', help='gsutil bucket')
     parser.add_argument('--cache-images', action='store_true', help='cache images for faster training')
-    parser.add_argument('--image-weights', action='store_true', help='use weighted image selection for training')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--multi-scale', action='store_true', help='vary img-size +/- 50%%')
     parser.add_argument('--single-cls', action='store_true', help='train multi-class data as single-class')
     parser.add_argument('--adam', action='store_true', help='use torch.optim.Adam() optimizer')
-    parser.add_argument('--sync-bn', action='store_true', help='use SyncBatchNorm, only available in DDP mode')
     parser.add_argument('--workers', type=int, default=8, help='maximum number of dataloader workers')
-    parser.add_argument('--qat-project', default='../runs_QAT/train', help='save to project/name')
-    parser.add_argument('--entity', default=None, help='W&B entity')
-    parser.add_argument('--qat-name', default='exp', help='save to project/name')
-    parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    parser.add_argument('--quad', action='store_true', help='quad dataloader')
-    parser.add_argument('--linear-lr', action='store_true', help='linear LR')
-    parser.add_argument('--label-smoothing', type=float, default=0.0, help='Label smoothing epsilon')
-    parser.add_argument('--upload_dataset', action='store_true', help='Upload dataset as W&B artifact table')
-    parser.add_argument('--bbox_interval', type=int, default=-1, help='Set bounding-box image logging interval for W&B')
-    parser.add_argument('--save_period', type=int, default=-1, help='Log model after every "save_period" epoch')
-    parser.add_argument('--artifact_alias', type=str, default="latest", help='version of dataset artifact to be used')
-    parser.add_argument('--local_rank', type=int, default=-1, help='DDP parameter, do not modify')
+
+    '''For Tflite fp32->fpint8 Only'''
+    parser.add_argument('--repr-images')
+    parser.add_argument('--img')
+    parser.add_argument('--ncalib')
+
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 

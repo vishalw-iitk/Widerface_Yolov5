@@ -133,17 +133,20 @@ def main(opt):
     '''
     quantization.run(
         skip_QAT_training = opt.skip_QAT_training,
+
         running_model_paths = running_model_paths, framework_path = framework_path,
         weights = running_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
-        repr_images = opt.repr_images, batch_size_QAT = opt.batch_size_QAT, img = opt.img, ncalib = opt.ncalib,
+        
         cfg = opt.cfg, data = opt.data, hyp = opt.hyp,
-        rect = False, resume = False, nosave = False, noval = False, noautoanchor = False, evolve = 0, #doubt
-        bucket = False, cache_images = True,
-        image_weights = False, device = opt.device, multi_scale = False,
-        single_cls = False, adam = opt.adam,
-        sync_bn = False, workers = 8,
-        entity = None, exist_ok = False, quad = False, linear_lr = False, label_smoothing = 0.0, upload_dataset = False,
-        bbox_interval = -1, save_period = -1, artifact_alias = 'latest', local_rank = -1, freeze = 0
+        batch_size_QAT = opt.batch_size_QAT, QAT_epochs = opt.QAT_epochs,
+        img_size = opt.img_size,
+        cache_images = opt.cache_images,
+        device = opt.device,
+        single_cls = opt.single_cls,
+        adam = opt.adam,
+        workers = opt.workers,
+
+        repr_images = opt.repr_images, img = opt.img, ncalib = opt.ncalib
         ) 
 
     # Not implemented yet # model_conversion.run('Quantized')
@@ -181,52 +184,64 @@ def main(opt):
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--yolov5-repo-name', default = 'yolov5', help='Better not to pass this argument unless the name of the repo itself is changed\
-        Not using this argument and keeping it default is completely fine. yolov5 repo at ../workdir will be deleted to allow cloning and to deal with old-ultralytics version')
+                        Not using this argument and keeping it default is completely fine. yolov5 repo at ../workdir will be deleted to allow cloning\
+                        and to deal with old-ultralytics version')
     parser.add_argument('--results-folder_path', default= '../runs', help='training results will be stored inside ..runs/ directory')
     parser.add_argument('--clone-updated-yolov5', action='store_true', help='clone the updated yolov5 repository. This may not work if updates in the original yolv5 repo become incompatible with our setup')
     
     parser.add_argument('--device', default='cpu', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
 
+    '''Dataset paths'''
     parser.add_argument('--raw-dataset-path', type=str, default = '../RAW_DATASET', help='Path of the raw dataset which was just arranged from the downloaded dataset')
     parser.add_argument('--arranged-data-path', type=str, default = '../ARRANGED_DATASET', help='Path of the arranged dataset')
 
+    '''Partial dataset selection'''
     parser.add_argument('--partial-dataset', action='store_true', help='willing to select custom percentage of dataset')
     parser.add_argument('--percent-traindata', type=int, default=100, help=' percent_of_the_train_data_required')
     parser.add_argument('--percent-validationdata', type=int, default=100, help=' percent_of_the_validation_data_required')
     parser.add_argument('--percent-testdata', type=int, default=100, help='percent_of_the_test_data_required')
 
+    parser.add_argument('--weights', type=str, default='', help='initial weights path')
     parser.add_argument('--batch-size', type=int, default=128, help='training batch size')
-    parser.add_argument('--batch-size-QAT', type=int, default=64, help='training batch size for Quantize aware training')
+    parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=416, help='train, val image size (pixels)')
 
-    parser.add_argument('--epochs', type=int, default=300, help='')   
+    parser.add_argument('--epochs', type=int, default=250, help='training epochs')   
     parser.add_argument('--adam', action='store_true', help='use torch.optim.Adam() optimizer') 
     parser.add_argument('--img-size', type=int, default = 416, help = 'Image size suitable for feeding to the model')
-    parser.add_argument('--single-cls', action='store_true', help='treat as single-class dataset')
-    parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
+    
+    parser.add_argument('--retrain-on-pre-trained', action='store_true', help= 'Retrain using the pre-trained weights')
 
+    parser.add_argument('--single-cls', action='store_true', help='treat as single-class dataset')
+    parser.add_argument('--cache-images', action='store_true', help='cache images for faster training')
+    parser.add_argument('--workers', type=int, default=8, help='maximum number of dataloader workers')
+    
     parser.add_argument('--cfg', type=str, default='../yolov5/models/yolov5s.yaml', help='model.yaml path')
     parser.add_argument('--data', type=str, default='data.yaml', help='dataset.yaml path')
     parser.add_argument('--hyp', type=str, default='../yolov5/data/hyps/hyp.scratch.yaml', help='hyperparameters path')
     
-    parser.add_argument('--retrain-on-pre-trained', action='store_true', help= 'Retrain using the pre-trained weights')
-    parser.add_argument('--skip-training', action='store_true', help='skip the time taking regular training')
+    '''Inference only'''
+    parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
+
+    '''Pytorch QAT training only'''
     parser.add_argument('--skip-QAT-training', action='store_true', help='skip the time taking Quantizze Aware training training')
-    parser.add_argument('--qat-project', default='../runs_QAT/train', help='save to project/name')
-    parser.add_argument('--qat-name', default='exp', help='save to project/name')
-    parser.add_argument('--QAT-epochs', type=int, default=50, help='')
+    parser.add_argument('--batch-size-QAT', type=int, default=64, help='training batch size for Quantize aware training')
+    parser.add_argument('--QAT-epochs', type=int, default=50, help='QAT training epochs')
+    
+    '''Pytorch QAT and PTQ inference'''
     parser.add_argument('--batch-size-inferquant', type=int, default=32, help='batch size for quantization inference')
 
+    '''Tflite int8 Only'''
     parser.add_argument('--repr-images', type=str, default='../ARRANGED_DATASET/images/validation/', help='path of representative dataset')
     parser.add_argument('--img', nargs='+', type=int, default=[640, 640], help='image size')  # height, width
     parser.add_argument('--ncalib', type=int, default=100, help='number of calibration images')
 
-    parser.add_argument('--weights', type=str, default='', help='initial weights path')
-    parser.add_argument('--local-rank', type=int, default=-1, help='DDP parameter, do not modify')
-
+    '''Skiping training'''
+    parser.add_argument('--skip-training', action='store_true', help='skip the time taking regular training')
     parser.add_argument('--skip-pruning', action='store_true', help='skip the time taking Pruning training')
     parser.add_argument('--skip-P1-training', action='store_true', help='skip the time taking Pruning m1 training')
     parser.add_argument('--skip-P2-training', action='store_true', help='skip the time taking Pruning m2 training')
     parser.add_argument('--skip-P4-training', action='store_true', help='skip the time taking Pruning m4 training')
+    
     parser.add_argument('--prune-infer-on-pre-pruned-only', action='store_true', help='pruning inference on pre-pruned stored model only and not on recently pruned in pipeline')
     parser.add_argument('--prune-iterations', type=int, default=5, help='prune+retrain total number of iterations') 
     parser.add_argument('--prune-retrain-epochs', type=int, default=100, help=' number of retrain epochs after pruning')

@@ -196,10 +196,10 @@ def run(data,
             interpreter.invoke()
             t1 += time_sync() - t
             #get output data from output node index
-            pred = interpreter.get_tensor(output_details[0]['index'])
+            pred = interpreter.get_tensor(output_details[-1]['index'])
             if tfl_int8:
                 #Transform back predicted data
-                scale, zero_point = output_details[0]['quantization']
+                scale, zero_point = output_details[-1]['quantization']
                 pred = pred.astype(np.float32)
                 pred = (pred - zero_point) * scale
             out = torch.tensor(pred)

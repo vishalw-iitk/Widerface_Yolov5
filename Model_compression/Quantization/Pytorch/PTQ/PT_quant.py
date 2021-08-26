@@ -112,7 +112,13 @@ def main(opt):
 def parse_opt(known = False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str, help='best_widerface_f32.pt')
+
+    parser.add_argument('--cfg', type=str, default='../yolov5/models/yolov5s.yaml', help='model.yaml path')
+    parser.add_argument('--data', type=str, default='data.yaml', help='dataset.yaml path')
+    parser.add_argument('--hyp', type=str, default='../yolov5/data/hyps/hyp.scratch.yaml', help='hyperparameters path')
+    
     parser.add_argument('--results', type=str, help='val_results')
+    
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 

@@ -270,7 +270,8 @@ def run(opt, running_model_paths):
         half = False,
         tfl_int8 = False
         )
-
+    print("the required....Tflite_fp16")
+    print(running_model_metrics['Quantization']['Tflite']['fp16'])
 
     '''*********************  Pruning  ***************'''
     # Pytorch
