@@ -8,7 +8,7 @@ Implementation       :
     -Quantization:
         Pytorch  :   Quantize Aware training(fp32 -> int8)    |   Static Post Training Quantization(PTQ)(fp32 -> int8)
         Tflite   :    fp32 -> fp16(PTQ)                       |   fp32 -> int8(PTQ) (Inference not implemented yet)
-    -Pruning     :   Global Unstructured (P1, P2, P3 here)    |   Channel-wise Structured (called P4 here)
+    -Pruning     :   Global Unstructured (P1, P2 here)    |   Channel-wise Structured (called P4 here)
 '''
 
 ''' Importing the libraries '''
@@ -30,7 +30,7 @@ from dts.model_paths \
 def main(opt):
     '''
     To clone the Ultralytics-repository's latest version or\
-    to continue working it's older version which we already have inside this repo.
+    to continue working on the version which we already have inside this repo.
     '''
     begin.run(
         yolov5_repo_name = opt.yolov5_repo_name,
@@ -72,7 +72,7 @@ def main(opt):
     model_names = model_defined_names()
 
     '''The paths updated here will be taken for inference results'''
-    running_model_paths = update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths, opt.skip_training, opt.skip_QAT_training, opt.skip_pruning, opt.skip_P1_training, opt.skip_P2_training, opt.skip_P3_training, opt.skip_P4_training)
+    running_model_paths = update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths, opt.skip_training, opt.skip_QAT_training, opt.skip_pruning, opt.skip_P1_training, opt.skip_P2_training, opt.skip_P4_training)
 
     '''Training the model. Either from scratch, or by using the widerface pre-trained weights'''
     if opt.skip_training == False:
@@ -110,12 +110,11 @@ def main(opt):
     ****************  PRUNING  *******************
     Two major section of pruning are implemented
     1) Unstructured with different initialization schemes
-    2) Structured(Pre-trained-model-yet-to-achieve)
+    2) Structured
     '''
     pruning.run(
         skip_pruning = opt.skip_pruning,
-        skip_P1_training = opt.skip_P1_training, skip_P2_training= opt.skip_P2_training,
-        skip_P3_training = opt.skip_P3_training, skip_P4_training = opt.skip_P4_training,
+        skip_P1_training = opt.skip_P1_training, skip_P2_training= opt.skip_P2_training, skip_P4_training = opt.skip_P4_training,
         running_model_paths = running_model_paths, pre_trained_model_paths = pre_trained_model_paths,
         weights = running_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
         prune_retrain_epochs = opt.prune_retrain_epochs, num_iterations = opt.prune_iterations, prune_perc = opt.prune_perc,
@@ -227,7 +226,6 @@ def parse_opt(known=False):
     parser.add_argument('--skip-pruning', action='store_true', help='skip the time taking Pruning training')
     parser.add_argument('--skip-P1-training', action='store_true', help='skip the time taking Pruning m1 training')
     parser.add_argument('--skip-P2-training', action='store_true', help='skip the time taking Pruning m2 training')
-    parser.add_argument('--skip-P3-training', action='store_true', help='skip the time taking Pruning m3 training')
     parser.add_argument('--skip-P4-training', action='store_true', help='skip the time taking Pruning m4 training')
     parser.add_argument('--prune-infer-on-pre-pruned-only', action='store_true', help='pruning inference on pre-pruned stored model only and not on recently pruned in pipeline')
     parser.add_argument('--prune-iterations', type=int, default=5, help='prune+retrain total number of iterations') 

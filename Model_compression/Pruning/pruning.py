@@ -38,12 +38,6 @@ class P2(Pytorch):
     def prune(self, **kwargs):
         prune_train.run(**kwargs)
 
-class P3(Pytorch):
-    def __init__(self):
-        Pytorch.__init__(self)
-        # to save path
-    def prune(self, **kwargs):
-        prune_train.run(**kwargs)
         
 class P4(Pytorch):
     def __init__(self):
@@ -65,7 +59,6 @@ def main(opt):
     '''
     P1 Pruning : Pruning on previously trained weights with Random Reinitialize.
     P2 Pruning : Pruning on previously trained weights with theta0 Reinitialize.
-    P3 Pruning : Pruning on previously trained weights with retaining parameter. 
     P4 Pruning : Structured pruning 
     '''
 
@@ -96,19 +89,6 @@ def main(opt):
                     data=opt.data,cfg=opt.cfg, 
                     hyp=opt.hyp,exist_ok=True)
 
-    if opt.skip_P3_training == False:
-        #no reinit
-        p3_py = P3()
-        for i in range(opt.num_iterations):
-            p3_py.prune(weights=opt.weights, 
-                    batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_retrain_epochs,
-                    project = train_results_paths['Pruning']['Pytorch']['P3'],
-                    name=model_names['Pruning']['Pytorch']['P3'],     
-                    prune_perc=opt.prune_perc,prune_iter=i,
-                    random_reinit=False, theta0_reinit=False,
-                    data=opt.data,cfg=opt.cfg,
-                    hyp=opt.hyp,exist_ok=True)
-    
     if opt.skip_P4_training == False:
         p4_py = P4()
         p4_py.prune(

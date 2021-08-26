@@ -113,13 +113,6 @@ class P2_PyP(PruningP):
         results_dictionary = infer_regular.run(**kwargs)
         return results_dictionary
 
-class P3_PyP(PruningP):
-    def __init__(self):
-        PruningP.__init__(self)
-    def metrics(self, **kwargs):
-        results_dictionary = infer_regular.run(**kwargs)
-        return results_dictionary
-        
 class P4_PyP(PruningP):
     def __init__(self):
         PruningP.__init__(self)
@@ -146,10 +139,6 @@ def run(opt, running_model_paths):
     running_model_metrics = running_model_paths
     infer_paths = infer_results_dictionary()
     model_name = model_defined_names()
-
-    # Regular model Pytroch val results
-    # infer_paths['Regular']['Pytorch']['fp32']
-    # model_name['Regular']['Pytorch']['fp32']
     
     project = infer_paths['Regular']['Pytorch']['fp32'],
     name = model_name['Regular']['Pytorch']['fp32']
@@ -379,29 +368,6 @@ def run(opt, running_model_paths):
     print("the required...regular P2")
     print(running_model_metrics['Pruning']['Pytorch']['P2'])
 
-
-
-    project = infer_paths['Pruning']['Pytorch']['P3']
-    name = model_name['Pruning']['Pytorch']['P3']
-    save_dir = os.path.join(project, name)
-    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-    (Path(save_dir) / 'labels' if opt.save_txt else Path(save_dir)).mkdir(parents=True, exist_ok=True)  # make dir
-    # os.makedirs(infer_paths['Pruning']['Pytorch']['P3']) if not os.path.exists(infer_paths['Pruning']['Pytorch']['P3']) else None
-    p3_finetune = P3_PyP()
-    running_model_metrics['Pruning']['Pytorch']['P3'] = p3_finetune.metrics(
-        weights = running_model_paths['Pruning']['Pytorch']['P3'],
-        cfg = opt.cfg,
-        device = opt.device,
-        img_size = opt.img_size,
-        batch_size = opt.batch_size,
-        data = opt.data,
-        hyp = opt.hyp,
-        single_cls = opt.single_cls,
-        save_dir = Path(save_dir),
-        save_txt = opt.save_txt
-    )
-    print("the required...regular P3")
-    print(running_model_metrics['Pruning']['Pytorch']['P3'])
 
     project = infer_paths['Pruning']['Pytorch']['P4']
     name = model_name['Pruning']['Pytorch']['P4']

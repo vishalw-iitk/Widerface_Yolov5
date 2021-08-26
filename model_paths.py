@@ -77,24 +77,23 @@ def running_model_dictionary():
         },
         'Quantization': {
             'Pytorch' : {
-                'PTQ' : os.path.join('..', 'Model_compression', 'Quantization', 'Pytorch', 'PTQ', 'best.pt'), #'path',
+                'PTQ' : os.path.join('..', 'Model_compression', 'Quantization', 'Pytorch', 'PTQ', 'best.pt'), 
                 'QAT' : os.path.join('..', 'runs', 'Quantization', 'QAT', 'Quantized_Pytorch_QAT', 'weights', 'best.pt') #'path-Time-Taker(store-expicitly)'
                 },
             'Tflite' : {
-                'fp16' : os.path.join('..', 'Model_compression', 'Quantization', 'Tflite', 'fp16', 'best.tflite'),#'path',
-                'int8' : os.path.join('..', 'Model_compression', 'Quantization', 'Tflite', 'int8', 'best.tflite') #'path'
+                'fp16' : os.path.join('..', 'Model_compression', 'Quantization', 'Tflite', 'fp16', 'best.tflite'),
+                'int8' : os.path.join('..', 'Model_compression', 'Quantization', 'Tflite', 'int8', 'best.tflite')
             }
         },
         'Pruning': {
             'Pytorch' : {
-                'P1' : os.path.join('..', 'runs', 'Pruning', 'P1', 'Pruned_Pytorch_P1', 'weights', 'best.pt'), #'path-Time-Taker(store-expicitly)',
-                'P2' : os.path.join('..', 'runs', 'Pruning', 'P2', 'Pruned_Pytorch_P2', 'weights', 'best.pt'), #'path'
-                'P3' : os.path.join('..', 'runs', 'Pruning', 'P3', 'Pruned_Pytorch_P3', 'weights', 'best.pt'), #'path-Time-Taker(store-expicitly)',
-                'P4' : os.path.join('..', 'runs', 'Pruning', 'P4', 'Pruned_Pytorch_P4', 'weights', 'last.pt') #'path'
+                'P1' : os.path.join('..', 'runs', 'Pruning', 'P1', 'Pruned_Pytorch_P1', 'weights', 'best.pt'),
+                'P2' : os.path.join('..', 'runs', 'Pruning', 'P2', 'Pruned_Pytorch_P2', 'weights', 'best.pt'),
+                'P4' : os.path.join('..', 'runs', 'Pruning', 'P4', 'Pruned_Pytorch_P4', 'weights', 'last.pt')
             },
             'Tflite' : {
-                'P1' : os.path.join('..', 'Model_compression', 'Pruning', 'Tflite', 'P1', 'best.pt'), #'path',
-                'P2' : os.path.join('..', 'Model_compression', 'Pruning', 'Tflite', 'P2', 'best.pt') #'path'
+                'P1' : os.path.join('..', 'Model_compression', 'Pruning', 'Tflite', 'P1', 'best.pt'),
+                'P2' : os.path.join('..', 'Model_compression', 'Pruning', 'Tflite', 'P2', 'best.pt')
             }
         }
     }
@@ -112,23 +111,22 @@ def pre_trained_model_dictionary():
     pre_trained_model_paths = {
         'Regular' : {
             'Pytorch' : {
-                'fp32' : os.path.join('..', 'Pre_trained_model', 'Regular', 'Pytorch', 'fp32', 'best.pt'), #'path',
-                'fp16' : os.path.join('..', 'Pre_trained_model', 'Regular', 'Pytorch', 'fp16', 'best.pt') #'path'
+                'fp32' : os.path.join('..', 'Pre_trained_model', 'Regular', 'Pytorch', 'fp32', 'best.pt'),
+                'fp16' : os.path.join('..', 'Pre_trained_model', 'Regular', 'Pytorch', 'fp16', 'best.pt') 
             },
             'Tflite' : {
-                'fp32' : os.path.join('..', 'Pre_trained_model', 'Regular', 'Pytorch', 'fp32', 'best.tflite') #'path',
+                'fp32' : os.path.join('..', 'Pre_trained_model', 'Regular', 'Pytorch', 'fp32', 'best.tflite')
                 }
         },
         'Quantization' : {
             'Pytorch' : {
-                'QAT' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Quantization', 'QAT', 'best.pt') #'path'
+                'QAT' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Quantization', 'QAT', 'best.pt')
             }
         },
         'Pruning' : {
             'Pytorch' : {
-                'P1' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Pruning', 'P1', 'best.pt'), #'path'
+                'P1' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Pruning', 'P1', 'best.pt'),
                 'P2' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Pruning', 'P2', 'best.pt'),
-                'P3' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Pruning', 'P3', 'best.pt'),
                 'P4' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Pruning', 'P4', 'last.pt'),
                 'theta0' : os.path.join('..', 'Pre_trained_model', 'Regular', 'Pytorch', 'fp32', 'best.pt')
             }
@@ -136,7 +134,7 @@ def pre_trained_model_dictionary():
     }
     return pre_trained_model_paths
 
-def update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths, skip_train, skip_QAT_train, skip_Pruning, skip_P1_training, skip_P2_training, skip_P3_training, skip_P4_training):
+def update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths, skip_train, skip_QAT_train, skip_Pruning, skip_P1_training, skip_P2_training, skip_P4_training):
     '''
     Updates the paths as per what training part we are skiping.
     Replaces the paths with pre-trained models
@@ -146,7 +144,7 @@ def update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_mod
         skip_train : Skips the regular training part
         skip_QAT_train : skips the QAT training part
         skip_Pruning : Skip the entire pruning training part
-        skip_P1_training, skip_P2_training, skip_P3_training, skip_P4_training : Skips the individual training parts
+        skip_P1_training, skip_P2_training, skip_P4_training : Skips the individual training parts
     RETURNS :
         running_model_paths : Stores the path of model on which inference could be done(training sometimes)
     '''
@@ -161,15 +159,12 @@ def update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_mod
     if skip_Pruning:
         running_model_paths['Pruning']['Pytorch']['P1'] = pre_trained_model_paths['Pruning']['Pytorch']['P1']
         running_model_paths['Pruning']['Pytorch']['P2'] = pre_trained_model_paths['Pruning']['Pytorch']['P2']
-        running_model_paths['Pruning']['Pytorch']['P3'] = pre_trained_model_paths['Pruning']['Pytorch']['P3']
         running_model_paths['Pruning']['Pytorch']['P4'] = pre_trained_model_paths['Pruning']['Pytorch']['P4']
     else:
         if skip_P1_training:
             running_model_paths['Pruning']['Pytorch']['P1'] = pre_trained_model_paths['Pruning']['Pytorch']['P1']
         if skip_P2_training:
             running_model_paths['Pruning']['Pytorch']['P2'] = pre_trained_model_paths['Pruning']['Pytorch']['P2']
-        if skip_P3_training:
-            running_model_paths['Pruning']['Pytorch']['P3'] = pre_trained_model_paths['Pruning']['Pytorch']['P3']
         if skip_P4_training:
             running_model_paths['Pruning']['Pytorch']['P4'] = pre_trained_model_paths['Pruning']['Pytorch']['P4']
 
@@ -188,7 +183,6 @@ def prune_with_pre_trained_only(running_model_paths, pre_trained_model_paths):
     '''
     running_model_paths['Pruning']['Pytorch']['P1'] = pre_trained_model_paths['Pruning']['Pytorch']['P1']
     running_model_paths['Pruning']['Pytorch']['P2'] = pre_trained_model_paths['Pruning']['Pytorch']['P2']
-    running_model_paths['Pruning']['Pytorch']['P3'] = pre_trained_model_paths['Pruning']['Pytorch']['P3']
     running_model_paths['Pruning']['Pytorch']['P4'] = pre_trained_model_paths['Pruning']['Pytorch']['P4']
 
     return running_model_paths
@@ -214,7 +208,6 @@ def train_results_dictionary():
             'Pytorch' : {
                 'P1' : os.path.join('..', 'runs', 'Pruning', 'P1'),
                 'P2' : os.path.join('..', 'runs', 'Pruning', 'P2'),
-                'P3' : os.path.join('..', 'runs', 'Pruning', 'P3'),
                 'P4' : os.path.join('..', 'runs', 'Pruning', 'P4')               
             }
         }
@@ -250,7 +243,6 @@ def infer_results_dictionary():
             'Pytorch' : {
                 'P1' : os.path.join('..', 'Model_performance', 'Inference_results', 'Pruning', 'Pytorch', 'P1', 'val'),
                 'P2' : os.path.join('..', 'Model_performance', 'Inference_results', 'Pruning', 'Pytorch', 'P2', 'val'),
-                'P3' : os.path.join('..', 'Model_performance', 'Inference_results', 'Pruning', 'Pytorch', 'P3', 'val'),
                 'P4' : os.path.join('..', 'Model_performance', 'Inference_results', 'Pruning', 'Pytorch', 'P4', 'val')
             },
             'Tflite' : {
@@ -292,7 +284,6 @@ def test_results_dictionary():
             'Pytorch' : {
                 'P1' : os.path.join('..', 'Model_performance', 'TestData_results', 'Pruning', 'Pytorch', 'P1'),
                 'P2' : os.path.join('..', 'Model_performance', 'TestData_results', 'Pruning', 'Pytorch', 'P2'),
-                'P3' : os.path.join('..', 'Model_performance', 'TestData_results', 'Pruning', 'Pytorch', 'P3'),
                 'P4' : os.path.join('..', 'Model_performance', 'TestData_results', 'Pruning', 'Pytorch', 'P4')
             },
             'Tflite' : {
@@ -334,7 +325,6 @@ def model_defined_names():
             'Pytorch' : {
                 'P1' : 'Pruned_Pytorch_P1',
                 'P2' : 'Pruned_Pytorch_P2',
-                'P3' : 'Pruned_Pytorch_P3',
                 'P4' : 'Pruned_Pytorch_P4'
             },
             'Tflite' : {
@@ -418,14 +408,6 @@ def plot_dictionary():
                     'size' : 1
                 },
                 'P2' : {
-                    'mAP50' : 40,
-                    'mAP' : 10,
-                    'fitness' : 10,
-                    'latency' : 10,
-                    'GFLOPS' : 100,
-                    'size' : 1,
-                },
-                'P3' : {
                     'mAP50' : 40,
                     'mAP' : 10,
                     'fitness' : 10,
