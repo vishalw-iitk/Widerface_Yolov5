@@ -31,6 +31,15 @@ def plot_one_box(x, im, color=(128, 128, 128), label=None, line_thickness=3):
 
 
 def gt_overlay(gt_path, pred_path,source,out_path):
+    """creats bounding boxes of ground truths and predicted results on image
+    
+        Arguments:
+            gt_path   : Directory path of Ground Truths txt files.
+            pred_path : Directory path of Predicted txt files.
+            source    : Directory path of source images.
+            out_path  : Directory path of results.
+    
+    """
     if not os.path.isdir(out_path):
         os.makedirs(out_path)
     p = str(Path(source).absolute())
