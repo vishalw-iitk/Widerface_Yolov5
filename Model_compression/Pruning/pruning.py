@@ -66,7 +66,8 @@ def main(opt):
     #random re-init
         p1_py = P1()
         for i in range(opt.num_iterations):
-            p1_py.prune(weights=opt.weights,
+            print("++++++    Starting iteration " + str(i) + " of P1 iterative pruning    +++++++++")
+            p1_py.prune(weights=opt.weights if i==0 else train_results_paths['Pruning']['Pytorch']['P1']+'/'+model_names['Pruning']['Pytorch']['P1']+'/weights/best.pt',
                         batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_retrain_epochs,
                         project = train_results_paths['Pruning']['Pytorch']['P1'],
                         name=model_names['Pruning']['Pytorch']['P1'],     
@@ -80,7 +81,8 @@ def main(opt):
         #theta0 re-init
         p2_py = P2()
         for i in range(opt.num_iterations):
-            p2_py.prune(weights=opt.weights, 
+            print("++++++    Starting iteration " + str(i) + " of P2 iterative pruning    +++++++++")
+            p2_py.prune(weights=opt.weights if i==0 else train_results_paths['Pruning']['Pytorch']['P2']+'/'+model_names['Pruning']['Pytorch']['P2']+'/weights/best.pt', 
                     batch_size=opt.batch_size, imgsz=opt.img,epochs=opt.prune_retrain_epochs,
                     project = train_results_paths['Pruning']['Pytorch']['P2'],
                     name=model_names['Pruning']['Pytorch']['P2'],     

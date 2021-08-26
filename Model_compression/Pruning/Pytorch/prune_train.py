@@ -44,6 +44,49 @@ LOCAL_RANK = int(os.getenv('LOCAL_RANK', -1))  # https://pytorch.org/docs/stable
 RANK = int(os.getenv('RANK', -1))
 WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
 
+def measure_module_sparsity(module, weight=True, bias=False, use_mask=True):
+
+    num_zeros = 0
+    num_elements = 0
+
+    if use_mask == True:
+        for buffer_name, buffer in module.named_buffers():
+            if "weight_mask" in buffer_name and weight == True:
+                num_zeros += torch.sum(buffer == 0).item()
+                num_elements += buffer.nelement()
+            if "bias_mask" in buffer_name and bias == True:
+                num_zeros += torch.sum(buffer == 0).item()
+                num_elements += buffer.nelement()
+    else:
+        for param_name, param in module.named_parameters():
+            if "weight" in param_name and weight == True:
+                num_zeros += torch.sum(param == 0).item()
+                num_elements += param.nelement()
+            if "bias" in param_name and bias == True:
+                num_zeros += torch.sum(param == 0).item()
+                num_elements += param.nelement()
+
+    sparsity = num_zeros / num_elements
+
+    return num_zeros, num_elements, sparsity
+
+
+def measure_global_sparsity(model, use_mask=False):
+
+    num_zeros = 0
+    num_elements = 0
+
+    for module_name, module in model.named_modules():
+
+        if isinstance(module, torch.nn.Conv2d) and module_name[:-2] != 'model.24.m':
+            module_num_zeros, module_num_elements, _ = measure_module_sparsity(module,use_mask=use_mask)
+            num_zeros += module_num_zeros
+            num_elements += module_num_elements
+
+    sparsity = num_zeros / num_elements
+
+    return num_zeros, num_elements, sparsity
+
 
 def train(hyp,  # path/to/hyp.yaml or hyp dictionary
           opt,
@@ -265,9 +308,11 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         for name, m in model.named_modules():
             if isinstance(m, nn.Conv2d) and name[:-2] != 'model.24.m':
                 parameters_to_prune.append((m, 'weight'))
-
+        
+        _,_,sparsity = measure_global_sparsity(model,use_mask=False)
+        print("before global pruning, sparsity is: ",sparsity)
         prune.global_unstructured(parameters_to_prune,pruning_method=prune.L1Unstructured,amount=prune_percentages[opt.prune_iter])
-                
+
         #making pruning permanent   
         for module,param in parameters_to_prune:
             prune.remove(module,param)
@@ -308,7 +353,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             del ckpt, csd, theta0_model
             
         del pruned_model_sd
-        
+        _,_,sparsity = measure_global_sparsity(model,use_mask=False)
+        print("After reinit, sparsity is: ",sparsity)        
     prune_and_reinit(model,opt.prune_perc)
     
     
