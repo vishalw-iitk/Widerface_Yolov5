@@ -217,16 +217,12 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
         if not resume:
             labels = np.concatenate(dataset.labels, 0)
-            # c = torch.tensor(labels[:, 0])  # classes
-            # cf = torch.bincount(c.long(), minlength=nc) + 1.  # frequency
-            # model._initialize_biases(cf.to(device))
             if plots:
                 plot_labels(labels, names, save_dir)
 
             # Anchors
             if not opt.noautoanchor:
                 check_anchors(dataset, model=model, thr=hyp['anchor_t'], imgsz=imgsz)
-            # model.half().float()  # pre-reduce anchor precision
 
         callbacks.on_pretrain_routine_end()
 
@@ -259,32 +255,28 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 f'Logging results to {save_dir}\n'
                 f'Starting training for {epochs} epochs...')
     
-    
+    #Pruning Methord 
     def prune_and_reinit(model,percentage):
-        #global pruning
         import torch.nn.utils.prune as prune
         import torch.nn.init as init
-        #from dts.utils.prune_utils import measure_global_sparsity
         parameters_to_prune = []
         a = percentage
-        prune_percentages = (1.0/100)*np.array([a,(a**(1.0/2)),(a**(1.0/3)),(a**(1.0/4)),(a**(1.0/5))])
+        prune_percentages = (1.0/100)*np.array([a,(a**(1.0/2)),(a**(1.0/3)),(a**(1.0/4)),(a**(1.0/5))]) #Decaying Pruning Percentage
         prune_percentages = np.cumsum(prune_percentages)
         print(prune_percentages)
+        '''
+        Appending name of layers for which pruning is required.
+        '''
         for name, m in model.named_modules():
             if isinstance(m, nn.Conv2d) and name[:-2] != 'model.24.m':
                 parameters_to_prune.append((m, 'weight'))
 
-        #_,_,sparsity = measure_global_sparsity(model,use_mask=False)
-        #print("before global pruning, sparsity is: ",sparsity)
-        
         prune.global_unstructured(parameters_to_prune,pruning_method=prune.L1Unstructured,amount=prune_percentages[opt.prune_iter])
                 
         #making pruning permanent   
         for module,param in parameters_to_prune:
             prune.remove(module,param)
                   
-        #_,_,sparsity = measure_global_sparsity(model,use_mask=False)
-        #print("After pruning permanent, sparsity is: ",sparsity)
         pruned_model_sd = model.state_dict()
         #reinitialization after pruning permanent
         if opt.random_reinit:
@@ -299,6 +291,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             rsd = random_model.state_dict()
             model.load_state_dict(rsd, strict=False)
             del rsd,random_model
+        
         if opt.theta0_reinit:
             #load theta0_model
             exclude = ['anchor']# exclude keys
@@ -320,8 +313,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             del ckpt, csd, theta0_model
             
         del pruned_model_sd
-        #_,_,sparsity = measure_global_sparsity(model,use_mask=False)
-        #print("After reinit, sparsity is: ",sparsity)
+        
     prune_and_reinit(model,opt.prune_perc)
     
     
@@ -342,10 +334,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 if RANK != 0:
                     dataset.indices = indices.cpu().numpy()
 
-        # Update mosaic border
-        # b = int(random.uniform(0.25 * imgsz, 0.75 * imgsz + gs) // gs * gs)
-        # dataset.mosaic_border = [b - imgsz, -b]  # height, width borders
-
+       
         mloss = torch.zeros(3, device=device)  # mean losses
         if RANK != -1:
             train_loader.sampler.set_epoch(epoch)
@@ -361,7 +350,6 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             # Warmup
             if ni <= nw:
                 xi = [0, nw]  # x interp
-                # compute_loss.gr = np.interp(ni, xi, [0.0, 1.0])  # iou loss ratio (obj_loss = 1.0 or iou)
                 accumulate = max(1, np.interp(ni, xi, [1, nbs / batch_size]).round())
                 for j, x in enumerate(optimizer.param_groups):
                     # bias lr falls from 0.1 to lr0, all other lrs rise from 0.0 to lr0

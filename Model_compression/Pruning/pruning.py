@@ -1,8 +1,5 @@
 import argparse
 import os
-# from dts.model_paths import running_model_dictionary
-# from dts.model_paths import pre_trained_model_dictionary
-# from dts.model_paths import frameworks
 from dts.Model_conversion import model_export
 from dts.Model_compression.Pruning.Pytorch import prune_train
 from dts.Model_compression.Pruning.Pytorch.P4 import train
@@ -71,17 +68,19 @@ class TFP2(Tflite):
 
 
 def main(opt):
-    # running_model_paths = opt.running_model_paths
-    # framework_path = opt.framework_path
-    # weights = running_model_paths['Regular']['Pytorch']['fp32']
     if opt.skip_pruning == True:
         return
     
     train_results_paths = train_results_dictionary()
     model_names = model_defined_names()
     pre_trained_model_paths = pre_trained_model_dictionary()
-    # running_model_paths = opt.running_model_paths
-    # framework_path = opt.framework_path
+
+    '''
+    P1 Pruning : Pruning on previously trained weights with Random Reinitialize.
+    P2 Pruning : Pruning on previously trained weights with theta0 Reinitialize.
+    P3 Pruning : Pruning on previously trained weights with retaining parameter. 
+    P4 Pruning : Structured pruning 
+    '''
 
     if opt.skip_P1_training == False:
     #random re-init
@@ -140,25 +139,6 @@ def main(opt):
             sr = opt.sr
             )
 
-    # p2_py = P2()
-    # p2_py.prune()
-
-    # Tflite
-    # tfl_p1 = TFP1()
-    # tfl_p1.prune(
-        # model_type_for_export = 'pruned_tfl_fp16',
-        # framework_path = framework_path
-        # )
-
-    # tfl_p2 = TFP2()
-    # tfl_p2.prune(
-        # model_type_for_export = 'pruned_tfl_int8',
-        # framework_path = framework_path,
-        # repr_images = opt.repr_images,
-        # img = opt.img,
-        # ncalib = opt.ncalib
-    # )
-        
 
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
