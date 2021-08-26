@@ -147,17 +147,17 @@ python Pipeline.py --batch-size 32 --img-size 416 --epochs 1 --device '0' --adam
 
 <div align="center">
 
-|Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) | |GFOPs<br><sup>416 |Size<br><sup> (Mb)
-|---                    |---  |---  |---      |---      |---      |---     |---|---   |---
-|YOLOv5s      |416  |fp16  |0.605|0.31 |-     |**-** |   |6.92   |14.4
-|             |     |     |         |         |         |        |   |      |
-|Pruning_1(G)     |416 |fp16     |-     |-     |-     |-    |   |-  |-
-|Pruning_2(P)     |416 |fp16     |-     |-     |-     |-    |   |-  |-
-|                 |     |     |         |         |         |        |   |      |
-|Q_tf             |416 |fp16     |-     |-     |-     |-    |   |-  |-
-|PTQ     |416 |int8     |-     |-     |-     |-    |   |-  |-
-|QAT     |416 |int8     |-     |-     |-     |-    |   |-  |-
-|                       |     |     |         |         |         |        |   |      |
+|Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) |GFOPs<br><sup>416 |Size<br><sup> (Mb)
+|---                    |---  |---  |---      |---      |---      |---     |---   |---
+|YOLOv5s      |416  |fp16  |0.605|0.31 |-     |**-** |6.92   |14.4
+|             |     |     |         |         |         |        |      |
+|Pruning_1(G)     |416 |fp16     |-     |-     |-     |-    |-  |-
+|Pruning_2(P)     |416 |fp16     |-     |-     |-     |-    |-  |-
+|                 |     |     |         |         |         |        |      |
+|Q_tf             |416 |fp16     |-     |-     |-     |-    |-  |-
+|PTQ     |416 |int8     |-     |-     |-     |-    |-  |-
+|QAT     |416 |int8     |-     |-     |-     |-    |-  |-
+|                       |     |     |         |         |         |        |      |
 </div>
 <details>
 <summary>Table Notes (<b>Reproduce</b>)</summary>
