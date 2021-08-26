@@ -53,19 +53,6 @@ class P4(Pytorch):
         train.run(**kwargs)
 
 
-# Tflite
-class TFP1(Tflite):
-    def __init__(self):
-        Tflite.__init__(self)
-    def prune(self, **kwargs):
-        model_export.run(**kwargs)
-
-class TFP2(Tflite):
-    def __init__(self):
-        Tflite.__init__(self)
-    def prune(self, **kwargs):
-        model_export.run(**kwargs)
-
 
 def main(opt):
     if opt.skip_pruning == True:
