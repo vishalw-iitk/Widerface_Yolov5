@@ -5,8 +5,6 @@ import yaml
 import os
 import argparse
 
-# sys.path.append("../../../../..")
-# from dts.Model_performance.Inference_results_store.Quantization.Pytorch.load_and_infer
 from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.models.yolo import Model
 from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo.utils.torch_utils import ModelEMA
 
@@ -18,8 +16,6 @@ from dts.Model_compression.Quantization.Pytorch.QAT.yolov5_repo import val  # fo
 
 from pathlib import Path
 
-# class pytorch_load_quantized_model:
-#     def __init__():
 def quantized_load(
         weights = None,
         cfg = None,
@@ -31,18 +27,13 @@ def quantized_load(
         fuse = True
     ):
 
-    # rel_path = '../../../../..'
 
     with open(data) as f:
-        data_dict = yaml.safe_load(f)  # data dict
+        data_dict = yaml.safe_load(f)   # data dict
     
-    # Hyperparameters
-    # if isinstance(hyp, str):
     with open(hyp) as f:
-        hyp = yaml.safe_load(f)  # load hyps dict
-
-    # x = torch.load(f, map_location=torch.device('cpu'))
-    
+        hyp = yaml.safe_load(f)         # load hyps dict
+  
     nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
     model = Model(cfg = cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)
     model.train()
@@ -54,54 +45,18 @@ def quantized_load(
 
     imgs = torch.randint(255, (2,3, img_size, img_size))
     imgs = imgs.to(device = device, non_blocking=True).float() / 255.0
-    # nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
-    # model = Model(cfg = cfg, ch=3, nc=nc, anchors=hyp.get('anchors')).to(device)
-    # necessary to fix the min_max tensors shape
     _ = model(imgs)
 
 
     model.eval()
     model = torch.quantization.convert(model)
 
-    # model.load_state_dict(x['model'])
-
-
-
-    # model.train()
-
-    # quantization_config = torch.quantization.get_default_qat_qconfig("fbgemm")
-    # model.qconfig = quantization_config
-    # torch.quantization.prepare_qat(model, inplace=True)
-
-    # model.eval()
-
-    # model = torch.quantization.convert(model)
-    
-    # print("is it errr")
-    # pred = model(imgs)
-    # print("pred1", pred.shape)
-
     ckpt = torch.load(weights, map_location=torch.device(device))
 
     state_dict = ckpt['model']
 
-    state_dict = intersect_dicts(state_dict, model.state_dict())  # intersect   
-    model.load_state_dict(state_dict, strict=False)  # load
-
-    # print(model)
-    # pred = model(imgs)
-    # print("pred2", pred.shape)
-
-    # c = 2
-    # for i ,j in zip(state_dict.keys(), model.state_dict().keys()):
-    #     c = c - 1
-    #     print(state_dict[i])
-    #     print(model.state_dict()[i])
-    #     print('\n')
-    #     if c == 0:
-    #         break
-        
-
+    state_dict = intersect_dicts(state_dict, model.state_dict())    # intersect   
+    model.load_state_dict(state_dict, strict=False)                 # load
     return model
 
 def get_mAP_and_fitness_score(
@@ -118,82 +73,42 @@ def get_mAP_and_fitness_score(
         fuse = True
     ):
 
-    # save_dir = name
-
     model = quantized_load(weights, cfg, device, img_size, data, hyp, single_cls, fuse)
-
-
-    # imgs = torch.randint(255, (1,3, img_size, img_size))
-    # import numpy as np
-    # imgs = np.random.randint(256, size=(1,3, img_size, img_size)) # 0 to 255
-    # imgs = torch.from_numpy(imgs).to(device)
-    # imgs = imgs.float()  # uint8 to fp16/32
-    # _ = model(imgs)
-    # print("pred shape", pred.shape)
-
-
-    # ckpt = torch.load(weights, map_location=torch.device(device))
-    # fitness_score = ckpt['best_fitness'] if ckpt.get('best_fitness') else None
-
     with open(data) as f:
-        data_dict = yaml.safe_load(f)  # data dict
+        data_dict = yaml.safe_load(f)               # data dict
     
-    # Hyperparameters
-    # if isinstance(hyp, str):
     with open(hyp) as f:
-        hyp = yaml.safe_load(f)  # load hyps dict
+        hyp = yaml.safe_load(f)                     # load hyps dict
 
     nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
-    # batch_size = 4
-    # WORLD_SIZE = 2
     WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
     imgsz = img_size
     gs = max(int(model.stride.max()), 32)
-    nl = model.model[-1].nl  # number of detection layers (used for scaling hyp['obj'])
+    nl = model.model[-1].nl                     # number of detection layers (used for scaling hyp['obj'])
     workers = 8
 
     # Model parameters
-    hyp['box'] *= 3. / nl  # scale to layers
-    hyp['cls'] *= nc / 80. * 3. / nl  # scale to classes and layers
+    hyp['box'] *= 3. / nl                       # scale to layers
+    hyp['cls'] *= nc / 80. * 3. / nl            # scale to classes and layers
     hyp['obj'] *= (imgsz / 640) ** 2 * 3. / nl  # scale to image size and layers
     hyp['label_smoothing'] = 0.0
-    model.nc = nc  # attach number of classes to model
-    model.hyp = hyp  # attach hyperparameters to model
-    model.gr = 1.0  # iou loss ratio (obj_loss = 1.0 or iou)
-
-    # compute_loss = ComputeLoss(model)
-    # print("loss value", compute_loss)
-
-    # train_path = data_dict['train']
+    model.nc = nc                               # attach number of classes to model
+    model.hyp = hyp                             # attach hyperparameters to model
+    model.gr = 1.0                              # iou loss ratio (obj_loss = 1.0 or iou)
     val_path = data_dict['val']
-    # print("****************")
-    # print(val_path)
-
     val_loader = create_dataloader(val_path, imgsz, batch_size_inferquant // WORLD_SIZE * 2, gs,
                                         hyp=hyp, rect=True, rank=-1,
                                         workers=workers, pad=0.5,
                                         cache = True,
                                         prefix=colorstr('val: '))[0]
 
-    # save_dir = os.path.join(project, name)
     results, class_wise_maps, t = val.run(data_dict,
-                                # batch_size=batch_size // WORLD_SIZE * 2,
                                 batch_size_QAT = batch_size_inferquant  // WORLD_SIZE * 2,
                                 imgsz=imgsz,
                                 model=model,
-                                # single_cls=single_cls,
                                 dataloader=val_loader,
-                                # project=project,
-                                # name = name,
                                 save_dir=save_dir,
                                 save_txt = save_txt,
-                                # conf_thres = 0.0001,
-                                # iou_thres = 0.00001,
-                                # save_json=is_coco and final_epoch,
-                                # verbose=nc < 50 and final_epoch,
-                                # plots=plots and final_epoch,
-                                # wandb_logger=wandb_logger,
-                                # compute_loss=compute_loss
                                 )
 
     return results, class_wise_maps, t
@@ -214,30 +129,6 @@ def parse_opt(known=False):
 
 
 def main(opt):
-    # model = quantized_load(
-    #     weights = opt.weights,
-    #     cfg = opt.cfg,
-    #     device = 'cpu',
-    #     img_size = opt.img_size,
-    #     data = opt.data,
-    #     hyp = opt.hyp,
-    #     single_cls = opt.single_cls
-    # )
-    # imgs = torch.randint(255, (1,3, opt.img_size, opt.img_size))
-    # # pred = model(imgs)
-    # # print("pred shape", pred.shape)
-    
-    # from flopth import flopth
-    # try:
-    #     print("opoppp")
-    #     pred = model(imgs.float()/255.0)
-    #     print(list(pred.shape))
-    #     sum_flops = flopth(model, in_size=[[1, 3, 416, 416], list(pred.shape)])
-    #     print(sum_flops)
-    # except Exception as e:
-    #     print(e)
-
-    # print(model)
     results, class_wise_maps, t = get_mAP_and_fitness_score(
             weights = opt.weights,
             cfg = opt.cfg,
