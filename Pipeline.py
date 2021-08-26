@@ -1,7 +1,7 @@
 '''
 To perform face detection over WIDERFACE dataset and get the trained model and \
     then optimize the obtained model using Pruning and Quantization.
-Model architechture used : Yolov5s
+Model architechture  : Yolov5s
 Implementation       :
     -Model trained   :   Pytorch fp16 and fp32 models         |   Tflite fp32 model via export
     -ONNX export     :   Pytorch->ONNX->tf_pb_keras->TFLITE
@@ -72,7 +72,7 @@ def main(opt):
     model_names = model_defined_names()
 
     '''The paths updated here will be taken for inference results'''
-    running_model_paths = update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths, opt.skip_train, opt.skip_QAT_train, opt.skip_Pruning, opt.skip_P1_training, opt.skip_P2_training, opt.skip_P3_training, opt.skip_P4_training)
+    running_model_paths = update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths, opt.skip_training, opt.skip_QAT_training, opt.skip_pruning, opt.skip_P1_training, opt.skip_P2_training, opt.skip_P3_training, opt.skip_P4_training)
 
     '''Training the model. Either from scratch, or by using the widerface pre-trained weights'''
     if opt.skip_training == False:
@@ -88,10 +88,11 @@ def main(opt):
             bbox_interval = -1, save_period = -1, artifact_alias = 'latest', local_rank = -1, freeze = 0
         )
         if opt.clone_updated_yolov5 == True:
-            fp_type_conversion('fp16_to_fp32', opt.device, running_model_paths)
+            conversion_type = 'fp16_to_fp32'
         else:
-            fp_type_conversion('fp132_to_fp16', opt.device, running_model_paths)
-    
+            conversion_type = 'fp32_to_fp16'
+        fp_type_conversion(conversion_type, opt.device, opt.cfg, opt.data, opt.hyp, opt.single_cls, opt.img_size, running_model_paths)
+
     # Not to use fp16 path onwards
     # Use fp32 path
     '''

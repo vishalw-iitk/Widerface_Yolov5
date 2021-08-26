@@ -1,22 +1,7 @@
 
 
-# additional subgradient descent on the sparsity-induced penalty term
-# def updateBN(model):
-#     for m in model.named_modules():
-#         if isinstance(m, nn.BatchNorm2d):
-#             print("find bn layer...")
-#             m.weight.grad.data.add_(0.001*torch.sign(m.weight.data))  # L1
-
-# ================================
-
-"""Train a YOLOv5 model on a custom dataset
-
-Usage:
-    $ python path/to/train.py --data coco128.yaml --weights yolov5s.pt --img 640
-"""
-
+''' Importing the libraries '''
 import argparse
-# from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_yolo import ModelPruned
 import logging
 import os
 import random
@@ -24,7 +9,6 @@ import sys
 import time
 from copy import deepcopy
 from pathlib import Path
-
 import math
 import numpy as np
 import torch
@@ -37,9 +21,8 @@ from torch.optim import Adam, SGD, lr_scheduler
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 
-# FILE = Path(__file__).absolute()
-# sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
 
+''' Files and functions imports '''
 from dts.Model_compression.Pruning.Pytorch.P4 import val  # for end-of-epoch mAP
 from yolov5.models.experimental import attempt_load
 from yolov5.models.yolo import Model
@@ -57,6 +40,7 @@ from yolov5.utils.metrics import fitness
 from yolov5.utils.loggers import Loggers
 from yolov5.utils.callbacks import Callbacks
 from yolov5.models.common import Bottleneck
+# from dts.Model_compression.Pruning.Pytorch.P1.models.pruned_yolo import ModelPruned
 
 LOGGER = logging.getLogger(__name__)
 LOCAL_RANK = int(os.getenv('LOCAL_RANK', -1))  # https://pytorch.org/docs/stable/elastic/run.html
@@ -64,8 +48,6 @@ RANK = int(os.getenv('RANK', -1))
 WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
 
 def measure_module_sparsity(module, weight=True, bias=False, use_mask=False):
-    # print("inside module sparsity")
-
     num_zeros = 0
     num_elements = 0
 
@@ -96,7 +78,6 @@ def measure_global_sparsity(model,
                             conv2d_use_mask=False,
                             linear_use_mask=False):
 
-    # print("inside global sparsity")
     num_zeros = 0
     num_elements = 0
 
@@ -396,8 +377,15 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
 
             # # ============================= sparsity training ========================== #
+            '''
+            Sparsity trainng starts here.....
+            sr is the sparsity training rate and st means we want to perform sparsity training
+
+            '''
             srtmp = opt.sr*(1 - 0.9*epoch/epochs)
             if opt.st:
+                '''Ignoring the Batch-Norm layers coming in the skip-connection\
+                    as, if these concatenations can achieve different sparsities hence preventing the approach'''
                 ignore_bn_list = []
                 for k, m in model.named_modules():
                     if isinstance(m, Bottleneck):
@@ -406,6 +394,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                             ignore_bn_list.append(k + '.cv1.bn')
                             ignore_bn_list.append(k + '.cv2.bn')
                     if isinstance(m, nn.BatchNorm2d) and (k not in ignore_bn_list):
+                        '''Penalizing the bn weights and biases by means of L1-Norm'''
                         m.weight.grad.data.add_(srtmp * torch.sign(m.weight.data))  # L1
                         m.bias.grad.data.add_(opt.sr*10 * torch.sign(m.bias.data))  # L1
             # # ============================= sparsity training ========================== #
@@ -504,8 +493,20 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             bnb_weights[index:(index + size)] = module_bias_list[idx].data.abs().clone()
             index += size
 
-        print("bn_weights:", torch.sort(bn_weights))
+        bn_weight_sorted_tensor = torch.sort(bn_weights)
+        print("bn_weights:", bn_weight_sorted_tensor)
         print("bn_bias:", torch.sort(bnb_weights))
+
+        mp, mr, map50, map, loss, = [results[i] for i in range(0,5)]
+        try:
+            '''Attempting to save the epoch with the model having \
+                lowest bn weight tensor value less than 0.001 and\
+                     mAP50 of greater than 40%
+                Hence, in this case, we should consider last.pt as the pruned model'''
+            if bn_weight_sorted_tensor.values[0] < 0.001 and map50 > 40:
+                break
+        except Exception as err:
+            print(err)
         # SummaryWriter.add_histogram('bn_weights/hist', bn_weights.numpy(), epoch, bins='doane')
         # SummaryWriter.add_histogram('bn_bias/hist', bnb_weights.numpy(), epoch, bins='doane')
 
@@ -533,6 +534,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}")
 
     # ===================================================================
+    '''Pruning size optimization is yet to be achieved
+    Target is to get the subset of the current architechture
+    '''
     if False:
         
         from dts.Model_compression.Pruning.Pytorch.P1.prune_utils import gather_bn_weights, obtain_bn_mask

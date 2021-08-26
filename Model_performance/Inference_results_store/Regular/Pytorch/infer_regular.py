@@ -15,6 +15,7 @@ def run(
         cfg = None,
         device = 'cpu',
         img_size = 416,
+        batch_size = 32,
         data = 'data.yaml',
         hyp = 'data/hyps/hyp.scratch.yaml',
         single_cls = False,
@@ -29,11 +30,6 @@ def run(
     MLmodel.load_pytorch(
         model_path = weights,
         model_name_user_defined = model_name_user_defined,
-        cfg = cfg,
-        imgsz = img_size,
-        data = data,
-        hyp = hyp,
-        single_cls = single_cls,
         model_class = model_type
     )
     print(MLmodel.statement)
@@ -55,7 +51,7 @@ def run(
         hyp = yaml.safe_load(f)  # load hyps dict
 
     nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
-    batch_size = 4
+    # batch_size = 4
     # WORLD_SIZE = 2
     WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
     imgsz = img_size

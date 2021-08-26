@@ -90,7 +90,7 @@ def running_model_dictionary():
                 'P1' : os.path.join('..', 'runs', 'Pruning', 'P1', 'Pruned_Pytorch_P1', 'weights', 'best.pt'), #'path-Time-Taker(store-expicitly)',
                 'P2' : os.path.join('..', 'runs', 'Pruning', 'P2', 'Pruned_Pytorch_P2', 'weights', 'best.pt'), #'path'
                 'P3' : os.path.join('..', 'runs', 'Pruning', 'P3', 'Pruned_Pytorch_P3', 'weights', 'best.pt'), #'path-Time-Taker(store-expicitly)',
-                'P4' : os.path.join('..', 'runs', 'Pruning', 'P4', 'Pruned_Pytorch_P4', 'weights', 'best.pt') #'path'
+                'P4' : os.path.join('..', 'runs', 'Pruning', 'P4', 'Pruned_Pytorch_P4', 'weights', 'last.pt') #'path'
             },
             'Tflite' : {
                 'P1' : os.path.join('..', 'Model_compression', 'Pruning', 'Tflite', 'P1', 'best.pt'), #'path',
@@ -129,7 +129,7 @@ def pre_trained_model_dictionary():
                 'P1' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Pruning', 'P1', 'best.pt'), #'path'
                 'P2' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Pruning', 'P2', 'best.pt'),
                 'P3' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Pruning', 'P3', 'best.pt'),
-                'P4' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Pruning', 'P4', 'best.pt'),
+                'P4' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Pruning', 'P4', 'last.pt'),
                 'theta0' : os.path.join('..', 'Pre_trained_model', 'Regular', 'Pytorch', 'fp32', 'best.pt')
             }
         }

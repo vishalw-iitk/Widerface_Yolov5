@@ -1,40 +1,66 @@
+'''
+Loading the models on different frameworks such as pytorch, ONNX, tf_pb and tflite
+'''
+
+''' Importing the libraries '''
 import onnx
 import torch
 
 class load_the_model:
+    
+    '''
+    To load the models such as :
+        Pytorch normal/regular model
+        ONNX model
+        Tf_pb_keras (loading as a converter)
+        Loading the tflite model
+    '''
+
     def __init__(self, device_name):
+        '''Device on which the model will be loaded'''
         self.device_name = device_name
-    def load_pytorch(self, model_path, model_name_user_defined, cfg, imgsz, data, hyp, single_cls, model_class = 'any'):
+
+
+    def load_pytorch(self, model_path, model_name_user_defined, model_class = 'any'):
         if model_class == 'Regular':
+            '''Loading the Pytorch model using attemot load so fp32 model version/dtype is loaded'''
             from yolov5.models.experimental import attempt_load
             self.model = attempt_load(model_path, map_location=self.device_name)  # load FP32 model
-            
-        elif model_class == 'QAT quantized':
-            self.model = quantized_load(model_path, cfg, self.device_name, imgsz, data, hyp, single_cls)
-            
         else:
+            '''Trying to load any other pytorch model weights'''
             self.model = torch.load(model_path, map_location = torch.device(self.device_name))
-            pass
         self.statement = model_name_user_defined + " has been loaded"
-    
+
+
     def load_onnx(self, model_path, model_name_user_defined):
+        '''Loading the ONNX model using the pytorch model path'''
         self.model = onnx.load(model_path)
         self.statement = model_name_user_defined + " has been loaded"
 
+
     def load_tf_pb(self, model_path, model_name_user_defined):
+        '''Not loading the tf_pb keras model'''
         import tensorflow as tf
         pass
-    
+
+
     def load_tf_pb_as_tflite_converter(self, model_path, model_name_user_defined):
+        '''Loading the tf_pb as tflite_converter'''
         import tensorflow as tf
         self.converter =  tf.compat.v1.lite.TFLiteConverter.from_saved_model(model_path)
         self.statement = model_name_user_defined + " has been loaded"
-    
+
+
     def load_tflite(self, model_path, model_name_user_defined):
+        '''Loading the tflite model'''
         import tensorflow as tf
         with open(model_path, 'rb') as fid:
             self.model = fid.read()
         self.statement = model_name_user_defined + " has been loaded"
+
+# =========================================================================
+# In case you want to experiment on loading the model separately
+
 
 # MLmodel = load_the_model('cpu')
 
