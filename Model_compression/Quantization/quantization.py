@@ -2,7 +2,7 @@
     ****************  QUANTIZATION  *******************
     Four Quantization schemes implemented
     1) Quantize aware training  2) Static Post training Quantization(Static PTQ)
-    3) Tflite fp32 PTQ          4) Tflite int8 PTQ
+    3) Tflite fp16 PTQ          4) Tflite int8 PTQ
 '''
 
 ''' Importing the libraries '''
@@ -125,7 +125,7 @@ def main(opt):
         model_type_for_export = model_names['Quantization']['Tflite']['int8'],
         framework_path = framework_path,
         model_names = model_names,
-        repr_images = opt.repr_images, img = opt.img, ncalib = opt.ncalib
+        repr_images = opt.repr_images, imgtf = opt.imgtf, ncalib = opt.ncalib
     )
         
 
@@ -150,9 +150,9 @@ def parse_opt(known=False):
     parser.add_argument('--workers', type=int, default=8, help='maximum number of dataloader workers')
 
     '''For Tflite fp32->fpint8 Only'''
-    parser.add_argument('--repr-images')
-    parser.add_argument('--img')
-    parser.add_argument('--ncalib')
+    parser.add_argument('--repr-images', type=str, default='../ARRANGED_DATASET/images/validation/', help='path of representative dataset')
+    parser.add_argument('--imgtf', nargs='+', type=int, default=[640, 640], help='image size')  # height, width
+    parser.add_argument('--ncalib', type=int, default=100, help='number of calibration images')
 
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt

@@ -146,7 +146,7 @@ def main(opt):
         adam = opt.adam,
         workers = opt.workers,
 
-        repr_images = opt.repr_images, img = opt.img, ncalib = opt.ncalib
+        repr_images = opt.repr_images, imgtf = opt.imgtf, ncalib = opt.ncalib
         ) 
 
     # Not implemented yet # model_conversion.run('Quantized')
@@ -203,11 +203,10 @@ def parse_opt(known=False):
 
     parser.add_argument('--weights', type=str, default='', help='initial weights path')
     parser.add_argument('--batch-size', type=int, default=128, help='training batch size')
-    parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=416, help='train, val image size (pixels)')
 
     parser.add_argument('--epochs', type=int, default=250, help='training epochs')   
     parser.add_argument('--adam', action='store_true', help='use torch.optim.Adam() optimizer') 
-    parser.add_argument('--img-size', type=int, default = 416, help = 'Image size suitable for feeding to the model')
+    parser.add_argument('--img-size', type=int, default = 416, help = 'Image size suitable for feeding to the model and train, val image size (pixels)')
     
     parser.add_argument('--retrain-on-pre-trained', action='store_true', help= 'Retrain using the pre-trained weights')
 
@@ -232,7 +231,7 @@ def parse_opt(known=False):
 
     '''Tflite int8 Only'''
     parser.add_argument('--repr-images', type=str, default='../ARRANGED_DATASET/images/validation/', help='path of representative dataset')
-    parser.add_argument('--img', nargs='+', type=int, default=[640, 640], help='image size')  # height, width
+    parser.add_argument('--imgtf', nargs='+', type=int, default=[640, 640], help='image size')  # height, width
     parser.add_argument('--ncalib', type=int, default=100, help='number of calibration images')
 
     '''Skiping training'''

@@ -164,7 +164,7 @@ def main(opt):
     
     def repr_im():
         try:
-            return opt.ncalib, LoadImages(opt.repr_images, img_size=opt.img), representative_dataset_gen
+            return opt.ncalib, LoadImages(opt.repr_images, img_size=opt.imgtf), representative_dataset_gen
         except:
             return None, None, None
     ncalib, dataset, representative_dataset_gen = repr_im()
@@ -182,6 +182,10 @@ def parse_opt(known=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_type_for_export', default= 'Regular_fp32', help='')
     parser.add_argument('--skip-training', action='store_true', help='skip the time taking regular training')
+    parser.add_argument('--repr-images', type=str, default='../ARRANGED_DATASET/images/validation/', help='path of representative dataset')
+    parser.add_argument('--imgtf', nargs='+', type=int, default=[640, 640], help='image size')  # height, width
+    parser.add_argument('--ncalib', type=int, default=100, help='number of calibration images')
+
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     running_model_paths = running_model_dictionary()
     pre_trained_model_paths = pre_trained_model_dictionary()
