@@ -163,7 +163,14 @@ def main(opt):
     performance dictionary so as to plot the performance results
     Inference not yet available for Tflite int8 quantized model
     '''
-    plot_results = inference_results.run(opt, running_model_paths) #mAP0.5, mAP0.5:0.95, fitness_score, latency, GFLOPs, Size
+    plot_results = inference_results.run(   #mAP0.5, mAP0.5:0.95, fitness_score, latency, Size, GFLOPs
+        cfg = opt.cfg, data = opt.data,  hyp = opt.hyp,
+        device = opt.device,
+        img_size = opt.img_size,  batch_size = opt.batch_size,  batch_size_inferquant = opt.batch_size_inferquant,
+        single_cls = opt.single_cls,  save_txt = opt.save_txt,
+        running_model_paths = running_model_paths,
+        conf_thres = opt.conf_thres,  iou_thres = opt.iou_thres
+        )
     print(plot_results)
     
     # Not implemented yet
@@ -172,7 +179,7 @@ def main(opt):
     '''
     Getting the model performance plots stored inside plot_metrics folder
     '''
-    plot_the_performance.run(plot_results,save_dir = '../plot_metrics')
+    plot_the_performance.run(plot_results, save_dir = '../plot_metrics')
 
 
 
@@ -207,7 +214,8 @@ def parse_opt(known=False):
     parser.add_argument('--epochs', type=int, default=250, help='training epochs')   
     parser.add_argument('--adam', action='store_true', help='use torch.optim.Adam() optimizer') 
     parser.add_argument('--img-size', type=int, default = 416, help = 'Image size suitable for feeding to the model and train, val image size (pixels)')
-    
+
+    parser.add_argument('--skip-training', action='store_true', help='skip the time taking regular training')
     parser.add_argument('--retrain-on-pre-trained', action='store_true', help= 'Retrain using the pre-trained weights')
 
     parser.add_argument('--single-cls', action='store_true', help='treat as single-class dataset')
@@ -217,6 +225,9 @@ def parse_opt(known=False):
     parser.add_argument('--cfg', type=str, default='../yolov5/models/yolov5s.yaml', help='model.yaml path')
     parser.add_argument('--data', type=str, default='data.yaml', help='dataset.yaml path')
     parser.add_argument('--hyp', type=str, default='../yolov5/data/hyps/hyp.scratch.yaml', help='hyperparameters path')
+    
+    parser.add_argument('--conf-thres', type=float, default=0.001, help='confidence threshold')
+    parser.add_argument('--iou-thres', type=float, default=0.6, help='NMS IoU threshold')
     
     '''Inference only'''
     parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
@@ -234,13 +245,11 @@ def parse_opt(known=False):
     parser.add_argument('--imgtf', nargs='+', type=int, default=[640, 640], help='image size')  # height, width
     parser.add_argument('--ncalib', type=int, default=100, help='number of calibration images')
 
-    '''Skiping training'''
-    parser.add_argument('--skip-training', action='store_true', help='skip the time taking regular training')
+    '''Pruning'''
     parser.add_argument('--skip-pruning', action='store_true', help='skip the time taking Pruning training')
     parser.add_argument('--skip-P1-training', action='store_true', help='skip the time taking Pruning m1 training')
     parser.add_argument('--skip-P2-training', action='store_true', help='skip the time taking Pruning m2 training')
-    parser.add_argument('--skip-P4-training', action='store_true', help='skip the time taking Pruning m4 training')
-    
+    parser.add_argument('--skip-P4-training', action='store_true', help='skip the time taking Pruning m4 training')  
     parser.add_argument('--prune-infer-on-pre-pruned-only', action='store_true', help='pruning inference on pre-pruned stored model only and not on recently pruned in pipeline')
     parser.add_argument('--prune-iterations', type=int, default=5, help='prune+retrain total number of iterations') 
     parser.add_argument('--prune-retrain-epochs', type=int, default=100, help=' number of retrain epochs after pruning')
