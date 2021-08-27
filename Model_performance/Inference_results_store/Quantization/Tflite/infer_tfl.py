@@ -184,7 +184,7 @@ def run(data,
             out, train_out = model(img, augment=augment)  # inference and training outputs
             t1 += time_sync() - t
         elif suffix=='.tflite':
-            input_data = np.array(img)
+            input_data = img.cpu().numpy()
             if tfl_int8:
                 #Transform input data to format required by integer tflite model
                 scale, zero_point = input_details[0]['quantization']
@@ -202,7 +202,7 @@ def run(data,
                 scale, zero_point = output_details[-1]['quantization']
                 pred = pred.astype(np.float32)
                 pred = (pred - zero_point) * scale
-            out = torch.tensor(pred)
+            out = torch.tensor(pred).to(device)
 
         # Compute loss
         if compute_loss:
