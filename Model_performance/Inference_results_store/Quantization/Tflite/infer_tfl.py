@@ -102,6 +102,7 @@ def run(data,
         ):
     # Initialize/load model and set device
     training = model is not None
+    gflops = None
     if training:  # called by train.py
         device = next(model.parameters()).device  # get model device
 
@@ -127,7 +128,28 @@ def run(data,
             imgsz = check_img_size(imgsz, s=gs)
             interpreter = tf.lite.Interpreter(model_path=weights)
             interpreter.allocate_tensors()
-
+            '''
+            Gflops Integration 
+            https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/tools/flatbuffer_utils.py#L40
+            https://github.com/tensorflow/tensorflow/blob/v2.6.0/tensorflow/lite/python/interpreter.py#L650-L675
+            https://github.com/tensorflow/tensorflow/blob/cec1e90613e609eb04755e396e821d2346033c33/tensorflow/tools/benchmark/benchmark_model.cc#L148-L212
+            '''
+            pram = 0
+            tensor_details = interpreter.get_tensor_details()
+            for i in interpreter._get_ops_details():
+                if i['op_name'] == 'CONV_2D':
+                    filter = tensor_details[i['inputs'][1]]['shape']
+                    output = tensor_details[i['outputs'][0]]['shape']
+                    pram += 2 * filter[3] * filter[1] * \
+                        filter[2] * output[1] * output[2] * filter[0]
+                    pass
+                elif i['op_name'] == 'MUL':
+                    pram += i['inputs'][1] * i['outputs'][0] * 2
+                else:
+                    pass
+            gflops = pram / 1E9 
+            print(gflops, 'GFLOPs')
+            # Gflops -------------------------------------------------------
             # Get input and output details
             input_details = interpreter.get_input_details()
             output_details = interpreter.get_output_details()
@@ -328,7 +350,6 @@ def run(data,
     from yolov5.utils.metrics import fitness
     fi = fitness(np.array([mp, mr, map50, map]).reshape(1, -1))
     size = os.stat(weights).st_size/(1024.0*1024.0)
-    gflops = None
     return {'mAP50': map50, 'mAP' : map, 'fitness' : fi[0], 'size': size, 'latency' : t, 'GFLOPS' : gflops}
 
 
