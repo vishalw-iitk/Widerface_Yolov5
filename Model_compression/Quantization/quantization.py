@@ -71,15 +71,8 @@ def main(opt):
     train_results_paths = train_results_dictionary()
     model_names = model_defined_names()
 
-    try:
-        '''Running from the pipeline'''
-        running_model_paths = opt.running_model_paths
-        framework_path = opt.framework_path
-    except:
-        ''' If directly executing quantization.py(Not yet tested) '''
-        running_model_paths =  running_model_dictionary()
-        pre_trained_model_paths =  pre_trained_model_dictionary()
-        framework_path = frameworks(opt.skip_QAT_training, running_model_paths, pre_trained_model_paths)
+    running_model_paths = opt.running_model_paths
+    framework_path = opt.framework_path
     
     '''Pytorch'''
 
@@ -140,6 +133,7 @@ def parse_opt(known=False):
     parser.add_argument('--hyp', type=str, default='data/hyps/hyp.scratch.yaml', help='hyperparameters path')
 
     '''For Pytorch QAT only'''
+    parser.add_argument('--skip-QAT-training', action='store_true', help='skip the time taking Quantizze Aware training training')
     parser.add_argument('--QAT-epochs', type=int, default=30)
     parser.add_argument('--batch-size-QAT', type=int, default=64, help='total batch size for all GPUs')
     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640, help='train, val image size (pixels)')
@@ -155,6 +149,13 @@ def parse_opt(known=False):
     parser.add_argument('--ncalib', type=int, default=100, help='number of calibration images')
 
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
+
+    ''' If directly executing quantization.py(Not yet tested) '''
+    running_model_paths =  running_model_dictionary()
+    pre_trained_model_paths =  pre_trained_model_dictionary()
+    opt.framework_path = frameworks(opt.skip_QAT_training, running_model_paths, pre_trained_model_paths)
+    opt.running_model_paths = running_model_paths
+
     return opt
 
 
