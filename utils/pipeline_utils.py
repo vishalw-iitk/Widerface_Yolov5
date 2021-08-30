@@ -71,7 +71,7 @@ class regular_train(pipeline):
     def train_n_quant(self, opt):
         self.adam = opt.adam
         self.workers = opt.workers
-    def prun_n_quant(self, opt, paths):
+    def train_prun_n_quant(self, opt, paths):
         self.weights = paths.running_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights
     def prun_quant_infer(self, paths):
         self.running_model_paths = paths.running_model_paths
@@ -84,7 +84,7 @@ class regular_train(pipeline):
 
     def run(self, opt, paths):
         self.epochs = opt.epochs
-        self.weights = paths.pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights
+        self.train_prun_n_quant(opt, paths)
         self.project = paths.train_results_paths['Regular']['Pytorch']['fp32']
         self.name = paths.model_names['Regular']['Pytorch']['fp32']
         self.train_n_quant(opt)
@@ -128,11 +128,14 @@ class Pruning_(regular_train):
         self.prune_retrain_epochs = opt.prune_retrain_epochs
         self.num_iterations = opt.prune_iterations
         self.prune_perc = opt.prune_perc
+        self.theta0_weights = paths.pre_trained_model_paths['Pruning']['Pytorch']['theta0']
+        self.P1_saved = paths.running_model_paths['Pruning']['Pytorch']['P1']
+        self.P2_saved = paths.running_model_paths['Pruning']['Pytorch']['P2']
         self.st = opt.st
         self.sr = opt.sr
 
     def run(self, opt, paths):
-        regular_train.prun_n_quant(self, opt, paths)
+        regular_train.train_prun_n_quant(self, opt, paths)
         regular_train.prun_quant_infer(self, paths)
         ''' running_model_paths_modification for pruned model with pre-trained/pruned stored weights'''
         if opt.prune_infer_on_pre_pruned_only == True:
@@ -157,7 +160,7 @@ class Quantization_(regular_train):
 
     def run(self, opt, paths):
         regular_train.train_n_quant(self, opt)
-        regular_train.prun_n_quant(self, opt, paths)
+        regular_train.train_prun_n_quant(self, opt, paths)
         regular_train.prun_quant_infer(self, paths)
         regular_train.quant_infer(self, opt)
         regular_train.train_quant_infer(self, opt)
