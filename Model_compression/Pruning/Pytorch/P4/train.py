@@ -735,7 +735,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--st', action='store_true',default=True, help='train with L1 sparsity normalization')
-    parser.add_argument('--sr', type=float, default=0.01, help='L1 normal sparse rate')
+    parser.add_argument('--sr', type=float, default=0.001, help='L1 normal sparse rate')
     parser.add_argument('--weights', type=str, default='yolov5s.pt', help='initial weights path')
     parser.add_argument('--cfg', type=str, default='', help='model.yaml path')
     parser.add_argument('--data', type=str, default='data/coco128.yaml', help='dataset.yaml path')

@@ -4,7 +4,7 @@ from cv2 import data
 
 
 from dts.utils.load_the_models import load_the_model
-from dts.model_paths import running_model_dictionary
+from dts.model_paths import model_defined_names, running_model_dictionary
 from dts.model_paths import pre_trained_model_dictionary
 from yolov5 import export
 from pathlib import Path
@@ -190,6 +190,8 @@ def parse_opt(known=False):
     running_model_paths = running_model_dictionary()
     pre_trained_model_paths = pre_trained_model_dictionary()
     opt.framework_path = frameworks(opt.skip_training, running_model_paths, pre_trained_model_paths)
+
+    opt.model_names = model_defined_names()
     return opt
 
 def run(**kwargs):

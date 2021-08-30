@@ -120,8 +120,7 @@ def pre_trained_model_dictionary():
         },
         'Quantization' : {
             'Pytorch' : {
-                'QAT' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Quantization', 'QAT', 'best.pt'),
-                'PTQ' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Quantization', 'PTQ', 'best.pt')
+                'QAT' : os.path.join('..', 'Pre_trained_model', 'Model_compression', 'Quantization', 'QAT', 'best.pt')
             }
         },
         'Pruning' : {
@@ -153,7 +152,6 @@ def update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_mod
         running_model_paths['Regular']['Pytorch']['fp32'] = pre_trained_model_paths['Regular']['Pytorch']['fp32']
         running_model_paths['Regular']['Pytorch']['fp16'] = pre_trained_model_paths['Regular']['Pytorch']['fp16']
         running_model_paths['Regular']['Tflite']['fp32'] = pre_trained_model_paths['Regular']['Tflite']['fp32']
-        running_model_paths['Quantization']['Pytorch']['PTQ'] = pre_trained_model_paths['Quantization']['Pytorch']['PTQ']
     
     if skip_QAT_train:
         running_model_paths['Quantization']['Pytorch']['QAT'] = pre_trained_model_paths['Quantization']['Pytorch']['QAT']

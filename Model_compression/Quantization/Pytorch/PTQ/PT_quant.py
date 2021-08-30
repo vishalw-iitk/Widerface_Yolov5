@@ -107,6 +107,9 @@ def main(opt):
     }
     best = store_result / 'best.pt'
     torch.save(ckpt, best)
+    print("*******************************************")
+    print("Pytorch PTQ model has been saved...........")
+    print("*******************************************")
 
 
 def parse_opt(known = False):

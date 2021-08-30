@@ -73,33 +73,38 @@ def process_batch(detections, labels, iouv):
 
 
 @torch.no_grad()
-def run(data,
-        weights=None,  # model.pt path(s)
-        batch_size=32,  # batch size
-        imgsz=640,  # inference size (pixels)
-        conf_thres=0.001,  # confidence threshold
-        iou_thres=0.6,  # NMS IoU threshold
-        task='val',  # train, val, test, speed or study
-        device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
-        single_cls=False,  # treat as single-class dataset
-        augment=False,  # augmented inference
-        verbose=False,  # verbose output
-        save_txt=False,  # save results to *.txt
-        save_hybrid=False,  # save label+prediction hybrid results to *.txt
-        save_conf=False,  # save confidences in --save-txt labels
-        save_json=False,  # save a COCO-JSON results file
-        project='runs/val',  # save to project/name
-        name='exp',  # save to project/name
-        exist_ok=False,  # existing project/name ok, do not increment
-        half=False,  # use FP16 half-precision inference
-        model=None,
-        dataloader=None,
-        save_dir=Path(''),
-        plots=True,
-        callbacks=Callbacks(),
-        compute_loss=None,
-        tfl_int8 = False,
-        ):
+def run(**kwargs):
+    opt = parse_opt(True)
+    for k, v in kwargs.items():
+        setattr(opt, k, v)
+    print("data..", opt.data)
+    data = opt.data
+    weights=opt.weights  # model.pt path(s)
+    batch_size=opt.batch_size  # batch size
+    img_size=opt.img_size  # inference size (pixels)
+    conf_thres=opt.conf_thres  # confidence threshold
+    iou_thres=opt.iou_thres  # NMS IoU threshold
+    task=opt.task  # train, val, test, speed or study
+    device=opt.device  # cuda device, i.e. 0 or 0,1,2,3 or cpu
+    single_cls=opt.single_cls  # treat as single-class dataset
+    augment=opt.augment  # augmented inference
+    model = None
+    verbose=opt.verbose  # verbose output
+    save_txt=opt.save_txt  # save results to *.txt
+    save_hybrid=opt.save_hybrid  # save label+prediction hybrid results to *.txt
+    save_conf= opt.save_conf # save confidences in --save-txt labels
+    save_json=opt.save_json  # save a COCO-JSON results file
+    project=opt.project  # save to project/name
+    name=opt.name  # save to project/name
+    exist_ok=opt.exist_ok  # existing project/name ok, do not increment
+    half=opt.half  # use FP16 half-precision inference
+    save_dir=Path('')
+    plots=True
+    callbacks=Callbacks()
+    compute_loss=None
+    tfl_int8 = opt.tfl_int8
+
+    imgsz = img_size
     # Initialize/load model and set device
     training = model is not None
     if training:  # called by train.py
@@ -332,7 +337,7 @@ def run(data,
     return {'mAP50': map50, 'mAP' : map, 'fitness' : fi[0], 'size': size, 'latency' : t, 'GFLOPS' : gflops}
 
 
-def parse_opt():
+def parse_opt(known=False):
     parser = argparse.ArgumentParser(prog='val.py')
     parser.add_argument('--data', type=str, default='data.yaml', help='dataset.yaml path')
     parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
@@ -354,7 +359,9 @@ def parse_opt():
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     parser.add_argument('--half', action='store_true', help='use FP16 half-precision inference')
     parser.add_argument('--tfl_int8', action='store_true', help='use int8 quantized TFLite model')
-    opt = parser.parse_args()
+    
+    opt = parser.parse_known_args()[0] if known else parser.parse_args()
+
     opt.save_json |= opt.data.endswith('coco.yaml')
     opt.save_txt |= opt.save_hybrid
     opt.data = check_file(opt.data)  # check file

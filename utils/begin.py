@@ -47,8 +47,10 @@ def main(opt):
 
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--yolov5_repo_name', default= 'yolov5', help='')
-    parser.add_argument('--results_folder_path', default= '../runs', help='')
+    parser.add_argument('--yolov5-repo-name', default = 'yolov5', help='Better not to pass this argument unless the name of the repo itself is changed\
+                        Not using this argument and keeping it default is completely fine. yolov5 repo at ../workdir will be deleted to allow cloning\
+                        and to deal with old-ultralytics version')
+    parser.add_argument('--results-folder_path', default= '../runs', help='training results will be stored inside ..runs/ directory')
     parser.add_argument('--clone-updated-yolov5', action='store_true', help='clone the updated yolov5 repository. This may not work if updates in the original yolv5 repo become incompatible with our setup')
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
@@ -60,7 +62,7 @@ def run(**kwargs):
     main(opt)
 
 
-if __name__ == "__main__":
-    opt = parse_opt()
-    main(opt)
+# if __name__ == "__main__":
+opt = parse_opt(True)
+main(opt)
 

@@ -19,12 +19,9 @@ import argparse
 sys.path.append('..')
 
 ''' Files and functions imports '''
-from dts.utils import begin
-from dts.model_paths \
-    import \
-        running_model_dictionary, train_results_dictionary, pre_trained_model_dictionary,\
-        train_results_dictionary, model_defined_names, prune_with_pre_trained_only, frameworks, \
-        update_to_running_paths_with_pretrianed
+from dts.utils.pipeline_utils import *
+from dts.Model_performance import plot_the_performance
+from dts.Requirements import requirements
 
 
 def main(opt):
@@ -32,66 +29,32 @@ def main(opt):
     To clone the Ultralytics-repository's latest version or\
     to continue working on the version which we already have inside this repo.
     '''
-    begin.run(
-        yolov5_repo_name = opt.yolov5_repo_name,
-        results_folder_path = opt.results_folder_path,
-        clone_updated_yolov5 = opt.clone_updated_yolov5,
-    )
+    # U = ultralytics(opt)
+    # U.run()
 
     '''
     To install the requirements if not already installed.
     This step can be easily avoided if all the requirements are pre-installed beforehand
     '''
-    from dts.Requirements import requirements
     requirements.run()
 
     '''Data preparation step'''
-    from dts.Data_preparation import data_prep_yolo
-    data_prep_yolo.run(
-        raw_dataset_path = opt.raw_dataset_path, arranged_data_path = opt.arranged_data_path, img_size = opt.img_size,
-        partial_dataset = opt.partial_dataset,
-        percent_traindata = opt.percent_traindata, percent_validationdata = opt.percent_validationdata, percent_testdata = opt.percent_testdata
-    )
+    data_preparation(opt).run()
 
     '''
     Now, as the system is setup with Repository, requiremnts and dataset,\
     we can import the yolov5 repo libraries to use in the codes ahead
     '''
-    from yolov5 import train
-    from dts.Model_conversion import model_export
-    from dts.Model_compression.Quantization import quantization
-    from dts.Model_compression.Pruning import pruning
-    from dts.Model_performance import inference_results, plot_the_performance
-    from dts.Model_conversion.fp_type_conversion import fp_type_conversion
 
     '''Getting the model names and initial model paths'''
-    running_model_paths = running_model_dictionary()
-    pre_trained_model_paths = pre_trained_model_dictionary()
-    framework_path = frameworks(opt.skip_training, running_model_paths, pre_trained_model_paths)
-    train_results_paths = train_results_dictionary()
-    model_names = model_defined_names()
-
-    '''The paths updated here will be taken for inference results'''
-    running_model_paths = update_to_running_paths_with_pretrianed(running_model_paths, pre_trained_model_paths, opt.skip_training, opt.skip_QAT_training, opt.skip_pruning, opt.skip_P1_training, opt.skip_P2_training, opt.skip_P4_training)
+    paths = get_paths(opt)
 
     '''Training the model. Either from scratch, or by using the widerface pre-trained weights'''
     if opt.skip_training == False:
-        train.run(
-            weights = pre_trained_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
-            cfg = opt.cfg, data = opt.data, hyp = opt.hyp,
-            rect = False, resume = False, nosave = False, noval = False, noautoanchor = False, evolve = 0, #doubt
-            bucket = False, cache_images = True, image_weights = False, device = opt.device, multi_scale = False, single_cls = False,
-            adam = opt.adam, sync_bn = False, workers = 8, entity = None,
-            project = train_results_paths['Regular']['Pytorch']['fp32'],
-            name = model_names['Regular']['Pytorch']['fp32'],
-            exist_ok = False, quad = False, linear_lr = False, label_smoothing = 0.0, upload_dataset = False,
-            bbox_interval = -1, save_period = -1, artifact_alias = 'latest', local_rank = -1, freeze = 0
-        )
-        if opt.clone_updated_yolov5 == True:
-            conversion_type = 'fp16_to_fp32'
-        else:
-            conversion_type = 'fp32_to_fp16'
-        fp_type_conversion(conversion_type, opt.device, opt.cfg, opt.data, opt.hyp, opt.single_cls, opt.img_size, running_model_paths)
+        T = regular_train(opt)
+        T.run(opt, paths)
+
+        model_type_conversion(opt, paths).run()
 
     # Not to use fp16 path onwards
     # Use fp32 path
@@ -100,11 +63,8 @@ def main(opt):
     Once the pytorch model is trained, we can export it to ONNX -> tf_pb_keras -> TFLITE model
     Same is done with pre-trained models if pre-trained weights are being used
     '''
-    model_export.run(
-        model_type_for_export = model_names['Regular']['Pytorch']['fp32'],
-        framework_path = framework_path,
-        model_names = model_names
-    )
+
+    model_exportation(opt, paths).run()
 
     '''
     ****************  PRUNING  *******************
@@ -112,16 +72,7 @@ def main(opt):
     1) Unstructured with different initialization schemes
     2) Structured
     '''
-    pruning.run(
-        skip_pruning = opt.skip_pruning,
-        skip_P1_training = opt.skip_P1_training, skip_P2_training= opt.skip_P2_training, skip_P4_training = opt.skip_P4_training,
-        running_model_paths = running_model_paths, pre_trained_model_paths = pre_trained_model_paths,
-        weights = running_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
-        prune_retrain_epochs = opt.prune_retrain_epochs, num_iterations = opt.prune_iterations, prune_perc = opt.prune_perc,
-        data = opt.data, cfg = opt.cfg, hyp = opt.hyp, img = opt.img_size, device = opt.device, batch_size = opt.batch_size,
-        cache_images = True,
-        st = True, sr = 0.0001
-        )
+    Pruning_(opt, paths).run(opt, paths)
 
     '''
     ****************  QUANTIZATION  *******************
@@ -131,46 +82,19 @@ def main(opt):
     3) Tflite fp32 PTQ
     4) Tflite int8 PTQ
     '''
-    quantization.run(
-        skip_QAT_training = opt.skip_QAT_training,
-
-        running_model_paths = running_model_paths, framework_path = framework_path,
-        weights = running_model_paths['Regular']['Pytorch']['fp32'] if opt.retrain_on_pre_trained else opt.weights,
-        
-        cfg = opt.cfg, data = opt.data, hyp = opt.hyp,
-        batch_size_QAT = opt.batch_size_QAT, QAT_epochs = opt.QAT_epochs,
-        img_size = opt.img_size,
-        cache_images = opt.cache_images,
-        device = opt.device,
-        single_cls = opt.single_cls,
-        adam = opt.adam,
-        workers = opt.workers,
-
-        repr_images = opt.repr_images, imgtf = opt.imgtf, ncalib = opt.ncalib
-        ) 
+    Quantization_(opt, paths).run(opt, paths) 
 
     # Not implemented yet # model_conversion.run('Quantized')
 
     # Not implemented yet in the pipeline # test_the_models() #detect.py
 
-    ''' running_model_paths_modification for pruned model with pre-trained/pruned stored weights'''
-    if opt.prune_infer_on_pre_pruned_only == True:
-        running_model_paths = prune_with_pre_trained_only(running_model_paths, pre_trained_model_paths)
-    
     '''
     Inference on every model which have been implemented above.
     Getting the inference results stored inside Model performance folder and also return the \
     performance dictionary so as to plot the performance results
     Inference not yet available for Tflite int8 quantized model
     '''
-    plot_results = inference_results.run(   #mAP0.5, mAP0.5:0.95, fitness_score, latency, Size, GFLOPs
-        cfg = opt.cfg, data = opt.data,  hyp = opt.hyp,
-        device = opt.device,
-        img_size = opt.img_size,  batch_size = opt.batch_size,  batch_size_inferquant = opt.batch_size_inferquant,
-        single_cls = opt.single_cls,  save_txt = opt.save_txt,
-        running_model_paths = running_model_paths,
-        conf_thres = opt.conf_thres,  iou_thres = opt.iou_thres
-        )
+    plot_results = inferencing(opt, paths).run(opt, paths)
     print(plot_results)
     
     # Not implemented yet
@@ -254,6 +178,8 @@ def parse_opt(known=False):
     parser.add_argument('--prune-iterations', type=int, default=5, help='prune+retrain total number of iterations') 
     parser.add_argument('--prune-retrain-epochs', type=int, default=100, help=' number of retrain epochs after pruning')
     parser.add_argument('--prune-perc', type=int, default=30, help=' initial pruning percentage')
+    parser.add_argument('--st', action='store_true',default=True, help='train with L1 sparsity normalization')
+    parser.add_argument('--sr', type=float, default=0.001, help='L1 normal sparse rate')
 
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
