@@ -30,24 +30,20 @@ def main(opt):
 
     '''Pytorch Quantize Aware training'''
     if opt.skip_QAT_training == False:
-        qat_py = QAT(opt, 'Quantization', 'Pytorch', 'QAT')
-        qat_py.quantize(train_results_paths, model_names)
+        QAT(opt, 'Quantization', 'Pytorch', 'QAT').quantize(train_results_paths, model_names)
 
     '''Pytorch Static Post Training Quantization(PTQ)'''
-    ptq_py = PTQ(opt, 'Quantization', 'Pytorch', 'PTQ')
-    ptq_py.quantize()
+    PTQ(opt, 'Quantization', 'Pytorch', 'PTQ').quantize()
 
 
 
     '''Tflite'''
 
     '''Tflite fp32->fp16 PTQ'''
-    tfl_fp16 = TFL_fp16(opt, 'Quantization', 'Tflite', 'fp16')
-    tfl_fp16.quantize(model_names)
+    TFL_fp16(opt, 'Quantization', 'Tflite', 'fp16').quantize(model_names)
 
     '''Tflite fp32->int8 PTQ'''
-    tfl_int8 = TFL_int8(opt, 'Quantization', 'Tflite', 'int8')
-    tfl_int8.quantize(model_names)
+    TFL_int8(opt, 'Quantization', 'Tflite', 'int8').quantize(model_names)
         
 
 def parse_opt(known=False):

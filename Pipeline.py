@@ -51,8 +51,7 @@ def main(opt):
 
     '''Training the model. Either from scratch, or by using the widerface pre-trained weights'''
     if opt.skip_training == False:
-        T = regular_train(opt)
-        T.run(opt, paths)
+        regular_train(opt).run(opt, paths)
 
         model_type_conversion(opt, paths).run()
 

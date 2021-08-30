@@ -19,14 +19,12 @@ def main(opt):
     '''************  Regular Pytorch fp32  **************'''
 
     # classmethod(PytorchR(opt, 'Regular', 'Pytorch', 'fp32').explicit_inference(infer_paths, model_names, running_model_metrics))
-    regularp = PytorchR(opt, 'Regular', 'Pytorch', 'fp32')
-    regularp.explicit_inference(infer_paths, model_names, running_model_metrics)
+    PytorchR(opt, 'Regular', 'Pytorch', 'fp32').explicit_inference(infer_paths, model_names, running_model_metrics)
 
 
     '''***********  Regular Tflite fp32  ***************'''
 
-    regulartf = Tfl_fp32_R(opt, 'Regular', 'Tflite', 'fp32')
-    regulartf.explicit_inference(infer_paths, model_names, running_model_metrics)
+    Tfl_fp32_R(opt, 'Regular', 'Tflite', 'fp32').explicit_inference(infer_paths, model_names, running_model_metrics)
 
 
     '''**************************************************************************************************'''
@@ -42,8 +40,7 @@ def main(opt):
 
     '''************  Tflite Quantization  ****************'''
     # method 3
-    fp16_Q_tf = TfliteQ(opt, 'Quantization', 'Tflie', 'fp16')
-    fp16_Q_tf.explicit_inference(infer_paths, model_names, running_model_metrics)
+    TfliteQ(opt, 'Quantization', 'Tflie', 'fp16').explicit_inference(infer_paths, model_names, running_model_metrics)
 
 
 
