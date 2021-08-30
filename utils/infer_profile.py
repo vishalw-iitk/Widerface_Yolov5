@@ -9,6 +9,7 @@ from thop import profile
 
 def model_info(model, img_size=416):
     try:  # FLOPs
+        
         stride = max(int(model.stride.max()), 32) if hasattr(model, 'stride') else 32
         img = torch.zeros((1, model.yaml.get('ch', 3), stride, stride), device=next(model.parameters()).device)  # input
         # print(profile(deepcopy(model), inputs=(img,), verbose=False)[

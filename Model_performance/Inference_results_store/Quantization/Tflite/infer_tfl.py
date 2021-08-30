@@ -1,9 +1,3 @@
-"""Validate a trained YOLOv5 model accuracy on a custom dataset
-
-Usage:
-    $ python path/to/val.py --data coco128.yaml --weights yolov5s.pt --img 640
-"""
-
 import argparse
 import json
 import os
