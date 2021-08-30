@@ -103,7 +103,7 @@ def main(opt):
     '''
     Getting the model performance plots stored inside plot_metrics folder
     '''
-    plot_the_performance.run(plot_results, save_dir = '../plot_metrics')
+    plot_the_performance.run(plot_results=plot_results, save_dir = opt.save_metrics_dir)
 
 
 
@@ -181,6 +181,8 @@ def parse_opt(known=False):
     parser.add_argument('--st', action='store_true',default=True, help='train with L1 sparsity normalization')
     parser.add_argument('--sr', type=float, default=0.001, help='L1 normal sparse rate')
 
+    '''Save metrics dir'''
+    parser.add_argument('--save-metrics-dir', type=str, default='../plot_metrics', help='path to save metric plots')
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 

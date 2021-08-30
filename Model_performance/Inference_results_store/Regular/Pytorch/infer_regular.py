@@ -5,6 +5,8 @@ from yolov5.utils.loss import ComputeLoss
 from yolov5.utils.datasets import create_dataloader
 from yolov5.utils.general import colorstr
 from yolov5.utils.torch_utils import select_device
+from dts.utils.infer_profile import model_info
+
 from yolov5 import val
 from pathlib import Path
 
@@ -86,6 +88,7 @@ def main(opt):
     size = os.stat(opt.weights).st_size/(1024.0*1024.0)
 
     mAP50, mAP, fitness, size, latency, gflops = map50, map, fi[0], size, t, None
+    gflops = model_info(model, img_size=416)
     print("class_wise_maps", class_wise_maps)
     print("fitness_score", fitness)
     return {'mAP50' : mAP50, 'mAP' : mAP, 'fitness' : fitness, 'size' : size, 'latency' : latency, 'GFLOPS' : gflops}

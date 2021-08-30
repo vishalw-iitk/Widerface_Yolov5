@@ -5,7 +5,7 @@ YOLOv5 🚀 is a family of object detection architectures and models pretrained 
 </p></div>
 
 ## <div align="center"> SETUP </div>
-***
+
 <b>STEP 1 :</b>
 - Download dataset from : http://shuoyang1213.me/WIDERFACE/index.html
     - Train : 12880
@@ -53,7 +53,7 @@ $ cd dts/
 ```
 
 ## <div align="center"> Pipeline </div>
-***
+
 Every pipeline run, you will get the summary of the model performance in the form of well analysed plots in the plot_metrics folder.
 
 <details open>
@@ -143,20 +143,33 @@ python Pipeline.py --batch-size 32 --img-size 416 --epochs 1 --device '0' --adam
 </details>
 
 ## <div align="center"> Results </div>
-***
 
 <div align="center">
 
 |Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) |GFOPs<br><sup>416 |Size<br><sup> (Mb)
 |---                    |---  |---  |---      |---      |---      |---     |---   |---
+|YOLOv5s      |416  |fp32  |0.591|0.30 |33.19     |**-** |6.92   |27.2
 |YOLOv5s      |416  |fp16  |0.605|0.31 |-     |**-** |6.92   |14.4
 |             |     |     |         |         |         |        |      |
-|Pruning_1(G)     |416 |fp16     |-     |-     |-     |-    |-  |-
-|Pruning_2(P)     |416 |fp16     |-     |-     |-     |-    |-  |-
+|TF      |416 |fp32    |0.591     |0.30     |-        |-  |-     |27.3
+|TF     |416 |fp16     |0.591     |0.30     |33.22    |-  |- |13.7
 |                 |     |     |         |         |         |        |      |
-|Q_tf             |416 |fp16     |-     |-     |-     |-    |-  |-
-|PTQ     |416 |int8     |-     |-     |-     |-    |-  |-
-|QAT     |416 |int8     |-     |-     |-     |-    |-  |-
+|PTQ     |416 |int8     |0.53     |0.23     |26.64     |-    |-  |7.25
+|QAT     |416 |int8     |0.54     |0.24     |27.70     |-    |-  |7.07
+|                       |     |     |         |         |         |        |      |
+</div>
+
+
+Pruning (Train-30%  Val-100%)
+<div align="center">
+
+|Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) |Sparsity<br><sup>% |Size<br><sup> (Mb)
+|---                    |---  |---  |---      |---      |---      |---     |---   |---
+|Base      |416  |fp32  |-|- |-     |**-** |0   |27.2
+|             |     |     |         |         |         |        |      |
+|P1     |416 |fp16     |0.54     |0.26     |29.47     |-    |-  |13.69
+|P2     |416 |fp16     |0.55     |0.27     |30.22    |-    |-  |13.69
+|P3     |416 |fp32     |0.36     |0.16     |18.65     |-    |-  |27.19
 |                       |     |     |         |         |         |        |      |
 </div>
 <details>
