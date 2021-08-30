@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import argparse
 
 def none_to_zero(lst):
     """
@@ -27,11 +28,11 @@ def plot_each_metric(metric_list,names_list,metric_name,nums,save_dir):
     plt.savefig(os.path.join(save_dir,metric_name+'.png'),bbox_inches = 'tight')
 
 
-def run(plot_results,save_dir):
+def main(opt):
     """
     extract metrics from dictionary and plot to seperate files
     """
-    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
+    os.makedirs(opt.save_metrics_dir) if not os.path.exists(opt.save_metrics_dir) else None
     mAP50_list = []
     mAP_list = []
     fitness_list = []
@@ -43,7 +44,7 @@ def run(plot_results,save_dir):
     #nums to track number of methods/platforms under each optimization technique
     nums = []
     #iterate through the dictionary
-    for technique, platform_results in plot_results.items():
+    for technique, platform_results in opt.plot_results.items():
         name = ''
         i = 0
         for platform,x in platform_results.items():
@@ -64,9 +65,32 @@ def run(plot_results,save_dir):
     latency_list = none_to_zero(latency_list)
     GFLOPS_list = none_to_zero(GFLOPS_list)
     size_list = none_to_zero(size_list)
-    plot_each_metric(mAP50_list,names_list,'mAP50',nums,save_dir)
-    plot_each_metric(mAP_list,names_list,'mAP',nums,save_dir)
-    plot_each_metric(fitness_list,names_list,'fitness',nums,save_dir)
-    plot_each_metric(latency_list,names_list,'Latency',nums,save_dir)
-    plot_each_metric(GFLOPS_list,names_list,'GFLOPS',nums,save_dir)
-    plot_each_metric(size_list,names_list,'size',nums,save_dir) 
+    plot_each_metric(mAP50_list,names_list,'mAP50',nums,opt.save_metrics_dir)
+    plot_each_metric(mAP_list,names_list,'mAP',nums,opt.save_metrics_dir)
+    plot_each_metric(fitness_list,names_list,'fitness',nums,opt.save_metrics_dir)
+    plot_each_metric(latency_list,names_list,'Latency',nums,opt.save_metrics_dir)
+    plot_each_metric(GFLOPS_list,names_list,'GFLOPS',nums,opt.save_metrics_dir)
+    plot_each_metric(size_list,names_list,'size',nums,opt.save_metrics_dir) 
+
+
+def parse_opt(known=False):
+    parser = argparse.ArgumentParser()
+    '''results dictionary'''
+    parser.add_argument('--plot-results', type=dict, help='input results dictionary')
+    '''Save metrics dir'''
+    parser.add_argument('--save-metrics-dir', type=str, default='../plot_metrics', help='path to save metric plots')
+
+    opt = parser.parse_known_args()[0] if known else parser.parse_args()
+    return opt
+
+
+def run(**kwargs):
+    opt = parse_opt(True)
+    for k, v in kwargs.items():
+        setattr(opt, k, v)
+    main(opt)
+
+
+if __name__ == "__main__":
+    opt = parse_opt()
+    main(opt)
