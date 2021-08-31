@@ -26,13 +26,6 @@ from dts.Requirements import requirements
 
 def main(opt):
     '''
-    To clone the Ultralytics-repository's latest version or\
-    to continue working on the version which we already have inside this repo.
-    '''
-    # U = ultralytics(opt)
-    # U.run()
-
-    '''
     To install the requirements if not already installed.
     This step can be easily avoided if all the requirements are pre-installed beforehand
     '''
@@ -104,10 +97,6 @@ def main(opt):
     '''
     plot_the_performance.run(plot_results=plot_results, save_dir = opt.save_metrics_dir)
 
-
-
-
-    
 
 
 

@@ -21,10 +21,9 @@ def main(opt):
     '''
     Implementation of four Quantization schemes
     '''
+
     train_results_paths = train_results_dictionary()
     model_names = model_defined_names()
-
-
 
     '''Pytorch'''
 
