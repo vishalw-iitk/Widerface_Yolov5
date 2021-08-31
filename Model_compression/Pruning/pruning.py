@@ -42,12 +42,12 @@ def parse_opt(known=False):
     parser.add_argument('--prune-perc', type=int, default=30, help=' initial pruning percentage')
     parser.add_argument('--st', action='store_true',default=True, help='train with L1 sparsity normalization')
     parser.add_argument('--sr', type=float, default=0.001, help='L1 normal sparse rate')
+    parser.add_argument('--P4-epochs', type=int, default=1500, help='number of epochs for structured pruning')
 
     parser.add_argument('--weights', type=str, default='yolov5s.pt', help='initial weights path')
     parser.add_argument('--cfg', type=str, default='', help='model.yaml path')
     parser.add_argument('--data', type=str, default='data/coco128.yaml', help='dataset.yaml path')
     parser.add_argument('--hyp', type=str, default='data/hyps/hyp.scratch.yaml', help='hyperparameters path')
-    parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--batch-size', type=int, default=16, help='total batch size for all GPUs')
     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=416, help='train, val image size (pixels)')
     parser.add_argument('--cache-images', action='store_true', help='cache images for faster training')

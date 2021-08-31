@@ -176,8 +176,9 @@ def parse_opt(known=False):
     parser.add_argument('--prune-infer-on-pre-pruned-only', action='store_true', help='pruning inference on pre-pruned stored model only and not on recently pruned in pipeline')
     parser.add_argument('--prune-iterations', type=int, default=5, help='prune+retrain total number of iterations') 
     parser.add_argument('--prune-retrain-epochs', type=int, default=100, help=' number of retrain epochs after pruning')
-    parser.add_argument('--prune-perc', type=int, default=30, help=' initial pruning percentage')
+    parser.add_argument('--prune-perc', type=int, default=30, help='initial pruning percentage')
     parser.add_argument('--st', action='store_true',default=True, help='train with L1 sparsity normalization')
+    parser.add_argument('--P4-epochs', type=int, default=1500, help='number of epochs for structured pruning')
     parser.add_argument('--sr', type=float, default=0.001, help='L1 normal sparse rate')
 
     '''Save metrics dir'''

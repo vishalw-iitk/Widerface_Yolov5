@@ -131,6 +131,7 @@ class Pruning_(regular_train):
         self.theta0_weights = paths.pre_trained_model_paths['Pruning']['Pytorch']['theta0']
         self.P1_saved = paths.running_model_paths['Pruning']['Pytorch']['P1']
         self.P2_saved = paths.running_model_paths['Pruning']['Pytorch']['P2']
+        self.P4_epochs = opt.P4_epochs
         self.st = opt.st
         self.sr = opt.sr
 

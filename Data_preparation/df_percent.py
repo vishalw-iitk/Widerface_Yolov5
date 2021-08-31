@@ -111,7 +111,7 @@ class three_dataframe_preparation:
         self.data_type_validation = data_type_validation
         self.validation_frac = validation_frac
         self.data_type_test = data_type_test
-        self.test_frac = test_frac,
+        self.test_frac = test_frac
         self.raw_dataset_path = raw_dataset_path
 
     def dataframe_preparation(self, dtype, frac):

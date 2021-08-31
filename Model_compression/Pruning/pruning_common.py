@@ -1,7 +1,7 @@
 from dts.Model_compression.Pruning.Pytorch import prune_train
 from dts.Model_compression.Pruning.Pytorch.P4 import train
 
-class Pruning:
+class Pruning__:
     def __init__(self, opt, technique, framework, model_name, train_results_paths, model_names):
         self.technique, self.framework, self.model_name = technique, framework, model_name
         self.train_results_paths = train_results_paths
@@ -20,12 +20,10 @@ class Pruning:
     def set_project_and_name(self):
         self.project = self.train_results_paths[self.technique][self.framework][self.model_name]
         self.name = self.model_names[self.technique][self.framework][self.model_name]
-    def prune(self):
-        self.set_project_and_name()
 
 
 
-class Unstructured(Pruning):
+class Unstructured(Pruning__):
     def __init__(self, opt, technique, framework, model_name, train_results_paths, model_names):
         super().__init__(opt, technique, framework, model_name, train_results_paths, model_names)
         self.epochs=opt.prune_retrain_epochs
@@ -41,11 +39,11 @@ class Unstructured(Pruning):
         self.prune_iter=i
         self.set_weights(i)
         self.give_iter_prints(i)
-        Pruning.set_project_and_name(self)
+        Pruning__.set_project_and_name(self)
     def iterator(self):
         for i in range(self.num_iterations):
             self.prune(i)
-            Pruning.model_args(self)
+            Pruning__.model_args(self)
             prune_train.run(**self.__dict__)
 
 
@@ -70,10 +68,11 @@ class P2(Unstructured):
 
 
 
-class Structured(Pruning):
+class Structured(Pruning__):
     def __init__(self, opt, technique, framework, model_name, train_results_paths, model_names):
         super().__init__(opt, technique, framework, model_name, train_results_paths, model_names)
         self.weights = self.prune_on_weights
+        self.epochs = opt.P4_epochs
         self.st = opt.st
         self.sr = opt.sr
 
@@ -82,6 +81,7 @@ class P4(Structured):
         super().__init__(opt, technique, framework, model_name, train_results_paths, model_names)
         
     def prune(self):
-        Pruning.model_args(self)
+        Pruning__.set_project_and_name(self)
+        Pruning__.model_args(self)
         train.run(**self.__dict__)
 
