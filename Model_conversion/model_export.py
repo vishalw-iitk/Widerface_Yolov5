@@ -24,16 +24,17 @@ import tensorflow as tf
 
  
 class transform_the_model:
-    def __init__(self, framework_path, model_names):
+    def __init__(self, framework_path, model_names, img_sz):
         self.MLmodel = load_the_model('cpu')
         self.framework_path = framework_path
         self.model_names = model_names
+        self.img_sz = img_sz
 
     def pytorch_to_onnx(self, framework_from, model_type, pytorch_name_user_defined, onnx_name_user_defined,  framework_to):
         if model_type == self.model_names['Regular']['Pytorch']['fp32']:
             export.run(
                 weights = os.path.join(self.framework_path[framework_from][model_type]),
-                img_size = (416, 416),
+                img_size = (self.img_sz, self.img_sz),
                 include = ['onnx']
                 # half = half
             )
@@ -130,7 +131,7 @@ class transform_the_model:
 def main(opt):
     model_type = opt.model_type_for_export
 
-    transform = transform_the_model(opt.framework_path, opt.model_names)
+    transform = transform_the_model(opt.framework_path, opt.model_names, opt.img_size)
     transform.pytorch_to_onnx(framework_from = 'Pytorch', model_type = model_type, \
         pytorch_name_user_defined = 'Pytorch '+model_type+ ' model', \
         onnx_name_user_defined = 'Onnx '+model_type, framework_to = 'ONNX')
@@ -180,6 +181,7 @@ def main(opt):
 
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
+    parser.add_argument('--img-size', type=int, default = 416, help = 'Image size suitable for feeding to the model and train, val image size (pixels)')
     parser.add_argument('--model_type_for_export', default= 'Regular_fp32', help='')
     parser.add_argument('--skip-training', action='store_true', help='skip the time taking regular training')
     parser.add_argument('--repr-images', type=str, default='../ARRANGED_DATASET/images/validation/', help='path of representative dataset')
