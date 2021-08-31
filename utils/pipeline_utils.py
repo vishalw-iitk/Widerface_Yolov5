@@ -179,5 +179,5 @@ class inferencing(Quantization_, Pruning_):
         regular_train.train_prun_infer(self, opt)
         regular_train.train_quant_infer(self, opt)
         pipeline.model_args(self)
-        inference_results.run(**self.__dict__)
+        return inference_results.run(**self.__dict__)
 

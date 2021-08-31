@@ -26,7 +26,8 @@ class Pruning:
 
 
 class Unstructured(Pruning):
-    def __init__(self, opt):
+    def __init__(self, opt, technique, framework, model_name, train_results_paths, model_names):
+        super().__init__(opt, technique, framework, model_name, train_results_paths, model_names)
         self.epochs=opt.prune_retrain_epochs
         self.prune_perc=opt.prune_perc
         self.random_reinit = False
@@ -45,7 +46,7 @@ class Unstructured(Pruning):
         for i in range(self.num_iterations):
             self.prune(i)
             Pruning.model_args(self)
-            prune_train(**self.__dict__)
+            prune_train.run(**self.__dict__)
 
 
 
@@ -54,13 +55,13 @@ class Unstructured(Pruning):
 # Pytorch
 class P1(Unstructured):
     def __init__(self, opt, technique, framework, model_name, train_results_paths, model_names):
-        Unstructured.__init__(self, opt, technique, framework, model_name, train_results_paths, model_names)
+        super().__init__(opt, technique, framework, model_name, train_results_paths, model_names)
         self.P_saved = opt.P1_saved
         
 
 class P2(Unstructured):
     def __init__(self, opt, technique, framework, model_name, train_results_paths, model_names):
-        Unstructured.__init__(self, opt, technique, framework, model_name, train_results_paths, model_names)
+        super().__init__(opt, technique, framework, model_name, train_results_paths, model_names)
         self.random_reinit = not self.random_reinit
         self.theta0_reinit = not self.theta0_reinit
         self.theta0_weights = opt.theta0_weights

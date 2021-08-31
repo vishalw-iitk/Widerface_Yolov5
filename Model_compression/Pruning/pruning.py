@@ -23,7 +23,7 @@ def main(opt):
     
 
     #theta0 re-init
-    P2(opt, 'Pruning', 'Pytorch', 'P1', train_results_paths, model_names).iterator() if opt.skip_P2_training == False else None
+    P2(opt, 'Pruning', 'Pytorch', 'P2', train_results_paths, model_names).iterator() if opt.skip_P2_training == False else None
 
     # Structure channel-wise pruning
     P4(opt, 'Pruning', 'Pytorch', 'P4', train_results_paths, model_names).prune() if opt.skip_P4_training == False else None

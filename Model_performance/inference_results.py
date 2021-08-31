@@ -40,7 +40,7 @@ def main(opt):
 
     '''************  Tflite Quantization  ****************'''
     # method 3
-    TfliteQ(opt, 'Quantization', 'Tflie', 'fp16').explicit_inference(infer_paths, model_names, running_model_metrics)
+    TfliteQ(opt, 'Quantization', 'Tflite', 'fp16').explicit_inference(infer_paths, model_names, running_model_metrics)
 
 
 
@@ -56,11 +56,7 @@ def main(opt):
 
     '''**************************************************************************************************'''
     '''***********  filtering the plot-keys  ***************************'''
-    model_performance_Results.unused_plot_keys(
-        running_model_metrics['Regular']['Pytorch']['fp16'],
-        running_model_metrics['Quantization']['Tflite']['int8'],
-        running_model_metrics['Pruning']['Tflite']
-    )
+    model_performance_Results.unused_plot_keys(running_model_metrics)
 
     return running_model_metrics
 

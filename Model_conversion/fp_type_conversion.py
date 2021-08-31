@@ -20,7 +20,7 @@ def fp_type_conversion(type_conversion, device, cfg, data, hyp, single_cls, img_
     and converiting into other dtype
     Finally storing the model
     '''
-    MLmodel = load_the_model(device)
+    MLmodel = load_the_model('cpu')
     framework = 'Pytorch'
     model_type = 'Regular'
 
@@ -44,11 +44,6 @@ def fp_type_conversion(type_conversion, device, cfg, data, hyp, single_cls, img_
     MLmodel.load_pytorch(
         model_path = model_path,
         model_name_user_defined = model_name_user_defined,
-        cfg = cfg,
-        imgsz = img_size,
-        data = data,
-        hyp = hyp,
-        single_cls = single_cls,
         model_class = model_type
     )
 

@@ -66,11 +66,12 @@ class model_performance_Results:
         self.result_prints(running_model_metrics)
         
     @staticmethod
-    def unused_plot_keys(**args):
-        for plotkey in args:
-            del plotkey
+    def unused_plot_keys(running_model_metrics):
+        del running_model_metrics['Regular']['Pytorch']['fp16']
+        del running_model_metrics['Quantization']['Tflite']['int8']
+        del running_model_metrics['Pruning']['Tflite']
 
-    
+
 # Regular
 class Regular(model_performance_Results):
     def __init__(self, opt, technique, framework, model_name):
@@ -84,8 +85,8 @@ class Quantization(model_performance_Results):
 
 # Pruning
 class Pruning(model_performance_Results):
-    def __init__(self, opt):
-        model_performance_Results.__init__(self, opt)
+    def __init__(self, opt, technique, framework, model_name):
+        model_performance_Results.__init__(self, opt, technique, framework, model_name)
         self.device = opt.device
         self.cfg = opt.cfg
         self.hyp = opt.hyp
@@ -155,5 +156,6 @@ class PytorchQ(Quantization):
 # Tflite Quantization
 class TfliteQ(Quantization, Tfl_fp32_R):
     def __init__(self, opt, technique, framework, model_name):
-        super.__init__(self, opt, technique, framework, model_name)
+        Quantization.__init__(self, opt, technique, framework, model_name)
+        Tfl_fp32_R.__init__(self, opt, technique, framework, model_name)
         self.tfl_int8 = False

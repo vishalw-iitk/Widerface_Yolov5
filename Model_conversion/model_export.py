@@ -155,7 +155,7 @@ def main(opt):
             # Get sample input data as a numpy array in a method of your choosing.
             n += 1
             inp = np.transpose(img, [0, 1, 2])
-            print(inp.shape)
+            # print(inp.shape)
             inp = np.expand_dims(inp, axis=0).astype(np.float32)
             inp /= 255.0
             yield [inp]
