@@ -28,8 +28,8 @@ class Unstructured(Pruning__):
         super().__init__(opt, technique, framework, model_name, train_results_paths, model_names)
         self.epochs=opt.prune_retrain_epochs
         self.prune_perc=opt.prune_perc
-        self.random_reinit = False
-        self.theta0_reinit = True
+        self.random_reinit = True
+        self.theta0_reinit = False
         self.num_iterations = opt.num_iterations
     def set_weights(self, i):
         self.weights=self.prune_on_weights if i==0 else self.P_saved
