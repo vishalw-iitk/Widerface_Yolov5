@@ -44,7 +44,7 @@ def main(opt):
 
     '''Training the model. Either from scratch, or by using the widerface pre-trained weights'''
     if opt.skip_training == False:
-        regular_train(opt).run(opt, paths)
+        regular_train(opt, paths).run()
 
         model_type_conversion(opt, paths).run()
 
@@ -64,7 +64,7 @@ def main(opt):
     1) Unstructured with different initialization schemes
     2) Structured
     '''
-    Pruning_(opt, paths).run(opt, paths)
+    Pruning_(opt, paths).run()
 
     '''
     ****************  QUANTIZATION  *******************
@@ -74,7 +74,7 @@ def main(opt):
     3) Tflite fp32 PTQ
     4) Tflite int8 PTQ
     '''
-    Quantization_(opt, paths).run(opt, paths) 
+    Quantization_(opt, paths).run()
 
     # Not implemented yet # model_conversion.run('Quantized')
 
@@ -86,7 +86,7 @@ def main(opt):
     performance dictionary so as to plot the performance results
     Inference not yet available for Tflite int8 quantized model
     '''
-    plot_results = inferencing(opt, paths).run(opt, paths)
+    plot_results = inferencing(opt, paths).run()
     print(plot_results)
     
     # Not implemented yet
