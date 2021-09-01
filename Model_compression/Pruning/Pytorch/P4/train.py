@@ -382,8 +382,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
             sr is the sparsity training rate and st means we want to perform sparsity training
 
             '''
-            srtmp = opt.sr*(1 - 0.9*epoch/epochs)
-            if opt.st:
+            srtmp = opt.sparsity_rate*(1 - 0.9*epoch/epochs)
+            if opt.sparsity_training:
                 '''Ignoring the Batch-Norm layers coming in the skip-connection\
                     as, if these concatenations can achieve different sparsities hence preventing the approach'''
                 ignore_bn_list = []
@@ -396,7 +396,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                     if isinstance(m, nn.BatchNorm2d) and (k not in ignore_bn_list):
                         '''Penalizing the bn weights and biases by means of L1-Norm'''
                         m.weight.grad.data.add_(srtmp * torch.sign(m.weight.data))  # L1
-                        m.bias.grad.data.add_(opt.sr*10 * torch.sign(m.bias.data))  # L1
+                        m.bias.grad.data.add_(opt.sparsity_rate*10 * torch.sign(m.bias.data))  # L1
             # # ============================= sparsity training ========================== #
 
             # Optimize
@@ -734,8 +734,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--st', action='store_true',default=True, help='train with L1 sparsity normalization')
-    parser.add_argument('--sr', type=float, default=0.001, help='L1 normal sparse rate')
+    parser.add_argument('--sparsity-training', action='store_true',default=True, help='train with L1 sparsity normalization')
+    parser.add_argument('--sparsity-rate', type=float, default=0.001, help='L1 normal sparse rate')
     parser.add_argument('--weights', type=str, default='yolov5s.pt', help='initial weights path')
     parser.add_argument('--cfg', type=str, default='', help='model.yaml path')
     parser.add_argument('--data', type=str, default='data/coco128.yaml', help='dataset.yaml path')

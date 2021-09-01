@@ -132,9 +132,9 @@ class Pruning_(regular_train):
         self.P1_saved = paths.running_model_paths['Pruning']['Pytorch']['P1']
         self.P2_saved = paths.running_model_paths['Pruning']['Pytorch']['P2']
         self.P4_epochs = opt.P4_epochs
-        self.st = opt.st
-        self.sr = opt.sr
-
+        self.sparsity_training = opt.sparsity_training
+        self.sparsity_rate = opt.sparsity_rate
+        
     def run(self, opt, paths):
         regular_train.train_prun_n_quant(self, opt, paths)
         regular_train.prun_quant_infer(self, paths)

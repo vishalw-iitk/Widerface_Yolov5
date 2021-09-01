@@ -73,8 +73,8 @@ class Structured(Pruning__):
         super().__init__(opt, technique, framework, model_name, train_results_paths, model_names)
         self.weights = self.prune_on_weights
         self.epochs = opt.P4_epochs
-        self.st = opt.st
-        self.sr = opt.sr
+        self.sparsity_training = opt.sparsity_training
+        self.sparsity_rate = opt.sparsity_rate
 
 class P4(Structured):
     def __init__(self, opt, technique, framework, model_name, train_results_paths, model_names):
