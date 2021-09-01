@@ -165,7 +165,7 @@ Pruning (Train-30%  Val-100%)
 
 |Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) |Sparsity<br><sup>% |Size<br><sup> (Mb)
 |---                    |---  |---  |---      |---      |---      |---     |---   |---
-|Base      |416  |fp32  |0.579|0.285 |-     |**-** |0   |27.2
+|Base      |416  |fp32  |0.558|0.278 |-     |**-** |0   |27.2
 |             |     |     |         |         |         |        |      |
 |P1     |416 |fp16     |0.54     |0.26     |29.47     |-    |-  |13.69
 |P2     |416 |fp16     |0.55     |0.27     |30.22    |-    |-  |13.69
