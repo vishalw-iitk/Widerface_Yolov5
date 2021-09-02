@@ -148,8 +148,8 @@ python Pipeline.py --batch-size 32 --img-size 416 --epochs 1 --device '0' --adam
 
 |Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) |GFOPs<br><sup>416 |Size<br><sup> (Mb)
 |---                    |---  |---  |---      |---      |---      |---     |---   |---
-|YOLOv5s      |416  |fp32  |0.591|0.30 |33.19     |163.05 |6.92   |27.2
-|YOLOv5s      |416  |fp16  |0.605|0.31 |-     |162.29 |6.92   |14.4
+|Pytorch      |416  |fp32  |0.591|0.30 |33.19     |163.05 |6.92   |27.2
+|Pytorch      |416  |fp16  |0.605|0.31 |-     |162.29 |6.92   |14.4
 |             |     |     |         |         |         |        |      |
 |TF      |416 |fp32    |0.591     |0.30     |-        |168.8  |-     |27.3
 |TF     |416 |fp16     |0.591     |0.30     |33.22    |168.0  |- |13.7
@@ -165,7 +165,7 @@ Pruning (Train-30%  Val-100%)
 
 |Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) |Sparsity<br><sup>% |Size<br><sup> (Mb)
 |---                    |---  |---  |---      |---      |---      |---     |---   |---
-|Base      |416  |fp32  |0.558|0.278 |-     |**-** |0   |27.2
+|Base      |416  |fp32  |0.558|0.278 |-     |162.29 |0   |27.2
 |             |     |     |         |         |         |        |      |
 |P1     |416 |fp16     |0.54     |0.26     |29.47     |162.2    |-  |13.69
 |P2     |416 |fp16     |0.55     |0.27     |30.22    |161.8    |-  |13.69
