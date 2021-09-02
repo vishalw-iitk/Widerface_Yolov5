@@ -48,8 +48,12 @@ def fp_type_conversion(type_conversion, img_size, weights):
 
     if type_conversion == 'fp16_to_fp32':
         ckpt = {'model' : MLmodel.model.float()}
+        fp = 'fp32'
+        weights = weights.replace('fp16', 'fp32')
     else:
         ckpt = {'model' : MLmodel.model.half()}
+        fp = 'fp16'
+        weights = weights.replace('fp32', 'fp16')
     
     if '/best.pt' in weights:
         if not os.path.exists(weights.replace('/best.pt', '')):

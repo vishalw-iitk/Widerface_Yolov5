@@ -73,7 +73,7 @@ class regular_train(pipeline):
     def train_n_quant(self):
         self.adam = self.opt.adam
         self.workers = self.opt.workers
-    def train_prun_n_quant(self):
+    def prun_n_quant(self):
         self.weights = self.paths.running_model_paths['Regular']['Pytorch']['fp32'] if self.opt.retrain_on_pre_trained else self.opt.weights
     def prun_quant_infer(self):
         self.running_model_paths = self.paths.running_model_paths
@@ -86,12 +86,15 @@ class regular_train(pipeline):
 
     def run(self):
         self.epochs = self.opt.epochs
-        self.train_prun_n_quant()
+        self.prun_n_quant()
         self.project = self.paths.train_results_paths['Regular']['Pytorch']['fp32']
         self.name = self.paths.model_names['Regular']['Pytorch']['fp32']
         self.train_n_quant()
         self.train_prun_infer()
         self.train_quant_infer()
+        self.weights = self.paths.pre_trained_model_paths['Regular']['Pytorch']['fp32'] if self.opt.retrain_on_pre_trained else self.opt.weights
+        for attr in ('opt','paths'):
+            self.__dict__.pop(attr,None)
         pipeline.model_args(self)
         train.run(**self.__dict__)
     
@@ -99,7 +102,7 @@ class regular_train(pipeline):
 class model_type_conversion(pipeline):
     def __init__(self, opt, paths):
         super().__init__(opt)
-        self.conversion_type = 'fp16_to_fp32' if opt.clone_updated_yolov5 True else 'fp32_to_fp16'
+        self.conversion_type = 'fp16_to_fp32' if opt.clone_updated_yolov5 == True else 'fp32_to_fp16'
         self.weights = paths.running_model_paths['Regular']['Pytorch']['fp16'] if self.conversion_type == 'fp16_to_fp32'\
                 else paths.running_model_paths['Regular']['Pytorch']['fp32']
     def run(self):
@@ -110,7 +113,7 @@ class model_type_conversion(pipeline):
 
 class model_exportation(regular_train):
     def __init__(self, opt, paths):
-        super().__init__(opt)
+        super().__init__(opt, paths)
         self.model_type_for_export = paths.model_names['Regular']['Pytorch']['fp32']
         self.framework_path = paths.framework_path
         self.model_names = paths.model_names
@@ -137,12 +140,14 @@ class Pruning_(regular_train):
         self.sparsity_rate = self.opt.sparsity_rate
         
     def run(self):
-        regular_train.train_prun_n_quant(self)
+        regular_train.prun_n_quant(self)
         regular_train.prun_quant_infer(self)
         ''' running_model_paths_modification for pruned model with pre-trained/pruned stored weights'''
         if self.opt.prune_infer_on_pre_pruned_only == True:
             self.running_model_paths = prune_with_pre_trained_only(self.running_model_paths, self.pre_trained_model_paths)
         regular_train.train_prun_infer(self)
+        for attr in ('opt','paths'):
+            self.__dict__.pop(attr,None)
         pipeline.model_args(self)
         pruning.run(**self.__dict__)
 
@@ -162,10 +167,12 @@ class Quantization_(regular_train):
 
     def run(self):
         regular_train.train_n_quant(self)
-        regular_train.train_prun_n_quant(self)
+        regular_train.prun_n_quant(self)
         regular_train.prun_quant_infer(self)
         regular_train.quant_infer(self)
         regular_train.train_quant_infer(self)
+        for attr in ('opt','paths'):
+            self.__dict__.pop(attr,None)
         pipeline.model_args(self)
         quantization.run(**self.__dict__)
 
@@ -180,6 +187,8 @@ class inferencing(Quantization_, Pruning_):
         regular_train.quant_infer(self)
         regular_train.train_prun_infer(self)
         regular_train.train_quant_infer(self)
+        for attr in ('opt','paths'):
+            self.__dict__.pop(attr,None)
         pipeline.model_args(self)
         return inference_results.run(**self.__dict__)
 
