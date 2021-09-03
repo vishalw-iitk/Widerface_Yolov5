@@ -155,17 +155,17 @@ python Pipeline.py --batch-size 128 --img-size 416 --device 0 --batch-size-infer
 
 <div align="center">
 
-|Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) |GFOPs<br><sup>416 |Size<br><sup> (Mb)
+|Model |size<br><sup>(pixels) |dtype |mAP<sup>val<br>0.5 |mAP<sup>val<br>0.5:0.95 |fitness<sup>val |latency<br><sup>(ms) |GFLOPs<br><sup>416 |Size<br><sup> (Mb)
 |---                    |---  |---  |---      |---      |---      |---     |---   |---
-|Pytorch      |416  |fp32  |0.591|0.30 |33.19     |163.05 |6.92   |27.2
-|Pytorch      |416  |fp16  |0.605|0.31 |-     |162.29 |6.92   |14.4
+|Pytorch      |416  |fp32  |0.591|0.30 |33.19     |163.05 |6.89   |27.2
+|Pytorch      |416  |fp16  |0.605|0.31 |-     |162.29 |6.89   |14.4
 |             |     |     |         |         |         |        |      |
-|TF      |416 |fp32    |0.591     |0.30     |-        |168.8  |-     |27.3
+|TF      |416 |fp32    |0.591     |0.30     |-        |168.8  |6.89     |27.3
 |                 |     |     |         |         |         |        |      |
 |PTQ     |416 |int8     |0.53     |0.23     |26.64     |140.62    |-  |7.25
 |QAT     |416 |int8     |0.54     |0.24     |27.70     |131.8    |-  |7.07
 |                       |     |     |         |         |         |        |      |
-|TF     |416 |fp16     |0.591     |0.30     |33.22    |168.0  |- |13.7
+|TF     |416 |fp16     |0.591     |0.30     |33.22    |168.0  |6.9 |13.7
 |TF     |416 |int8     |     |     |    |  |- |
 
 </div>
