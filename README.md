@@ -97,10 +97,13 @@ If the recent version of the ultralytics repository is not compatible with dts r
     --retrain-on-pre-trained # Fine-Tuning or retrain on pre-trained weights
 '''
 # Sctrach 
-python Pipeline.py --batch-size 32 --img-size 416 --epochs 1 --device '0' --adam --prune-iterations 1 --prune-retrain-epochs 1
+Pipeline.py --batch-size 128 --img-size 416 --device 0 --batch-size-inferquant 32 --P4-epochs 100 --epochs 250 --prune-iterations 5 --prune-retrain-epochs 100 --sparsity-training --QAT-batch-size 64 --QAT-epochs 15 --save-txt
 
 #Finetune training
-python Pipeline.py --batch-size 32 --img-size 416 --epochs 1 --device '0' --prune-iterations 1 --prune-retrain-epochs 1 --retrain-on-pre-trained
+python Pipeline.py --batch-size 128 --img-size 416 --device 0 --batch-size-inferquant 32 --P4-epochs 100 --epochs 250 --retrain-on-pre-trained --sparsity-training --skip-QAT-training --skip-pruning --save-txt
+
+# Inferencing on the pre-trained models
+python Pipeline.py --batch-size 128 --img-size 416 --device 0 --batch-size-inferquant 32  --skip-training --skip-QAT-training --skip-pruning --save-txt
 ```
 </details>
 <details open>
@@ -114,10 +117,16 @@ python Pipeline.py --batch-size 32 --img-size 416 --epochs 1 --device '0' --prun
     -- skip-pruning 
     --skip-P1-training #random re-init
     --skip-P2-training #theta0 re-init
-    --skip-P3-training #no reinit
     --skip-P4-training 
 '''
-python Pipeline.py --skip-P2-training --skip-P3-training --prune-iterations 5 --prune-retrain-epochs 1 --prune-perc 30 --img-size 416 --batch-size 1
+# P1 pruning
+python PPipeline.py --batch-size 128 --img-size 416 --device 0 --batch-size-inferquant 32 --skip-training --prune-iterations 5 --prune-retrain-epochs 100 --skip-QAT-training --skip-P2-training --skip-P4-training --retrain-on-pre-trained --save-txt
+
+# P2 pruning
+python Pipeline.py --batch-size 128 --img-size 416 --device 0 --batch-size-inferquant 32 --skip-training --prune-iterations 5 --prune-retrain-epochs 100 --skip-QAT-training --skip-P1-training --skip-P4-training --retrain-on-pre-trained --save-txt
+
+# P4 pruning
+python Pipeline.py --batch-size 128 --img-size 416 --device 0 --batch-size-inferquant 32 --skip-training --P4-epochs --sparsity-training 100 --skip-QAT-training --skip-P1-training --skip-P2-training --retrain-on-pre-trained --save-txt
 ```
 </details>
 <details open>
@@ -137,7 +146,7 @@ python Pipeline.py --clone-updated-yolov5 --partial-dataset --percent-traindata 
 
 ```python 
 # perform short training and do inference on all the models(fine-tuning/pre-trained)
-python Pipeline.py --batch-size 32 --img-size 416 --epochs 1 --device '0' --adam --prune-iterations 1 --prune-retrain-epochs 1 --retrain-on-pre-trained --prune-infer-on-pre-pruned-only
+python Pipeline.py --batch-size 128 --img-size 416 --device 0 --batch-size-inferquant 32 --batch-size-QAT 64 --QAT-epochs 1 --skip-training  --skip-pruning --retrain-on-pre-trained --save-txt
 ```
 </details>
 </details>
