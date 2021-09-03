@@ -134,7 +134,6 @@ def run(data,
     iouv = torch.linspace(0.5, 0.95, 10).to(device)  # iou vector for mAP@0.5:0.95
     niou = iouv.numel()
 
-    # print(_model_info(model))
 
     # Dataloader
     if not training:
