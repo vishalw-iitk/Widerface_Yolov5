@@ -16,8 +16,8 @@ plot_results = {
                     'mAP' : 30.33,
                     'fitness' : 33.22,
                     'latency' : 168.8,
-                    'GFLOPS' : 27.3,
-                    'size' : 6.89,
+                    'GFLOPS' : 6.89,
+                    'size' : 27.3,
                 }
             }
         },
@@ -74,8 +74,8 @@ plot_results = {
                     'mAP' : 27.43,
                     'fitness' : 30.22,
                     'latency' : 161.86,
-                    'GFLOPS' : 27.1,
-                    'size' : 6.89
+                    'GFLOPS' : 6.89,
+                    'size' : 27.1
                 },
                 'P4' : {
                     'mAP50' : 36.73,
