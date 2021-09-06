@@ -76,6 +76,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
     w = weights[0] if isinstance(weights, list) else weights
     classify, pt, onnx = False, w.endswith('.pt'), w.endswith('.onnx')  # inference type
     stride, names = 64, [f'class{i}' for i in range(1000)]  # assign defaults
+    print(1)
     if pt:
         if pyt_quantized:
             model = quantized_load(w, cfg, device, imgsz, data, hyp, single_cls, fuseQ)
@@ -168,7 +169,8 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 
                     if save_img or save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
-                        label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
+                        label_name = "Face" if names[c] == "0" else names[c]
+                        label = None if hide_labels else (names[c] if hide_conf else f'{label_name} {conf:.2f}')
                         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=line_thickness)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
@@ -178,6 +180,22 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 
             # Stream results
             if view_img:
+                # font
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                
+                # org
+                org = (50, 50)
+                
+                # fontScale
+                fontScale = 1
+                
+                # Blue color in BGR
+                color = (255, 255, 0)
+                
+                # Line thickness of 2 px
+                thickness = 0.5
+                im0 = cv2.putText(im0, f'FPS: {str(1//(t2-t1))}', org, font, fontScale, color, thickness, cv2.LINE_AA)
+                
                 cv2.imshow(str(p), im0)
                 cv2.waitKey(1)  # 1 millisecond
 
@@ -235,8 +253,8 @@ def parse_opt():
     parser.add_argument('--single-cls', action='store_true', help='treat as single-class dataset')
     parser.add_argument('--visualize', action='store_true', help='visualize features')
     parser.add_argument('--update', action='store_true', help='update all models')
-    parser.add_argument('--project', default='../demo/detect', help='save results to project/name')
-    parser.add_argument('--name', default='exp', help='save results to project/name')
+    parser.add_argument('--project', default='../small_test/detections', help='save results to project/name')
+    parser.add_argument('--name', default='experiment_', help='save results to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     parser.add_argument('--line-thickness', default=3, type=int, help='bounding box thickness (pixels)')
     parser.add_argument('--hide-labels', default=False, action='store_true', help='hide labels')
