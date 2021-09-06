@@ -117,6 +117,7 @@ class model_exportation(regular_train):
         self.model_type_for_export = paths.model_names['Regular']['Pytorch']['fp32']
         self.framework_path = paths.framework_path
         self.model_names = paths.model_names
+        self.batch_size = opt.batch_size
     def run(self):
         pipeline.model_args(self)
         model_export.run(**self.__dict__)
@@ -171,6 +172,7 @@ class Quantization_(regular_train):
         regular_train.prun_quant_infer(self)
         regular_train.quant_infer(self)
         regular_train.train_quant_infer(self)
+        regular_train.train_prun_infer(self)
         for attr in ('opt','paths'):
             self.__dict__.pop(attr,None)
         pipeline.model_args(self)

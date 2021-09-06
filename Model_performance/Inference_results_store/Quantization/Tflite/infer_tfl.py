@@ -205,7 +205,10 @@ def run(**kwargs):
             out, train_out = model(img, augment=augment)  # inference and training outputs
             t1 += time_sync() - t
         elif suffix=='.tflite':
-            input_data = img.cpu().numpy()
+            if opt.from_keras:
+                input_data = img.permute(0, 2, 3, 1).cpu().numpy()
+            else:
+                input_data = img.cpu().numpy()
             if tfl_int8:
                 #Transform input data to format required by integer tflite model
                 scale, zero_point = input_details[0]['quantization']
@@ -223,6 +226,11 @@ def run(**kwargs):
                 scale, zero_point = output_details[-1]['quantization']
                 pred = pred.astype(np.float32)
                 pred = (pred - zero_point) * scale
+            if opt.from_keras:
+                pred[..., 0] *= imgsz  # x
+                pred[..., 1] *= imgsz  # y
+                pred[..., 2] *= imgsz  # w
+                pred[..., 3] *= imgsz  # h
             out = torch.tensor(pred).to(device)
 
         # Compute loss
@@ -374,6 +382,7 @@ def parse_opt(known=False):
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     parser.add_argument('--half', action='store_true', help='use FP16 half-precision inference')
     parser.add_argument('--tfl_int8', action='store_true', help='use int8 quantized TFLite model')
+    parser.add_argument('--from-keras', action='store_true', help='is tflite model exported through keras')
     
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
 

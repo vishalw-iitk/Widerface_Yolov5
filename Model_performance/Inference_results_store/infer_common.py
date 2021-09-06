@@ -111,6 +111,7 @@ class Tfl_fp32_R(Regular):
         self.verbose = True
         self.exist_ok = True
         self.tfl_int8 = False
+        self.from_keras = True
 
     def creation_of_save_dir(self):
         os.makedirs(self.project) if not os.path.exists(self.project) else None
@@ -158,4 +159,8 @@ class TfliteQ(Quantization, Tfl_fp32_R):
     def __init__(self, opt, technique, framework, model_name):
         Quantization.__init__(self, opt, technique, framework, model_name)
         Tfl_fp32_R.__init__(self, opt, technique, framework, model_name)
-        self.tfl_int8 = False
+        self.from_keras = True
+        if model_name == 'int8':
+            self.tfl_int8 = True
+        else:
+            self.tfl_int8 = False

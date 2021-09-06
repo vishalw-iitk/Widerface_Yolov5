@@ -47,7 +47,7 @@ class load_the_model:
     def load_tf_pb_as_tflite_converter(self, model_path, model_name_user_defined):
         '''Loading the tf_pb as tflite_converter'''
         import tensorflow as tf
-        self.converter =  tf.compat.v1.lite.TFLiteConverter.from_saved_model(model_path)
+        self.converter =  tf.lite.TFLiteConverter.from_saved_model(model_path)
         self.statement = model_name_user_defined + " has been loaded"
 
 

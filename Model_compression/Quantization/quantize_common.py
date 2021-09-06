@@ -56,7 +56,9 @@ class Tflite(Quantization):
     def __init__(self, opt, technique, framework, model_name):
         Quantization.__init__(self, technique, framework, model_name)
         self.framework_path = opt.framework_path
-
+        self.cfg = opt.cfg,
+        self.data = opt.data,
+        self.batch_size = opt.batch_size
     # def set_name_only(self):
         # self.name = self.model_names[self.technique][self.framework][self.model_name]
 

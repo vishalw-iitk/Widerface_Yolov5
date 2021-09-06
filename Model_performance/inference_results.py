@@ -42,6 +42,7 @@ def main(opt):
     # method 3
     TfliteQ(opt, 'Quantization', 'Tflite', 'fp16').explicit_inference(infer_paths, model_names, running_model_metrics)
 
+    TfliteQ(opt, 'Quantization', 'Tflite', 'int8').explicit_inference(infer_paths, model_names, running_model_metrics)
 
 
     '''**************************************************************************************************'''

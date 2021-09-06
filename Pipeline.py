@@ -154,7 +154,7 @@ def parse_opt(known=False):
 
     '''Tflite int8 Only'''
     parser.add_argument('--repr-images', type=str, default='../ARRANGED_DATASET/images/validation/', help='path of representative dataset')
-    parser.add_argument('--imgtf', nargs='+', type=int, default=[640, 640], help='image size')  # height, width
+    parser.add_argument('--imgtf', nargs='+', type=int, default=[416, 416], help='image size')  # height, width
     parser.add_argument('--ncalib', type=int, default=100, help='number of calibration images')
 
     '''Pruning'''

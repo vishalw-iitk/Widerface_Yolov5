@@ -10,6 +10,7 @@ from yolov5 import export
 from pathlib import Path
 
 from dts.Model_conversion import onnx_export
+from dts.Model_conversion import keras_export
 from yolov5.utils.datasets import LoadImages
 
 
@@ -30,6 +31,16 @@ class transform_the_model:
         self.model_names = model_names
         self.img_sz = img_sz
 
+    def pytorch_to_keras(self,framework_from, model_type, pytorch_name_user_defined,keras_name_user_defined,  framework_to,cfg,data,batch_size):
+        if model_type == self.model_names['Regular']['Pytorch']['fp32']:
+            keras_export.run(
+                   weights = os.path.join(self.framework_path[framework_from][model_type]),
+                   cfg = cfg, source = data,img_size  =(self.img_sz, self.img_sz),
+                   batch_size = batch_size,
+                   )
+            self.statement = pytorch_name_user_defined + " has been transformed to " + keras_name_user_defined
+        else:
+            self.statement = "pytorch to keras already available"
     def pytorch_to_onnx(self, framework_from, model_type, pytorch_name_user_defined, onnx_name_user_defined,  framework_to):
         if model_type == self.model_names['Regular']['Pytorch']['fp32']:
             export.run(
@@ -179,6 +190,51 @@ def main(opt):
     print(transform.statement)
     print("********************************")
 
+
+def main_keras(opt):
+    model_type = opt.model_type_for_export
+
+    transform = transform_the_model(opt.framework_path, opt.model_names, opt.img_size)
+
+    transform.pytorch_to_keras(framework_from = 'Pytorch', model_type = model_type, \
+        pytorch_name_user_defined = 'Pytorch '+model_type+ ' model', \
+        keras_name_user_defined = 'keras '+model_type, framework_to = 'keras',cfg=opt.cfg,data=opt.data,batch_size=opt.batch_size)
+
+    print("********************************")
+    print(transform.statement)
+    print("********************************")
+
+
+    def representative_dataset_gen():
+        # Representative dataset for use with converter.representative_dataset(int8 quantization)
+        n = 0
+        for path, img, im0s, vid_cap in dataset:
+            # Get sample input data as a numpy array in a method of your choosing.
+            n += 1
+            inp = np.transpose(img, [1, 2, 0])
+            # print(inp.shape)
+            inp = np.expand_dims(inp, axis=0).astype(np.float32)
+            inp /= 255.0
+            yield [inp]
+            if n >= ncalib:
+                break
+
+    def repr_im():
+        try:
+            return opt.ncalib, LoadImages(opt.repr_images, img_size=opt.imgtf), representative_dataset_gen
+        except:
+            return None, None, None
+    ncalib, dataset, representative_dataset_gen = repr_im()
+
+    transform.tfpbconverter_to_tflite(framework_from = 'keras', model_type = model_type, \
+        tf_pb_name_user_defined = 'keras '+model_type, \
+            tflite_name_user_defined = 'tflite '+model_type, framework_to = 'tflite', \
+                representative_dataset_gen = representative_dataset_gen)
+    print("********************************")
+    print(transform.statement)
+    print("********************************")
+
+
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--img-size', type=int, default = 416, help = 'Image size suitable for feeding to the model and train, val image size (pixels)')
@@ -200,7 +256,7 @@ def run(**kwargs):
     opt = parse_opt(True)
     for k, v in kwargs.items():
         setattr(opt, k, v)
-    main(opt)
+    main_keras(opt)
 
 
 if __name__ == "__main__":
