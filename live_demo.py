@@ -9,6 +9,7 @@ import sys
 import time
 from pathlib import Path
 
+import numpy as np
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
@@ -57,7 +58,8 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         hyp = None,
         data = None,
         single_cls = None,
-        fuseQ = None
+        fuseQ = None,
+        tfl_int8 = False
         ):
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
@@ -74,9 +76,8 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 
     # Load model
     w = weights[0] if isinstance(weights, list) else weights
-    classify, pt, onnx = False, w.endswith('.pt'), w.endswith('.onnx')  # inference type
+    classify, pt, onnx , tflite = False, w.endswith('.pt'), w.endswith('.onnx'),w.endswith('.tflite') # inference type
     stride, names = 64, [f'class{i}' for i in range(1000)]  # assign defaults
-    print(1)
     if pt:
         if pyt_quantized:
             model = quantized_load(w, cfg, device, imgsz, data, hyp, single_cls, fuseQ)
@@ -84,6 +85,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         else:
             model = attempt_load(weights, map_location=device)  # load FP32 model
         stride = int(model.stride.max())  # model stride
+        print("stride for pytorch model",stride)
         names = model.module.names if hasattr(model, 'module') else model.names  # get class names
         if half:
             model.half()  # to FP16
@@ -94,13 +96,23 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         check_requirements(('onnx', 'onnxruntime'))
         import onnxruntime
         session = onnxruntime.InferenceSession(w, None)
+    elif tflite:
+        #loading the tflite model
+        import tensorflow as tf
+        interpreter = tf.lite.Interpreter(model_path=w)
+        interpreter.allocate_tensors()
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+        stride = 64
     imgsz = check_img_size(imgsz, s=stride)  # check image size
+    imgsz = [416, 416]
 
     # Dataloader
     if webcam:
         view_img = check_imshow()
         cudnn.benchmark = True  # set True to speed up constant image size inference
-        dataset = LoadStreams(source, img_size=imgsz, stride=stride)
+        print("imgsz in webcam",imgsz)
+        dataset = LoadStreams(source, img_size=imgsz, stride=stride, auto=pt)
         bs = len(dataset)  # batch_size
     else:
         dataset = LoadImages(source, img_size=imgsz, stride=stride)
@@ -112,15 +124,15 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
     t0 = time.time()
     for path, img, im0s, vid_cap in dataset:
-        if pt:
+        if onnx:
+            img = img.astype('float32')
+        else:
             img = torch.from_numpy(img).to(device)
             img = img.half() if half else img.float()  # uint8 to fp16/32
-        elif onnx:
-            img = img.astype('float32')
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
         if len(img.shape) == 3:
             img = img[None]  # expand for batch dim
-
+        
         # Inference
         t1 = time_sync()
         if pt:
@@ -128,7 +140,22 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
             pred = model(img, augment=augment, visualize=visualize)[0]
         elif onnx:
             pred = torch.tensor(session.run([session.get_outputs()[0].name], {session.get_inputs()[0].name: img}))
-
+        elif tflite:
+            imn = img.permute(0, 2, 3, 1).cpu().numpy()
+            if tfl_int8:
+                scale, zero_point = input_details[0]['quantization']
+                imn = (imn / scale + zero_point).astype(np.uint8)
+            interpreter.set_tensor(input_details[0]['index'], imn)
+            interpreter.invoke()
+            pred = interpreter.get_tensor(output_details[0]['index'])
+            if tfl_int8:
+                scale, zero_point = output_details[0]['quantization']
+                pred = (pred.astype(np.float32) - zero_point) * scale
+            pred[..., 0] *= imgsz[1]  # x
+            pred[..., 1] *= imgsz[0]  # y
+            pred[..., 2] *= imgsz[1]  # w
+            pred[..., 3] *= imgsz[0]  # h
+            pred = torch.tensor(pred)
         # NMS
         pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
         t2 = time_sync()
@@ -193,7 +220,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 color = (255, 255, 0)
                 
                 # Line thickness of 2 px
-                thickness = 0.5
+                thickness = 1
                 im0 = cv2.putText(im0, f'FPS: {str(1//(t2-t1))}', org, font, fontScale, color, thickness, cv2.LINE_AA)
                 
                 cv2.imshow(str(p), im0)
@@ -237,7 +264,7 @@ def parse_opt():
     parser.add_argument('--weights', nargs='+', type=str, default='', help='model.pt path(s)')
     parser.add_argument('--fuseQ', action='store_true', help = 'To infer on the quantized model is fusion is applied')
     parser.add_argument('--source', type=str, default='../small_test/images', help='file/dir/URL/glob, 0 for webcam')
-    parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640, help='inference size (pixels)')
+    parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=416, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
     parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
@@ -260,6 +287,7 @@ def parse_opt():
     parser.add_argument('--hide-labels', default=False, action='store_true', help='hide labels')
     parser.add_argument('--hide-conf', default=False, action='store_true', help='hide confidences')
     parser.add_argument('--half', action='store_true', help='use FP16 half-precision inference')
+    parser.add_argument('--tfl-int8', action='store_true', help='is the inference on int8 tflite model')
     opt = parser.parse_args()
     return opt
 
