@@ -170,7 +170,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                     if save_img or save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
                         label_name = "Face" if names[c] == "0" else names[c]
-                        label = None if hide_labels else (names[c] if hide_conf else f'{label_name} {conf:.2f}')
+                        label = None if hide_labels else (names[c] if hide_conf else f'{conf:.2f}') ##removed face label
                         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=line_thickness)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
