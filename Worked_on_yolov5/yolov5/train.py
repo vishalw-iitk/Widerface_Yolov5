@@ -1,4 +1,6 @@
-"""Train a YOLOv5 model on a custom dataset
+"""
+Model traning code 
+Train a YOLOv5 model on a custom dataset
 
 Usage:
     $ python path/to/train.py --data coco128.yaml --weights yolov5s.pt --img 640
@@ -40,7 +42,7 @@ from utils.loss import ComputeLoss
 from utils.plots import plot_labels, plot_evolution
 from utils.torch_utils import ModelEMA, select_device, intersect_dicts, torch_distributed_zero_first, de_parallel
 from utils.loggers.wandb.wandb_utils import check_wandb_resume
-from utils.metrics import fitness
+from utils.metrics import fitness #  Model fitness as a weighted combination of metrics
 from utils.loggers import Loggers
 from utils.callbacks import Callbacks
 

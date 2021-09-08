@@ -1,4 +1,9 @@
+'''
 # YOLOv5 PyTorch utils
+    ModelEMA # Model Exponential Moving Average
+    select_device # Set up cuda devices # device = 'cpu' or '0' or '0,1,2,3'
+    intersect_dicts # Prrimary cheak for models by dictionary intersection of matching keys and shapes
+'''
 
 import datetime
 import logging

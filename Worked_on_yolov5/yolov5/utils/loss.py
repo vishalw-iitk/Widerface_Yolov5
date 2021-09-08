@@ -1,5 +1,9 @@
+'''
 # Loss functions
-
+    FocalLoss
+    CIoU Loss # Regression for cordinates of BBox
+    build_targets  # Build targets for compute_loss(), input targets(image,class,x,y,w,h)
+'''
 import torch
 import torch.nn as nn
 

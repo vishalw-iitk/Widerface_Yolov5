@@ -1,4 +1,6 @@
 # YOLOv5 image augmentation functions
+# Same as YOLOv4 - Bag of Freebies 
+# Mosaic data augmentation
 
 import logging
 import random
