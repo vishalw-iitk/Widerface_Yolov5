@@ -68,7 +68,7 @@ class model_performance_Results:
     @staticmethod
     def unused_plot_keys(running_model_metrics):
         del running_model_metrics['Regular']['Pytorch']['fp16']
-        del running_model_metrics['Quantization']['Tflite']['int8']
+        #del running_model_metrics['Quantization']['Tflite']['int8']
         del running_model_metrics['Pruning']['Tflite']
 
 
