@@ -50,12 +50,12 @@ plot_results = {
                     'size' : 13.7,
                 },
                 'int8' : {
-                    'mAP50' : None,
-                    'mAP' : None,
-                    'fitness' : None,
+                    'mAP50' : 45.2,
+                    'mAP' : 19.1,
+                    'fitness' : 21.71,
                     'latency' : None,
-                    'GFLOPS' : None,
-                    'size' : None
+                    'GFLOPS' : 6.89,
+                    'size' : 7.15
                 }
             }
         },
